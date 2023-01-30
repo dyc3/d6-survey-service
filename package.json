@@ -1,0 +1,11 @@
+{
+	"name": "survey-app",
+	"license": "AGPL-3.0-or-later",
+	"private": true,
+	"workspaces": [
+		"packages/frontend"
+	],
+	"scripts": {
+		"dev": "yarn workspace frontend dev"
+	}
+}
