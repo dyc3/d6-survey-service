@@ -5,6 +5,7 @@
 3. Clone the repo
 4. Open the repo in vscode
 5. From the command pallette (<kbd>Ctrl + Shift + P</kbd>) , run `Dev Containers: Reopen in Container`
+6. Set up github cli: `gh auth login`
 
 ## Running
 
@@ -19,6 +20,16 @@ Both the frontend and backend will automatically reload/recompile when you make 
 
 TODO
 
-## Creating a PR
+## Creating a Pull Request
 
-TODO
+Before writing any code or making any commits, make a new branch
+
+```bash
+git checkout -b BRANCH_NAME
+```
+
+You can now make changes to on this branch. When you are done:
+
+1. Run `gh pr create`
+	- Add `--draft` flag to mark it as a work-in-progress draft PR
+2. Follow the prompts to submit your pull request.
