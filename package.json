@@ -6,6 +6,13 @@
 		"packages/frontend"
 	],
 	"scripts": {
-		"dev": "yarn workspace frontend dev"
+		"build": "yarn workspaces run build",
+		"preview": "yarn workspace frontend preview",
+		"dev": "yarn workspace frontend dev",
+		"check": "yarn workspaces run check",
+		"lint": "yarn workspaces run lint",
+		"test:unit": "yarn workspaces run test:unit",
+		"test:e2e": "yarn workspace frontend test",
+		"format": "yarn workspaces run format"
 	}
 }
