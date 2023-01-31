@@ -19,4 +19,8 @@
 	// "customizations": {},
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
+	"onCreateCommand": {
+		"yarn": "yarn install",
+		"extras": "bash ./scripts/install-extras.sh"
+	}
 }
