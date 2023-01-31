@@ -59,8 +59,61 @@ Wants to take a survey with as little friction as possible.
 
 # Architecture
 
-Entity relationship diagram:
 ```mermaid
+---
+title: Service Deployment Structure (prerendered frontend)
+---
+graph LR
+    back[API Service] --> db[(Postgres)]
+    back2[API Service] --> db
+    back3[API Service] --> db
+    load[Load Balancer] -->|proxy| back
+    load -->|proxy| back2
+    load -->|proxy| back3
+```
+
+In this setup, the API server is able to be completely stateless, which should make horizontal scaling very easy.
+
+(TBD: The following depends on if we want to do any server side rendering) In a production deployment, the API service will handle service static files for the frontend.
+
+Pros:
+- More simple
+Cons:
+- Could be slower for browsers to render
+- Completely unusable in a no-js environment
+
+```mermaid
+---
+title: Service Deployment Structure (server rendered frontend)
+---
+graph LR
+    back[API Service] --> db[(Postgres)]
+    back2[API Service] --> db
+    back3[API Service] --> db
+    front[Frontend] -->|proxy| back
+    front2[Frontend] -->|proxy| back2
+    front3[Frontend] -->|proxy| back3
+    load[Load Balancer] --> front
+    load --> front2
+    load --> front3
+```
+
+In this scenario, the frontend service would take care of rendering any dynamic elements before the page is served.
+
+Pros:
+- Could be faster for browsers to render pages
+- Less data sent to browsers
+- Enables the possibility of doing less round trip API requests from the client on page load.
+Cons:
+- Slightly more complex
+- Could get very complex
+- Could lose the benefit of using Rocket's request validation
+- Slightly less unusable in a no-js environment.
+
+```mermaid
+---
+title: Entity Relationship Diagram
+---
 erDiagram
     User {
         int id PK
@@ -121,6 +174,8 @@ The API will be RESTful, and will use JSON for data serialization. As such, it'l
 Requests will be validated using [Rocket's request guards](https://rocket.rs/v0.5-rc/guide/requests/#request-guards).
 
 Must be capable of the following:
+- Status
+  - Health check
 - Users
   - User registration
   - User login/logout
