@@ -6,6 +6,7 @@
 4. Open the repo in vscode
 5. From the command pallette (<kbd>Ctrl + Shift + P</kbd>) , run `Dev Containers: Reopen in Container`
 6. Set up github cli: `gh auth login`
+7. Run `./scripts/install-extras.sh`
 
 ## Running
 
