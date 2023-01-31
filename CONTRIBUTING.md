@@ -18,7 +18,11 @@ Both the frontend and backend will automatically reload/recompile when you make 
 
 ## Testing
 
-TODO
+```
+cargo test
+yarn run test:unit
+yarn run test:e2e
+```
 
 ## Creating a Pull Request
 
