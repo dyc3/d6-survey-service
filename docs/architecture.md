@@ -131,7 +131,7 @@ erDiagram
         String title
         String description
         int owner_id FK
-        Question[] questions "json serialized"
+        Question[] questions "JSON serialized"
     }
 
     Question {
@@ -141,18 +141,16 @@ erDiagram
         String content
     }
 
-    Response {
-        int survey_id FK "for faster result aggregation, technically unnecessary"
-        UUID question_uuid
+    SurveyResponse {
+        int survey_id FK
         UUID responder_uuid
-        String content
+        Map content "JSON serialized - Question UUID to response content"
     }
 
     User ||--o{ Survey : owns
     Survey ||--o{ Question : contains
-    Responder ||--|| Response : submits
-    Question ||--o{ Response : has
-    Survey ||--o{ Response : has
+    Responder ||--|| SurveyResponse : submits
+    Survey ||--o{ SurveyResponse : has
 ```
 
 - Users can create and own surveys.
@@ -164,7 +162,7 @@ Tables:
 - surveys
 - responses
 
-When writing survey responses to the database, it will be safe to aquire a [`ROW EXCLUSIVE` lock on the responses table](https://www.postgresql.org/docs/8.1/explicit-locking.html#LOCKING-ROWS) for and updating by using `SELECT FOR UPDATE`.
+When updating survey responses to the database, it will be safe to aquire a [`ROW EXCLUSIVE` lock on the responses table](https://www.postgresql.org/docs/8.1/explicit-locking.html#LOCKING-ROWS) for and updating by using `SELECT FOR UPDATE`.
 Questions intentionally don't have their own table, because each question is only ever associated with one survey. They are stored as json in the surveys table. (This is a tradeoff between performance and simplicity. We could have a separate table for questions, but that would require more complex queries to get the questions for a survey.)
 
 ## API
@@ -187,9 +185,8 @@ Must be capable of the following:
     - Must not accept edits of outdated versions of the survey to prevent data loss.
   - Clear all responses to a survey
 - Responses
-  - Generate a responder UUID
-  - Create a response to a question
-    - If response already exists, update it.
+  - Create a new response
+  - Edit an existing response
 
 ### Authentication and Authorization
 
@@ -230,17 +227,23 @@ These are the types of questions that we will support:
 
 # Response UI Behavior
 
-When a responder opens the survey, the client must obtain a responder UUID from the server. This UUID will be used to identify the responder in the database, and it will act like a session ID.
+As a responder completes the survey, the partial response should be saved in the browser's local storage.
+
+When a responder submits the survey, the client must obtain a responder UUID from the server in the response. This UUID will be used to identify the responder in the database, and will allow a responder to edit their response after they have submitted it.
 
 ```mermaid
 sequenceDiagram
-    Client->>+Server: GET /api/survey/{ID}/begin
-    Server->>-Client: Responder UUID
-    loop Until all questions are answered
-        Client->>+Server: POST /api/survey/{ID}/{QUESTION}
-        Server->>-Client: 200 OK
-    end
+    Client->>+Server: POST /api/survey/{ID}
+    Server->>-Client: Success! Here is your Responder UUID
+    Client->>+Server: PATCH /api/survey/{ID}?responder={UUID}
+    Server->>-Client: Success! Modified response saved.
 ```
 
-- Closing the broswer tab will prompt the user to prevent accidental loss of data. Otherwise, closing the tab will make the user lose their progress.
+```mermaid
+sequenceDiagram
+    Client->>+Server: PATCH /api/survey/{ID}
+    Server->>-Client: Failed! No responder provided
+```
+
+- Closing the broswer tab without submitting will prompt the user before exiting.
 - At the end of the survey, the user will be provided with a link that allows them to edit their responses.
