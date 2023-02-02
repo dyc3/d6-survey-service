@@ -25,8 +25,6 @@ Regardless of which project we do, we will most likely be doing a lot of front e
 
 We may be able to easily share type definitions between the frontend and backend using [typeshare](https://github.com/1Password/typeshare), which will save time.
 
-TBD: Do we want to use server side rendering at all?
-
 ### Code Style, Formatting, and Linting
 
 - Rust: rustfmt + clippy
@@ -61,29 +59,6 @@ Wants to take a survey with as little friction as possible.
 
 ```mermaid
 ---
-title: Service Deployment Structure (prerendered frontend)
----
-graph LR
-    back[API Service] --> db[(Postgres)]
-    back2[API Service] --> db
-    back3[API Service] --> db
-    load[Load Balancer] -->|proxy| back
-    load -->|proxy| back2
-    load -->|proxy| back3
-```
-
-In this setup, the API server is able to be completely stateless, which should make horizontal scaling very easy.
-
-(TBD: The following depends on if we want to do any server side rendering) In a production deployment, the API service will handle service static files for the frontend.
-
-Pros:
-- More simple
-Cons:
-- Could be slower for browsers to render
-- Completely unusable in a no-js environment
-
-```mermaid
----
 title: Service Deployment Structure (server rendered frontend)
 ---
 graph LR
@@ -99,16 +74,7 @@ graph LR
 ```
 
 In this scenario, the frontend service would take care of rendering any dynamic elements before the page is served.
-
-Pros:
-- Could be faster for browsers to render pages
-- Less data sent to browsers
-- Enables the possibility of doing less round trip API requests from the client on page load.
-Cons:
-- Slightly more complex
-- Could get very complex
-- Could lose the benefit of using Rocket's request validation
-- Slightly less unusable in a no-js environment.
+Each frontend service would be paired with exactly 1 backend service, running on the same machine.
 
 ```mermaid
 ---
