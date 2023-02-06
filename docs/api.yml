@@ -1,0 +1,15 @@
+openapi: 3.1.0
+info:
+  title: Survey Service
+  version: "1.0"
+paths:
+  /:
+    get:
+      summary: hello world
+      responses:
+        "200":
+          description: "hello world"
+          content:
+            text/plain:
+              schema:
+                type: string
