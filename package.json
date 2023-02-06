@@ -9,6 +9,7 @@
 		"build": "yarn workspaces run build",
 		"preview": "yarn workspace frontend preview",
 		"dev": "yarn workspace frontend dev",
+		"dev:capture": "optic oas capture docs/api.yml http://localhost:5347 --command \"yarn workspace frontend dev\"",
 		"check": "yarn workspaces run check",
 		"lint": "yarn workspaces run lint",
 		"test:unit": "yarn workspaces run test:unit",
