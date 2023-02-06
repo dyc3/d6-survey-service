@@ -6,4 +6,4 @@ set -e
 
 cargo install cargo-watch
 cargo install typeshare-cli
-yarn global add @useoptic/optic
+npm install -g @useoptic/optic
