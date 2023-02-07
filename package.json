@@ -13,6 +13,7 @@
 		"lint": "yarn workspaces run lint",
 		"test:unit": "yarn workspaces run test:unit",
 		"test:e2e": "yarn workspace frontend test",
-		"format": "yarn workspaces run format"
+		"format": "yarn workspaces run format",
+		"generate": "typeshare ./crates/api_server/ --lang=typescript --output-file=packages/frontend/src/lib/common.ts"
 	}
 }
