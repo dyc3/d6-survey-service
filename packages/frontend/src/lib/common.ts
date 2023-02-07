@@ -8,6 +8,4 @@ export interface QText {
 	multiline: boolean;
 }
 
-export type Question = 
-	| { type: "Text", content: QText };
-
+export type Question = { type: 'Text'; content: QText };
