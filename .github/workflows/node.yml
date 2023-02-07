@@ -29,6 +29,9 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn run check
       - run: yarn run lint
+      - run: cargo install typeshare-cli
+      - name: Ensure generated files are up to date
+        run: ./scripts/ensure-generated.sh
 
   test:
     runs-on: ubuntu-latest
