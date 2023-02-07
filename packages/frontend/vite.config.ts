@@ -5,10 +5,10 @@ const config: UserConfig = {
 	plugins: [sveltekit()],
 	server: {
 		proxy: {
-			"^/api": {
-				target: "http://localhost:5347",
-			},
-		},
+			'^/api': {
+				target: 'http://localhost:5347'
+			}
+		}
 	},
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
