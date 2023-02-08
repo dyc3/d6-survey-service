@@ -3,6 +3,7 @@ extern crate rocket;
 #[macro_use]
 extern crate typeshare;
 
+mod db;
 mod questions;
 
 #[get("/")]
