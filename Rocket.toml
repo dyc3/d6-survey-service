@@ -1,2 +1,5 @@
 [global]
 port = 5347
+
+[default.databases.survey_app]
+url = "db.sqlite"
