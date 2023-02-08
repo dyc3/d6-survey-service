@@ -1,4 +1,5 @@
 <script lang="ts">
+	import QContainer from '$lib/QContainer.svelte';
 	import QTextInput from '../lib/questions/QTextInput.svelte';
 
 	let editmode = false;
@@ -14,5 +15,15 @@
 	<label for="editmode">Survey Edit Mode</label>
 </div>
 
-<QTextInput prompt="What is your name?" {editmode} />
-<QTextInput prompt="Describe your shoes." multiline={true} {editmode} />
+<QTextInput prompt="What is your name?" description="" {editmode} />
+<QTextInput prompt="Describe your shoes." description="" multiline={true} {editmode} />
+
+<h3>QContainer</h3>
+
+<QContainer
+	question={{
+		type: 'Text',
+		content: { prompt: 'What is your name?', description: '', multiline: false }
+	}}
+	{editmode}
+/>
