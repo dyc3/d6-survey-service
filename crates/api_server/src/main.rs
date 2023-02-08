@@ -2,6 +2,8 @@
 extern crate rocket;
 #[macro_use]
 extern crate typeshare;
+#[macro_use]
+extern crate diesel_migrations;
 
 mod db;
 mod questions;
@@ -14,5 +16,7 @@ fn index() -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/api", routes![index, user::register_user])
+    rocket::build()
+        .attach(db::stage())
+        .mount("/api", routes![index, user::register_user])
 }

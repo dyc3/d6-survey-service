@@ -2,6 +2,8 @@ use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+use crate::db::Storage;
+
 #[typeshare]
 #[derive(Clone, Serialize, Deserialize)]
 pub struct UserLoginParams {
@@ -24,7 +26,11 @@ pub enum UserLoginError {
 }
 
 #[post("/user/register", data = "<user>")]
-pub fn register_user(user: Json<UserLoginParams>) -> Result<Json<UserToken>, Json<UserLoginError>> {
+pub async fn register_user(
+    user: Json<UserLoginParams>,
+) -> Result<Json<UserToken>, Json<UserLoginError>> {
+    let user = user.into_inner();
+
     let resp = UserToken {
         token: "token".to_string(),
     };
