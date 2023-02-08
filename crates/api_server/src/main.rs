@@ -5,6 +5,7 @@ extern crate typeshare;
 
 mod db;
 mod questions;
+mod user;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -13,5 +14,5 @@ fn index() -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index])
+    rocket::build().mount("/api", routes![index, user::register_user])
 }
