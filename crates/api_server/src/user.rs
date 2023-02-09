@@ -97,9 +97,21 @@ pub async fn login_user(
         if found_users.is_empty() {
             return Err(UserLoginError::InvalidCredentials);
         }
+        let Some(user) = found_users.first() else {
+            return Err(UserLoginError::InternalError);
+        };
+        let parsed_hash = PasswordHash::new(user.password_hash.as_str()).map_err(|e| match e {
+            ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
+            _ => UserLoginError::InternalError,
+        })?;
+        Argon2::default().verify_password(&user_params.password.as_bytes(), &parsed_hash).map_err(|e| match e {
+            ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
+            _ => UserLoginError::InternalError,
+        })?;
         Ok(())
     })
     .await?;
+
 
     let resp = UserToken {
         token: "token".to_string(),
