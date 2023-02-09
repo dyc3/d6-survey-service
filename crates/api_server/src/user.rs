@@ -37,7 +37,14 @@ pub enum UserLoginError {
 
 impl From<UserLoginError> for ApiErrorResponse<UserLoginError> {
     fn from(value: UserLoginError) -> Self {
-        ApiErrorResponse { message: value }
+        let status = match &value {
+            UserLoginError::InvalidCredentials => Status::BadRequest,
+            UserLoginError::InternalError => Status::InternalServerError
+        };
+        ApiErrorResponse {
+            status,
+            message: value,
+        }
     }
 }
 
@@ -46,11 +53,10 @@ impl From<UserLoginError> for ApiErrorResponse<UserLoginError> {
 pub async fn register_user(
     db: Storage,
     user: Json<UserLoginParams>,
-) -> Result<Created<Json<UserToken>>, (Status, Json<ApiErrorResponse<UserLoginError>>)> {
+) -> Result<Created<Json<UserToken>>, ApiErrorResponse<UserLoginError>> {
     match create_user(db, user.into_inner()).await {
         Ok(token) => Ok(Created::new("").body(Json(token))),
-        Err(UserLoginError::InvalidCredentials) => Err((Status::BadRequest, Json(UserLoginError::InvalidCredentials.into()))),
-        Err(UserLoginError::InternalError) => Err((Status::InternalServerError, Json(UserLoginError::InternalError.into()))),
+        Err(e) => Err(e.into()),
     }
 }
 
