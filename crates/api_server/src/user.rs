@@ -2,7 +2,7 @@ use argon2::{Argon2, PasswordHasher};
 use diesel::prelude::*;
 use password_hash::rand_core::OsRng;
 use rocket::http::Status;
-use rocket::response::{self, Responder};
+use rocket::response::{Responder};
 use rocket::response::status::Created;
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
@@ -54,17 +54,11 @@ pub async fn register_user(
     db: Storage,
     user: Json<UserLoginParams>,
 ) -> Result<Created<Json<UserToken>>, ApiErrorResponse<UserLoginError>> {
-    match create_user(db, user.into_inner()).await {
-        Ok(token) => Ok(Created::new("").body(Json(token))),
-        Err(e) => Err(e.into()),
-    }
-}
-
-async fn create_user(db: Storage, user_params: UserLoginParams) -> Result<UserToken, UserLoginError> {
+    let user_params = user.into_inner();
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let password_hash = argon2.hash_password(&user_params.password.as_bytes(), &salt).map_err(|e| {
-        println!("{e:?}");
+        error!("{e:?}");
         match e {
             password_hash::Error::Password => UserLoginError::InvalidCredentials,
             _ => UserLoginError::InternalError,
@@ -82,14 +76,14 @@ async fn create_user(db: Storage, user_params: UserLoginParams) -> Result<UserTo
     })
     .await
     .map_err(|e| {
-        println!("{e:?}");
+        error!("{e:?}");
         UserLoginError::InternalError
     })?;
 
     let resp = UserToken {
         token: "token".to_string(),
     };
-    Ok(resp)
+    Ok(Created::new("").body(Json(resp)))
 }
 
 #[post("/user/login", data = "<user>")]
@@ -105,7 +99,7 @@ pub async fn login_user(
             .filter(username.eq(user_params.username))
             .load(conn)
             .map_err(|e| {
-                println!("{e:?}");
+                error!("{e:?}");
                 UserLoginError::InternalError
             })?;
         if found_users.is_empty() {
