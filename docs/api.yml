@@ -12,7 +12,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UserLoginParams"
       responses:
-        "200":
+        "201":
           description: Successfully registered new user, returns JWT token
           content:
             application/json:
