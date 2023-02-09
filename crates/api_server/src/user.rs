@@ -1,9 +1,10 @@
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use diesel::prelude::*;
 
-use crate::db::Storage;
-use crate::db::models::User;
+use crate::db::{Storage, schema};
+use crate::db::models::{User, NewUser};
 
 #[typeshare]
 #[derive(Clone, Serialize, Deserialize)]
@@ -28,14 +29,21 @@ pub enum UserLoginError {
 
 #[post("/user/register", data = "<user>")]
 pub async fn register_user(
+    db: Storage,
     user: Json<UserLoginParams>,
 ) -> Result<Json<UserToken>, Json<UserLoginError>> {
     let user_params = user.into_inner();
-    let user = User {
-        id: 0,
+    let user = NewUser {
         username: user_params.username,
         password: user_params.password,
     };
+    use schema::users::dsl::*;
+    db.run(move |conn| {
+        diesel::insert_into(schema::users::table).values((username.eq(user.username), password.eq(user.password))).execute(conn)
+    }).await.map_err(|e| {
+        println!("{e:?}");
+        UserLoginError::InternalError
+    })?;
 
     let resp = UserToken {
         token: "token".to_string(),
