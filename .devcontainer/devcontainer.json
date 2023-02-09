@@ -8,5 +8,13 @@
 	"onCreateCommand": {
 		"yarn": "yarn install",
 		"extras": "bash ./scripts/install-extras.sh"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"svelte.svelte-vscode",
+				"rust-lang.rust-analyzer"
+			]
+		}
 	}
 }
