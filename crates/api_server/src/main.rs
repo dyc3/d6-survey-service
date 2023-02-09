@@ -4,6 +4,7 @@ extern crate rocket;
 extern crate typeshare;
 #[macro_use]
 extern crate diesel_migrations;
+extern crate diesel;
 
 mod db;
 mod questions;

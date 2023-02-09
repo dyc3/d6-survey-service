@@ -4,8 +4,11 @@ use rocket::Rocket;
 use rocket_sync_db_pools::database;
 use rocket_sync_db_pools::diesel;
 
+mod models;
+mod schema;
+
 #[database("survey_app")]
-pub struct Storage(diesel::SqliteConnection);
+pub struct Storage(diesel::PgConnection);
 
 embed_migrations!("migrations");
 
@@ -22,7 +25,7 @@ async fn run_migrations(rocket: Rocket<Build>) -> Rocket<Build> {
 }
 
 pub fn stage() -> AdHoc {
-    AdHoc::on_ignite("Diesel SQLite Stage", |rocket| async {
+    AdHoc::on_ignite("Diesel Postgres Stage", |rocket| async {
         rocket
             .attach(Storage::fairing())
             .attach(AdHoc::on_ignite("Diesel Migrations", run_migrations))
