@@ -3,8 +3,6 @@ extern crate rocket;
 #[macro_use]
 extern crate typeshare;
 #[macro_use]
-extern crate diesel_migrations;
-#[macro_use]
 extern crate diesel;
 
 mod db;

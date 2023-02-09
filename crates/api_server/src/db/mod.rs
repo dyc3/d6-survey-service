@@ -1,25 +1,30 @@
+use std::time::Duration;
+
+use diesel::r2d2::R2D2Connection;
 use rocket::fairing::AdHoc;
 use rocket::Build;
 use rocket::Rocket;
+use rocket_sync_db_pools::Config;
+use rocket_sync_db_pools::PoolResult;
+use rocket_sync_db_pools::Poolable;
 use rocket_sync_db_pools::database;
-use rocket_sync_db_pools::diesel;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
 pub mod models;
 pub mod schema;
 
 #[database("survey_app")]
-pub struct Storage(diesel::PgConnection);
+pub struct Storage(rocket_sync_db_pools::diesel::PgConnection);
 
-embed_migrations!("migrations");
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
 async fn run_migrations(rocket: Rocket<Build>) -> Rocket<Build> {
-    let conn = Storage::get_one(&rocket)
-        .await
-        .expect("database connection");
-
-    conn.run(|c| embedded_migrations::run(c))
-        .await
-        .expect("diesel migrations");
+    Storage::get_one(&rocket).await
+        .expect("database connection")
+        .run(|conn| {
+            conn.run_pending_migrations(MIGRATIONS).expect("diesel migrations");
+        })
+        .await;
 
     rocket
 }
