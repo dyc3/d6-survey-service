@@ -13,5 +13,5 @@ pub struct User {
 #[diesel(table_name=users)]
 pub struct NewUser {
     pub username: String,
-    pub password_hash: String
+    pub password_hash: String,
 }
