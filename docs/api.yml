@@ -23,6 +23,26 @@ paths:
                     type: string
                 required:
                   - token
+  /api/user/login:
+    summary: Log in an existing user
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginParams"
+      responses:
+        "200":
+          description: Successfully logged in user, returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                required:
+                  - token
 components:
   schemas:
     UserLoginParams:
