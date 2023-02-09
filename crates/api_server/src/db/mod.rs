@@ -4,8 +4,8 @@ use rocket::Rocket;
 use rocket_sync_db_pools::database;
 use rocket_sync_db_pools::diesel;
 
-mod models;
-mod schema;
+pub mod models;
+pub mod schema;
 
 #[database("survey_app")]
 pub struct Storage(diesel::PgConnection);

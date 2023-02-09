@@ -1,7 +1,8 @@
 use diesel::prelude::*;
 
+#[derive(Queryable)]
 pub struct User {
-	id: u32,
-	username: String,
-	password: String,
+	pub id: u32,
+	pub username: String,
+	pub password: String,
 }

@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::db::Storage;
+use crate::db::models::User;
 
 #[typeshare]
 #[derive(Clone, Serialize, Deserialize)]
@@ -29,7 +30,12 @@ pub enum UserLoginError {
 pub async fn register_user(
     user: Json<UserLoginParams>,
 ) -> Result<Json<UserToken>, Json<UserLoginError>> {
-    let user = user.into_inner();
+    let user_params = user.into_inner();
+    let user = User {
+        id: 0,
+        username: user_params.username,
+        password: user_params.password,
+    };
 
     let resp = UserToken {
         token: "token".to_string(),
