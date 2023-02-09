@@ -1,10 +1,10 @@
+use diesel::prelude::*;
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
-use diesel::prelude::*;
 
-use crate::db::{Storage, schema};
-use crate::db::models::{User, NewUser};
+use crate::db::models::{NewUser, User};
+use crate::db::{schema, Storage};
 
 #[typeshare]
 #[derive(Clone, Serialize, Deserialize)]
@@ -38,8 +38,12 @@ pub async fn register_user(
         password: user_params.password,
     };
     db.run(move |conn| {
-        diesel::insert_into(schema::users::table).values(&user).execute(conn)
-    }).await.map_err(|e| {
+        diesel::insert_into(schema::users::table)
+            .values(&user)
+            .execute(conn)
+    })
+    .await
+    .map_err(|e| {
         println!("{e:?}");
         UserLoginError::InternalError
     })?;
@@ -59,15 +63,19 @@ pub async fn login_user(
 
     db.run(move |conn| {
         use schema::users::dsl::*;
-        let found_users: Vec<User> = schema::users::table.filter(username.eq(user_params.username)).load(conn).map_err(|e| {
-            println!("{e:?}");
-            UserLoginError::InternalError
-        })?;
+        let found_users: Vec<User> = schema::users::table
+            .filter(username.eq(user_params.username))
+            .load(conn)
+            .map_err(|e| {
+                println!("{e:?}");
+                UserLoginError::InternalError
+            })?;
         if found_users.is_empty() {
             return Err(UserLoginError::InvalidCredentials);
         }
         Ok(())
-    }).await?;
+    })
+    .await?;
 
     let resp = UserToken {
         token: "token".to_string(),
