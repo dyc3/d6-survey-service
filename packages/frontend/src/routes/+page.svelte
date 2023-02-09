@@ -2,6 +2,7 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import QRating from '$lib/questions/QRating.svelte';
 	import QTextInput from '../lib/questions/QTextInput.svelte';
+	import type { Question } from '../lib/common';
 
 	let editmode = false;
 
