@@ -10,15 +10,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-              required:
-                - username
-                - password
+              $ref: "#/components/schemas/UserLoginParams"
       responses:
         "200":
           description: Successfully registered new user, returns JWT token
@@ -31,3 +23,15 @@ paths:
                     type: string
                 required:
                   - token
+components:
+  schemas:
+    UserLoginParams:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
