@@ -2,11 +2,14 @@ use argon2::{Argon2, PasswordHasher};
 use diesel::prelude::*;
 use password_hash::rand_core::OsRng;
 use rocket::http::Status;
+use rocket::response::{self, Responder};
+use rocket::response::status::Created;
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use password_hash::{PasswordHash, PasswordVerifier, SaltString};
 
+use crate::api::ApiErrorResponse;
 use crate::db::models::{NewUser, User};
 use crate::db::{schema, Storage};
 
@@ -32,18 +35,23 @@ pub enum UserLoginError {
     InternalError,
 }
 
+impl From<UserLoginError> for ApiErrorResponse<UserLoginError> {
+    fn from(value: UserLoginError) -> Self {
+        ApiErrorResponse { message: value }
+    }
+}
+
+
 #[post("/user/register", data = "<user>")]
 pub async fn register_user(
     db: Storage,
     user: Json<UserLoginParams>,
-) -> (Status, Result<Json<UserToken>, Json<UserLoginError>>) {
-    let (status, resp) = match create_user(db, user.into_inner()).await {
-        Ok(token) => (Status::Created, Ok(Json(token))),
-        Err(UserLoginError::InvalidCredentials) => (Status::BadRequest, Err(Json(UserLoginError::InvalidCredentials))),
-        Err(UserLoginError::InternalError) => (Status::InternalServerError, Err(Json(UserLoginError::InternalError))),
-    };
-
-    (status, resp)
+) -> Result<Created<Json<UserToken>>, (Status, Json<ApiErrorResponse<UserLoginError>>)> {
+    match create_user(db, user.into_inner()).await {
+        Ok(token) => Ok(Created::new("").body(Json(token))),
+        Err(UserLoginError::InvalidCredentials) => Err((Status::BadRequest, Json(UserLoginError::InvalidCredentials.into()))),
+        Err(UserLoginError::InternalError) => Err((Status::InternalServerError, Json(UserLoginError::InternalError.into()))),
+    }
 }
 
 async fn create_user(db: Storage, user_params: UserLoginParams) -> Result<UserToken, UserLoginError> {
