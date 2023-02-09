@@ -11,9 +11,6 @@ services:
       dockerfile: .devcontainer/Dockerfile
     environment:
       <<: *default-environment
-    ports:
-      - 5347:5347
-      - 5173:5173
     user: vscode
     command: sleep infinity
     volumes:
