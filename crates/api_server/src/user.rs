@@ -49,3 +49,28 @@ pub async fn register_user(
     };
     Ok(Json(resp))
 }
+
+#[post("/user/login", data = "<user>")]
+pub async fn login_user(
+    db: Storage,
+    user: Json<UserLoginParams>,
+) -> Result<Json<UserToken>, Json<UserLoginError>> {
+    let user_params = user.into_inner();
+
+    db.run(move |conn| {
+        use schema::users::dsl::*;
+        let found_users: Vec<User> = schema::users::table.filter(username.eq(user_params.username)).load(conn).map_err(|e| {
+            println!("{e:?}");
+            UserLoginError::InternalError
+        })?;
+        if found_users.is_empty() {
+            return Err(UserLoginError::InvalidCredentials);
+        }
+        Ok(())
+    }).await?;
+
+    let resp = UserToken {
+        token: "token".to_string(),
+    };
+    Ok(Json(resp))
+}

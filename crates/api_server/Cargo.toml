@@ -7,7 +7,8 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-diesel = { version = "2.0", features = ["postgres", "r2d2"] }
+chrono = "0.4.23"
+diesel = { version = "2.0", features = ["postgres", "r2d2", "chrono"] }
 diesel_migrations = "2.0"
 rocket = { git = "https://github.com/SergioBenitez/Rocket", features = ["json"] }
 serde = { version = "1.0.152", features = ["derive"] }

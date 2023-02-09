@@ -18,5 +18,5 @@ fn index() -> &'static str {
 fn rocket() -> _ {
     rocket::build()
         .attach(db::stage())
-        .mount("/api", routes![index, user::register_user])
+        .mount("/api", routes![index, user::register_user, user::login_user])
 }
