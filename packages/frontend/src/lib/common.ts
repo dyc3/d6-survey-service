@@ -8,6 +8,13 @@ export interface QText {
 	multiline: boolean;
 }
 
+/** Represents a question like \"On a scale of 1 to N, how do you feel about X?\" */
+export interface QRating {
+	prompt: string;
+	description: string;
+	max_rating: number;
+}
+
 export interface UserLoginParams {
 	username: string;
 	password: string;
@@ -17,4 +24,4 @@ export interface UserToken {
 	token: string;
 }
 
-export type Question = { type: 'Text'; content: QText };
+export type Question = { type: 'Text'; content: QText } | { type: 'Rating'; content: QRating };
