@@ -96,7 +96,7 @@ async fn create_user(db: Storage, user_params: UserLoginParams) -> Result<UserTo
 pub async fn login_user(
     db: Storage,
     user: Json<UserLoginParams>,
-) -> Result<Json<UserToken>, Json<UserLoginError>> {
+) -> Result<Json<UserToken>, ApiErrorResponse<UserLoginError>> {
     let user_params = user.into_inner();
 
     db.run(move |conn| {
