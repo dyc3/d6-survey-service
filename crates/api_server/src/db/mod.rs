@@ -1,12 +1,6 @@
-use std::time::Duration;
-
-use diesel::r2d2::R2D2Connection;
 use rocket::fairing::AdHoc;
 use rocket::Build;
 use rocket::Rocket;
-use rocket_sync_db_pools::Config;
-use rocket_sync_db_pools::PoolResult;
-use rocket_sync_db_pools::Poolable;
 use rocket_sync_db_pools::database;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
