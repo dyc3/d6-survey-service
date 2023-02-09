@@ -3,7 +3,7 @@ x-environment:
   &default-environment
   POSTGRES_USER: vscode
   POSTGRES_PASSWORD: notsecure
-  POSTGRES_DB: tutorial
+  POSTGRES_DB: survey_app
 services:
   app:
     build:

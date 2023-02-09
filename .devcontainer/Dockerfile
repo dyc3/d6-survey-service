@@ -15,6 +15,7 @@ RUN apt-get -y update --no-install-recommends \
 	git \
 	vim \
 	libsqlite3-dev \
+	libpq-dev \
 	&& apt-get autoremove -y \
 	&& apt-get clean -y
 
