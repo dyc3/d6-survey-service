@@ -37,9 +37,8 @@ pub async fn register_user(
         username: user_params.username,
         password: user_params.password,
     };
-    use schema::users::dsl::*;
     db.run(move |conn| {
-        diesel::insert_into(schema::users::table).values((username.eq(user.username), password.eq(user.password))).execute(conn)
+        diesel::insert_into(schema::users::table).values(&user).execute(conn)
     }).await.map_err(|e| {
         println!("{e:?}");
         UserLoginError::InternalError
