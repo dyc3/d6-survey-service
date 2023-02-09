@@ -8,4 +8,13 @@ export interface QText {
 	multiline: boolean;
 }
 
+export interface UserLoginParams {
+	username: string;
+	password: string;
+}
+
+export interface UserToken {
+	token: string;
+}
+
 export type Question = { type: 'Text'; content: QText };

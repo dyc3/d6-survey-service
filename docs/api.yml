@@ -3,13 +3,55 @@ info:
   title: Survey Service
   version: "1.0"
 paths:
-  /:
-    get:
-      summary: hello world
+  /api/user/register:
+    summary: Register a new user
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginParams"
       responses:
         "200":
-          description: "hello world"
+          description: Successfully registered new user, returns JWT token
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  token:
+                    type: string
+                required:
+                  - token
+  /api/user/login:
+    summary: Log in an existing user
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginParams"
+      responses:
+        "200":
+          description: Successfully logged in user, returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                required:
+                  - token
+components:
+  schemas:
+    UserLoginParams:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password

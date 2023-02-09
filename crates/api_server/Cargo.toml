@@ -6,10 +6,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = "0.5.0-rc.2"
-serde = "1.0.152"
+anyhow = "1.0"
+chrono = "0.4.23"
+diesel = { version = "2.0", features = ["postgres", "r2d2", "chrono"] }
+diesel_migrations = "2.0"
+rocket = { git = "https://github.com/SergioBenitez/Rocket", features = ["json"] }
+serde = { version = "1.0.152", features = ["derive"] }
+serde_json = "1.0.92"
+thiserror = "1.0"
 typeshare = "1.0.0"
 
-[dependencies.rocket_db_pools]
-version = "0.1.0-rc.2"
-features = ["sqlx_sqlite"]
+[dependencies.rocket_sync_db_pools]
+git = "https://github.com/SergioBenitez/Rocket"
+features = ["diesel_postgres_pool"]
