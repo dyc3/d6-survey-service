@@ -10,7 +10,15 @@ use thiserror::Error;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     user_id: i32,
+    /// Expiration time (as UTC timestamp)
     exp: u64,
+}
+
+impl Claims {
+    pub fn new(user_id: i32) -> Self {
+        let exp = jsonwebtoken::get_current_timestamp() + 2630000;
+        Self { user_id, exp }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Error)]
