@@ -1,6 +1,7 @@
 <script lang="ts">
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
+	import TextBox from '$lib/ui/TextBox.svelte';
 	import QTextInput from '../lib/questions/QTextInput.svelte';
 
 	let editmode = false;
@@ -13,6 +14,7 @@
 
 <h3>UI Primitives</h3>
 
+Buttons
 <div>
 	<Button>Default</Button>
 </div>
@@ -23,6 +25,14 @@
 </div>
 <div>
 	<Button toggleable={true}>Toggle Button</Button>
+</div>
+
+Textboxes
+<div>
+	<TextBox placeholder="placeholder" />
+</div>
+<div>
+	<TextBox placeholder="placeholder" multiline={true} />
 </div>
 
 <h3>Questions</h3>
