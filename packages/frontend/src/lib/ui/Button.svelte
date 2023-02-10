@@ -44,6 +44,13 @@
 		background-color: #fff;
 	}
 
+	button:active {
+		background-color: #000;
+		color: #fff;
+		position: relative;
+		top: 1px;
+	}
+
 	[aria-pressed='true'] {
 		background-color: #000;
 		color: #fff;
@@ -67,5 +74,10 @@
 	.kind-primary {
 		background-color: #000;
 		color: #fff;
+	}
+
+	.kind-primary:active {
+		background-color: #fff;
+		color: #000;
 	}
 </style>
