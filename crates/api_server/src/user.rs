@@ -2,12 +2,12 @@ use argon2::{Argon2, PasswordHasher};
 use diesel::prelude::*;
 use password_hash::rand_core::OsRng;
 use password_hash::{PasswordHash, PasswordVerifier, SaltString};
-use rocket::{Orbit, Rocket};
 use rocket::config::SecretKey;
 use rocket::http::Status;
 use rocket::response::status::Created;
 use rocket::response::Responder;
 use rocket::serde::json::Json;
+use rocket::{Orbit, Rocket};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -74,16 +74,17 @@ pub async fn register_user(
         password_hash: password_hash.to_string(),
     };
 
-    let users = db.run(move |conn| {
-        diesel::insert_into(schema::users::table)
-            .values(&user)
-            .get_results::<User>(conn)
-    })
-    .await
-    .map_err(|e| {
-        error!("{e:?}");
-        UserLoginError::InternalError
-    })?;
+    let users = db
+        .run(move |conn| {
+            diesel::insert_into(schema::users::table)
+                .values(&user)
+                .get_results::<User>(conn)
+        })
+        .await
+        .map_err(|e| {
+            error!("{e:?}");
+            UserLoginError::InternalError
+        })?;
     let Some(user) = users.first() else {
         return Err(UserLoginError::InternalError.into());
     };
@@ -92,9 +93,7 @@ pub async fn register_user(
         UserLoginError::InternalError
     })?;
 
-    let resp = UserToken {
-        token,
-    };
+    let resp = UserToken { token };
     Ok(Created::new("").body(Json(resp)))
 }
 
@@ -106,49 +105,48 @@ pub async fn login_user(
 ) -> Result<Json<UserToken>, ApiErrorResponse<UserLoginError>> {
     let user_params = user.into_inner();
 
-    let user_id = db.run(move |conn| {
-        use schema::users::dsl::*;
-        let found_users: Vec<User> = schema::users::table
-            .filter(username.eq(user_params.username))
-            .load(conn)
-            .map_err(|e| {
-                error!("{e:?}");
-                UserLoginError::InternalError
-            })?;
-        if found_users.is_empty() {
-            return Err(UserLoginError::InvalidCredentials);
-        }
-        let Some(user) = found_users.first() else {
+    let user_id = db
+        .run(move |conn| {
+            use schema::users::dsl::*;
+            let found_users: Vec<User> = schema::users::table
+                .filter(username.eq(user_params.username))
+                .load(conn)
+                .map_err(|e| {
+                    error!("{e:?}");
+                    UserLoginError::InternalError
+                })?;
+            if found_users.is_empty() {
+                return Err(UserLoginError::InvalidCredentials);
+            }
+            let Some(user) = found_users.first() else {
             return Err(UserLoginError::InternalError);
         };
-        let parsed_hash = PasswordHash::new(user.password_hash.as_str()).map_err(|e| match e {
-            ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
-            _ => UserLoginError::InternalError,
-        })?;
-        Argon2::default()
-            .verify_password(&user_params.password.as_bytes(), &parsed_hash)
-            .map_err(|e| match e {
-                ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
-                _ => UserLoginError::InternalError,
-            })?;
-        Ok(user.id)
-    })
-    .await?;
+            let parsed_hash =
+                PasswordHash::new(user.password_hash.as_str()).map_err(|e| match e {
+                    ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
+                    _ => UserLoginError::InternalError,
+                })?;
+            Argon2::default()
+                .verify_password(&user_params.password.as_bytes(), &parsed_hash)
+                .map_err(|e| match e {
+                    ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
+                    _ => UserLoginError::InternalError,
+                })?;
+            Ok(user.id)
+        })
+        .await?;
     let token = generate_jwt_for_user(secret, user_id).map_err(|e| {
         error!("{e:?}");
         UserLoginError::InternalError
     })?;
 
-    let resp = UserToken {
-        token,
-    };
+    let resp = UserToken { token };
     Ok(Json(resp))
 }
 
 fn generate_jwt_for_user(secret: &SecretKey, user_id: i32) -> anyhow::Result<String> {
     let claims = Claims::new(user_id);
-    let key =
-            jsonwebtoken::EncodingKey::from_secret(secret.to_string().as_bytes());
+    let key = jsonwebtoken::EncodingKey::from_secret(secret.to_string().as_bytes());
     let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims, &key)?;
     Ok(token)
 }
