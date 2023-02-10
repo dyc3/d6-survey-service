@@ -1,4 +1,6 @@
 <script lang="ts">
+	import TextBox from '$lib/ui/TextBox.svelte';
+
 	export let editmode = false;
 	export let multiline = false;
 	let response = '';
@@ -9,7 +11,7 @@
 <div>
 	<div>
 		{#if editmode}
-			<input bind:value={prompt} />
+			<TextBox bind:value={prompt} />
 		{:else}
 			<span>{prompt}</span>
 		{/if}
@@ -17,15 +19,11 @@
 
 	<div>
 		{#if editmode}
-			<input bind:value={description} />
+			<TextBox bind:value={description} />
 		{:else}
 			<span>{description}</span>
 		{/if}
 	</div>
 
-	{#if multiline}
-		<textarea bind:value={response} disabled={editmode} />
-	{:else}
-		<input bind:value={response} disabled={editmode} />
-	{/if}
+	<TextBox bind:value={response} disabled={editmode} {multiline} />
 </div>
