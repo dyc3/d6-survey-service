@@ -1,8 +1,15 @@
+use argon2::{Argon2, PasswordHasher};
 use diesel::prelude::*;
+use password_hash::rand_core::OsRng;
+use password_hash::{PasswordHash, PasswordVerifier, SaltString};
+use rocket::http::Status;
+use rocket::response::status::Created;
+use rocket::response::Responder;
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+use crate::api::ApiErrorResponse;
 use crate::db::models::{NewUser, User};
 use crate::db::{schema, Storage};
 
@@ -14,7 +21,8 @@ pub struct UserLoginParams {
 }
 
 #[typeshare]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Responder)]
+#[response(content_type = "json")]
 pub struct UserToken {
     token: String,
 }
@@ -27,16 +35,41 @@ pub enum UserLoginError {
     InternalError,
 }
 
+impl From<UserLoginError> for ApiErrorResponse<UserLoginError> {
+    fn from(value: UserLoginError) -> Self {
+        let status = match &value {
+            UserLoginError::InvalidCredentials => Status::BadRequest,
+            UserLoginError::InternalError => Status::InternalServerError,
+        };
+        ApiErrorResponse {
+            status,
+            message: value,
+        }
+    }
+}
+
 #[post("/user/register", data = "<user>")]
 pub async fn register_user(
     db: Storage,
     user: Json<UserLoginParams>,
-) -> Result<Json<UserToken>, Json<UserLoginError>> {
+) -> Result<Created<Json<UserToken>>, ApiErrorResponse<UserLoginError>> {
     let user_params = user.into_inner();
+    let salt = SaltString::generate(&mut OsRng);
+    let argon2 = Argon2::default();
+    let password_hash = argon2
+        .hash_password(&user_params.password.as_bytes(), &salt)
+        .map_err(|e| {
+            error!("{e:?}");
+            match e {
+                password_hash::Error::Password => UserLoginError::InvalidCredentials,
+                _ => UserLoginError::InternalError,
+            }
+        })?;
     let user = NewUser {
         username: user_params.username,
-        password: user_params.password,
+        password_hash: password_hash.to_string(),
     };
+
     db.run(move |conn| {
         diesel::insert_into(schema::users::table)
             .values(&user)
@@ -44,21 +77,21 @@ pub async fn register_user(
     })
     .await
     .map_err(|e| {
-        println!("{e:?}");
+        error!("{e:?}");
         UserLoginError::InternalError
     })?;
 
     let resp = UserToken {
         token: "token".to_string(),
     };
-    Ok(Json(resp))
+    Ok(Created::new("").body(Json(resp)))
 }
 
 #[post("/user/login", data = "<user>")]
 pub async fn login_user(
     db: Storage,
     user: Json<UserLoginParams>,
-) -> Result<Json<UserToken>, Json<UserLoginError>> {
+) -> Result<Json<UserToken>, ApiErrorResponse<UserLoginError>> {
     let user_params = user.into_inner();
 
     db.run(move |conn| {
@@ -67,12 +100,25 @@ pub async fn login_user(
             .filter(username.eq(user_params.username))
             .load(conn)
             .map_err(|e| {
-                println!("{e:?}");
+                error!("{e:?}");
                 UserLoginError::InternalError
             })?;
         if found_users.is_empty() {
             return Err(UserLoginError::InvalidCredentials);
         }
+        let Some(user) = found_users.first() else {
+            return Err(UserLoginError::InternalError);
+        };
+        let parsed_hash = PasswordHash::new(user.password_hash.as_str()).map_err(|e| match e {
+            ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
+            _ => UserLoginError::InternalError,
+        })?;
+        Argon2::default()
+            .verify_password(&user_params.password.as_bytes(), &parsed_hash)
+            .map_err(|e| match e {
+                ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
+                _ => UserLoginError::InternalError,
+            })?;
         Ok(())
     })
     .await?;

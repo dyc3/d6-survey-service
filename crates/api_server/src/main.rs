@@ -5,6 +5,7 @@ extern crate typeshare;
 #[macro_use]
 extern crate diesel;
 
+pub mod api;
 mod db;
 mod questions;
 mod user;
