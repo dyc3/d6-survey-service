@@ -10,8 +10,9 @@
 	 */
 	export let pressed = false;
 	export let size: 'small' | 'normal' | 'large' = 'normal';
+	export let kind: 'primary' | 'default' = 'default';
 
-	$: classes = `sz-${size}`;
+	$: classes = `sz-${size} kind-${kind}`;
 
 	const dispatch = createEventDispatcher();
 
@@ -61,5 +62,10 @@
 	.sz-large {
 		font-size: 1.4em;
 		padding: 0.6em 4em;
+	}
+
+	.kind-primary {
+		background-color: #000;
+		color: #fff;
 	}
 </style>

@@ -17,6 +17,7 @@
 Buttons
 <div>
 	<Button>Default</Button>
+	<Button kind="primary">Primary</Button>
 </div>
 <div>
 	<Button size="small">Small</Button>
