@@ -1,5 +1,7 @@
 <script lang="ts">
 	import QContainer from '$lib/QContainer.svelte';
+	import Button from '$lib/ui/Button.svelte';
+	import TextBox from '$lib/ui/TextBox.svelte';
 	import QTextInput from '../lib/questions/QTextInput.svelte';
 
 	let editmode = false;
@@ -9,6 +11,32 @@
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
 <h2>Component Demo</h2>
+
+<h3>UI Primitives</h3>
+
+Buttons
+<div>
+	<Button>Default</Button>
+	<Button kind="primary">Primary</Button>
+</div>
+<div>
+	<Button size="small">Small</Button>
+	<Button size="normal">Normal</Button>
+	<Button size="large">Large</Button><br />
+</div>
+<div>
+	<Button toggleable={true}>Toggle Button</Button>
+</div>
+
+Textboxes
+<div>
+	<TextBox placeholder="placeholder" />
+</div>
+<div>
+	<TextBox placeholder="placeholder" multiline={true} />
+</div>
+
+<h3>Questions</h3>
 
 <div>
 	<input type="checkbox" id="editmode" bind:checked={editmode} />
