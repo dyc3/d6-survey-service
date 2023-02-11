@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::{db::schema::users, questions::SurveyQuestion};
+use crate::{db::schema::{users, surveys}, questions::SurveyQuestion};
 
 #[derive(Queryable)]
 pub struct User {
