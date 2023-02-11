@@ -34,3 +34,9 @@ pub struct Survey {
 pub struct NewSurvey {
     owner_id: i32,
 }
+
+impl NewSurvey {
+    pub fn new(owner_id: i32) -> Self {
+        Self { owner_id }
+    }
+}
