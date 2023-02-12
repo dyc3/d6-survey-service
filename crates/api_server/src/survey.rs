@@ -98,19 +98,17 @@ pub async fn get_survey(
     Ok(Json(survey))
 }
 
-#[patch("/survey/<survey_id>", data="<new_survey>")]
+#[patch("/survey/<survey_id>", data = "<new_survey>")]
 pub async fn edit_survey(
     survey_id: i32,
     claims: Claims,
     db: Storage,
     new_survey: Json<SurveyPatch>,
 ) -> Result<(), ApiErrorResponse<SurveyError>> {
-    let survey = get_survey_from_db(&db, survey_id)
-        .await
-        .map_err(|e| {
-            error!("{e:?}");
-            SurveyError::NotFound
-        })?;
+    let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
+        error!("{e:?}");
+        SurveyError::NotFound
+    })?;
 
     if survey.owner_id != claims.user_id {
         return Err(SurveyError::Unauthorized.into());
@@ -124,7 +122,9 @@ pub async fn edit_survey(
             .set(new_survey.into_inner())
             .execute(conn)?;
         Ok(survey)
-    }).await.map_err(|e| {
+    })
+    .await
+    .map_err(|e| {
         error!("{e:?}");
         SurveyError::Unknown
     })?;
