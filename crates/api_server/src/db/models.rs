@@ -1,3 +1,4 @@
+use diesel::{serialize::ToSql, sql_types::Jsonb, pg::{Pg, PgValue}, deserialize::FromSql};
 use serde::{Serialize, Deserialize};
 
 use crate::{db::schema::{users, surveys}, questions::SurveyQuestion};
@@ -26,7 +27,7 @@ pub struct Survey {
     pub description: String,
     pub published: bool,
     pub owner_id: i32,
-    pub questions: Vec<SurveyQuestion>,
+    pub questions: SurveyQuestions,
 }
 
 #[derive(Insertable)]
@@ -38,5 +39,23 @@ pub struct NewSurvey {
 impl NewSurvey {
     pub fn new(owner_id: i32) -> Self {
         Self { owner_id }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
+#[diesel(sql_type = Jsonb)]
+pub struct SurveyQuestions(pub Vec<SurveyQuestion>);
+
+impl FromSql<Jsonb, Pg> for SurveyQuestions {
+    fn from_sql(value: PgValue) -> diesel::deserialize::Result<Self> {
+        let value = <serde_json::Value as FromSql<Jsonb, Pg>>::from_sql(value)?;
+        Ok(serde_json::from_value(value)?)
+    }
+}
+
+impl ToSql<Jsonb, Pg> for SurveyQuestions {
+    fn to_sql(&self, out: &mut diesel::serialize::Output<Pg>) -> diesel::serialize::Result {
+        let value = serde_json::to_value(self)?;
+        <serde_json::Value as ToSql<Jsonb, Pg>>::to_sql(&value, out)
     }
 }
