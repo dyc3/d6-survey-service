@@ -1,7 +1,15 @@
-use diesel::{serialize::ToSql, sql_types::Jsonb, pg::{Pg, PgValue}, deserialize::FromSql};
-use serde::{Serialize, Deserialize};
+use diesel::{
+    deserialize::FromSql,
+    pg::{Pg, PgValue},
+    serialize::ToSql,
+    sql_types::Jsonb,
+};
+use serde::{Deserialize, Serialize};
 
-use crate::{db::schema::{users, surveys}, questions::SurveyQuestion};
+use crate::{
+    db::schema::{surveys, users},
+    questions::SurveyQuestion,
+};
 
 #[derive(Queryable)]
 pub struct User {
