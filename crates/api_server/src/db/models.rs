@@ -64,6 +64,7 @@ impl NewSurvey {
 
 #[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
 #[diesel(sql_type = Jsonb)]
+#[typeshare(serialized_as = "Vec<SurveyQuestion>")]
 pub struct SurveyQuestions(pub Vec<SurveyQuestion>);
 
 impl FromSql<Jsonb, Pg> for SurveyQuestions {

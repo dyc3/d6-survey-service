@@ -4,6 +4,7 @@ use uuid::Uuid;
 #[typeshare]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SurveyQuestion {
+    #[typeshare(serialized_as = "String")]
     pub uuid: Uuid,
     pub required: bool,
     pub question: Question,
