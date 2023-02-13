@@ -41,10 +41,10 @@ pub async fn create_survey(
     claims: Claims,
     db: Storage,
 ) -> Result<Json<Survey>, ApiErrorResponse<SurveyError>> {
-    let new_survey = NewSurvey::new(claims.user_id);
+    let new_survey = NewSurvey::new(claims.user_id());
 
-    let surveys = db
-        .run(move |conn| {
+    let mut surveys = db
+        .run(move |conn| -> anyhow::Result<Vec<Survey>> {
             let surveys = diesel::insert_into(schema::surveys::table)
                 .values(&new_survey)
                 .get_results::<Survey>(conn)?;
@@ -58,7 +58,7 @@ pub async fn create_survey(
     if surveys.len() != 1 {
         return Err(SurveyError::Unknown.into());
     }
-    let survey = surveys[0];
+    let survey = surveys.remove(0);
 
     Ok(Json(survey))
 }
@@ -74,7 +74,7 @@ pub async fn get_survey_auth(
         SurveyError::NotFound
     })?;
 
-    if survey.owner_id != claims.user_id {
+    if survey.owner_id != claims.user_id() {
         return Err(SurveyError::Unauthorized.into());
     }
 
@@ -110,18 +110,18 @@ pub async fn edit_survey(
         SurveyError::NotFound
     })?;
 
-    if survey.owner_id != claims.user_id {
+    if survey.owner_id != claims.user_id() {
         return Err(SurveyError::Unauthorized.into());
     }
 
     // TODO: validate questions
 
-    db.run(move |conn| {
-        let survey = diesel::update(schema::surveys::table)
+    db.run(move |conn| -> anyhow::Result<()> {
+        diesel::update(schema::surveys::table)
             .filter(schema::surveys::id.eq(survey_id))
             .set(new_survey.into_inner())
             .execute(conn)?;
-        Ok(survey)
+        Ok(())
     })
     .await
     .map_err(|e| {
