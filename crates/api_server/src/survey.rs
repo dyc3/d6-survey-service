@@ -14,8 +14,10 @@ use crate::{
 
 #[derive(Debug, Error, Serialize, Deserialize)]
 pub enum SurveyError {
-    #[error("Unauthorized")]
-    Unauthorized,
+    #[error("Not published")]
+    NotPublished,
+    #[error("Not owner")]
+    NotOwner,
     #[error("Not found")]
     NotFound,
     #[error("Internal error")]
@@ -25,7 +27,8 @@ pub enum SurveyError {
 impl From<SurveyError> for ApiErrorResponse<SurveyError> {
     fn from(value: SurveyError) -> Self {
         let status = match &value {
-            SurveyError::Unauthorized => Status::Unauthorized,
+            SurveyError::NotPublished => Status::Forbidden,
+            SurveyError::NotOwner => Status::Forbidden,
             SurveyError::NotFound => Status::NotFound,
             SurveyError::Unknown => Status::InternalServerError,
         };
@@ -75,7 +78,7 @@ pub async fn get_survey_auth(
     })?;
 
     if survey.owner_id != claims.user_id() {
-        return Err(SurveyError::Unauthorized.into());
+        return Err(SurveyError::NotOwner.into());
     }
 
     Ok(Json(survey))
@@ -92,7 +95,7 @@ pub async fn get_survey(
     })?;
 
     if !survey.published {
-        return Err(SurveyError::Unauthorized.into());
+        return Err(SurveyError::NotPublished.into());
     }
 
     Ok(Json(survey))
@@ -111,7 +114,7 @@ pub async fn edit_survey(
     })?;
 
     if survey.owner_id != claims.user_id() {
-        return Err(SurveyError::Unauthorized.into());
+        return Err(SurveyError::NotOwner.into());
     }
 
     // TODO: validate questions
