@@ -7,6 +7,7 @@ extern crate diesel;
 
 pub mod api;
 mod db;
+pub mod jwt;
 mod questions;
 mod user;
 
