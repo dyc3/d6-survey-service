@@ -46,6 +46,70 @@ paths:
   "/api/survey/{survey}":
     parameters:
       - $ref: "#/components/parameters/survey"
+    get:
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  published:
+                    type: boolean
+                  owner_id:
+                    type: number
+                  questions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SurveyQuestion"
+                required:
+                  - id
+                  - title
+                  - description
+                  - published
+                  - owner_id
+                  - questions
+        "403":
+          description: Forbidden, survey is not published and you are not the owner
+        "404":
+          description: Survey not found
+    post:
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  published:
+                    type: boolean
+                  owner_id:
+                    type: number
+                  questions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SurveyQuestion"
+                required:
+                  - id
+                  - title
+                  - description
+                  - published
+                  - owner_id
+                  - questions
     patch:
       summary: Update a survey
       description: |
