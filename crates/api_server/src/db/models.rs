@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use diesel::{
     deserialize::FromSql,
     pg::{Pg, PgValue},
@@ -76,7 +78,9 @@ impl FromSql<Jsonb, Pg> for SurveyQuestions {
 
 impl ToSql<Jsonb, Pg> for SurveyQuestions {
     fn to_sql(&self, out: &mut diesel::serialize::Output<Pg>) -> diesel::serialize::Result {
-        let value = serde_json::to_value(self)?;
-        <serde_json::Value as ToSql<Jsonb, Pg>>::to_sql(&value, out)
+        out.write_all(&[1])?;
+        serde_json::to_writer(out, self)
+            .map(|_| diesel::serialize::IsNull::No)
+            .map_err(Into::into)
     }
 }
