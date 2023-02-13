@@ -45,12 +45,13 @@ paths:
                   - token
   "/api/survey/{survey}":
     parameters:
-      - in: path
-        name: survey
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/survey"
     patch:
+      summary: Update a survey
+      description: |
+        Update a survey. Only the owner of the survey can update it. If the survey is published, it cannot be updated unless it is unpublished first.
+
+        The request body can contain any of the top level fields, but they are not required. If a field is not present, it will not be updated.
       responses:
         "200":
           description: The survey was updated
@@ -68,8 +69,17 @@ paths:
                   type: boolean
                 questions:
                   type: array
-                  items: {}
+                  items:
+                    $ref: "#/components/schemas/SurveyQuestion"
 components:
+  parameters:
+    survey:
+      name: survey
+      in: path
+      required: true
+      description: The survey ID
+      schema:
+        type: string
   schemas:
     UserLoginParams:
       type: object
@@ -81,3 +91,42 @@ components:
       required:
         - username
         - password
+    SurveyQuestion:
+      type: object
+      properties:
+        uuid:
+          type: string
+        required:
+          type: boolean
+        question:
+          $ref: "#/components/schemas/Question"
+    Question:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - Text
+            - Rating
+        content:
+          oneOf:
+            - $ref: "#/components/schemas/QText"
+            - $ref: "#/components/schemas/QRating"
+    QText:
+      type: object
+      properties:
+        prompt:
+          type: string
+        description:
+          type: string
+        multiline:
+          type: boolean
+    QRating:
+      type: object
+      properties:
+        prompt:
+          type: string
+        description:
+          type: string
+        max_rating:
+          type: integer
