@@ -19,6 +19,15 @@ impl Claims {
         let exp = jsonwebtoken::get_current_timestamp() + 2630000;
         Self { user_id, exp }
     }
+
+    pub fn user_id(&self) -> i32 {
+        self.user_id
+    }
+
+    /// Expiration time (as UTC timestamp)
+    pub fn exp(&self) -> u64 {
+        self.exp
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Error)]
