@@ -43,6 +43,32 @@ paths:
                     type: string
                 required:
                   - token
+  "/api/survey/{survey}":
+    parameters:
+      - in: path
+        name: survey
+        required: true
+        schema:
+          type: string
+    patch:
+      responses:
+        "200":
+          description: The survey was updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                title:
+                  type: string
+                published:
+                  type: boolean
+                questions:
+                  type: array
+                  items: {}
 components:
   schemas:
     UserLoginParams:
