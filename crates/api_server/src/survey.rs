@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use rocket::{http::Status, serde::json::Json, response::status::Created};
+use rocket::{http::Status, response::status::Created, serde::json::Json};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
