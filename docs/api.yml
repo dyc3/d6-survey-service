@@ -47,6 +47,9 @@ paths:
     parameters:
       - $ref: "#/components/parameters/survey"
     get:
+      summary: Get a survey.
+      description: |
+        Get a survey. If the survey is not published, only the owner can get it. If the survey is published, anyone can get it.
       responses:
         "200":
           description: 200 response
@@ -81,9 +84,10 @@ paths:
         "404":
           description: Survey not found
     post:
+      summary: Create a new survey
       responses:
         "200":
-          description: 200 response
+          description: The survey was created. Returns the survey object.
           content:
             application/json:
               schema:
