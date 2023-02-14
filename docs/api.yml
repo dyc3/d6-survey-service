@@ -86,7 +86,7 @@ paths:
     post:
       summary: Create a new survey
       responses:
-        "200":
+        "201":
           description: The survey was created. Returns the survey object.
           content:
             application/json:

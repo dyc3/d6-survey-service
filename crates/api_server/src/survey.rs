@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use rocket::{http::Status, serde::json::Json};
+use rocket::{http::Status, serde::json::Json, response::status::Created};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -43,7 +43,7 @@ impl From<SurveyError> for ApiErrorResponse<SurveyError> {
 pub async fn create_survey(
     claims: Claims,
     db: Storage,
-) -> Result<Json<Survey>, ApiErrorResponse<SurveyError>> {
+) -> Result<Created<Json<Survey>>, ApiErrorResponse<SurveyError>> {
     let new_survey = NewSurvey::new(claims.user_id());
 
     let mut surveys = db
@@ -63,7 +63,8 @@ pub async fn create_survey(
     }
     let survey = surveys.remove(0);
 
-    Ok(Json(survey))
+    let resource_uri = uri!(get_survey_auth(survey.id)).to_string();
+    Ok(Created::new(resource_uri).body(Json(survey)))
 }
 
 #[get("/survey/<survey_id>")]
