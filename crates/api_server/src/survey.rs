@@ -148,16 +148,35 @@ async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Surv
 
 #[cfg(test)]
 mod tests {
+    use std::panic;
+
     use super::*;
     use jsonwebtoken::EncodingKey;
     use rocket::local::blocking::Client;
+    use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
+
+    fn create_db_for_tests() {
+        let mut conn = PgConnection::establish("postgres://vscode:notsecure@db/survey_app")
+            .expect("Failed to connect to database");
+        sql_query("CREATE DATABASE survey_app_test")
+            .execute(&mut conn)
+            .expect("Failed to create test database");
+    }
+
+    fn drop_test_db() {
+        let mut conn = PgConnection::establish("postgres://vscode:notsecure@db/survey_app")
+            .expect("Failed to connect to database");
+        sql_query("DROP DATABASE IF EXISTS survey_app_test")
+            .execute(&mut conn)
+            .expect("Failed to drop test database");
+    }
 
     fn create_test_user(client: &Client) -> String {
         let response = client
             .post(uri!("/api", crate::user::register_user))
             .header(rocket::http::ContentType::JSON)
             .body(r#"{"username": "test", "password": "test"}"#).dispatch();
-        response.into_json::<crate::user::UserToken>().unwrap().token
+        format!("Bearer {}", response.into_json::<crate::user::UserToken>().unwrap().token)
     }
 
     fn make_jwt(client: &Client, user_id: i32) -> String {
@@ -168,16 +187,29 @@ mod tests {
         "Bearer ".to_string() + &token
     }
 
+    fn run_test_with_db<T>(test: T) -> ()
+        where T: FnOnce() -> () + panic::UnwindSafe
+    {
+        create_db_for_tests();
+        let result = panic::catch_unwind(|| {
+            test()
+        });
+        drop_test_db();
+        assert!(result.is_ok())
+    }
+
     #[test]
     fn test_create_survey() {
-        let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
+        run_test_with_db(|| {
+            let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
 
-        let token = create_test_user(&client);
-        let response = client.post(uri!("/api", create_survey))
-            .header(rocket::http::ContentType::JSON)
-            .header(rocket::http::Header::new("Authorization", token))
-            .dispatch();
+            let token = create_test_user(&client);
+            let response = client.post(uri!("/api", create_survey))
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token))
+                .dispatch();
 
-        assert_eq!(response.status(), rocket::http::Status::Created);
+            assert_eq!(response.status(), rocket::http::Status::Created);
+        });
     }
 }
