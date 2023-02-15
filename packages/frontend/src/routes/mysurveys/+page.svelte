@@ -3,7 +3,10 @@
 	import TextBox from '../../lib/ui/TextBox.svelte';
 </script>
 
-<h1>My Surveys</h1>
+<div class="toolbar">
+	<h1>My Surveys</h1>
+	<Button kind="primary" size="large">Create Survey</Button>
+</div>
 
 <table class="container">
 	<thead class="header">
@@ -15,7 +18,9 @@
 	<tbody>
 		<tr class="survey">
 			<td class="name">Survey 1</td>
+			<!-- TODO: replace with check box-->
 			<td class="published">Yes</td>
+			<!-- TODO: make this read only-->
 			<td class="share-link"><TextBox value="https://www.survey.com/123" /></td>
 			<td class="actions">
 				<Button>Edit</Button>
@@ -47,5 +52,11 @@
 	}
 	.published {
 		text-align: center;
+	}
+
+	.toolbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 </style>
