@@ -41,6 +41,11 @@ export interface QRating {
 	max_rating: number;
 }
 
+export interface QMultipleChoice {
+	prompt: string;
+	description: string;
+}
+
 export interface UserLoginParams {
 	username: string;
 	password: string;
@@ -50,4 +55,7 @@ export interface UserToken {
 	token: string;
 }
 
-export type Question = { type: 'Text'; content: QText } | { type: 'Rating'; content: QRating };
+export type Question =
+	| { type: 'Text'; content: QText }
+	| { type: 'Rating'; content: QRating }
+	| { type: 'MultipleChoice'; content: QMultipleChoice };
