@@ -1,7 +1,8 @@
 <script lang="ts">
 	import QContainer from '$lib/QContainer.svelte';
 	import QTextInput from '../lib/questions/QTextInput.svelte';
-
+	import Login from '../lib/login.svelte';
+let name = 'worldzz';
 	let editmode = false;
 </script>
 
@@ -23,7 +24,8 @@
 <QContainer
 	question={{
 		type: 'Text',
-		content: { prompt: 'What is your name?', description: '', multiline: false }
+		content: { prompt: 'What is your name??', description: '', multiline: false }
 	}}
 	{editmode}
 />
+<Login />
