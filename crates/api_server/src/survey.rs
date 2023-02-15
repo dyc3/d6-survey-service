@@ -212,4 +212,28 @@ mod tests {
             assert_eq!(response.status(), rocket::http::Status::Created);
         });
     }
+
+    #[test]
+    fn test_get_survey() {
+        run_test_with_db(|| {
+            let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let response = client.post(uri!("/api", create_survey))
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Created);
+
+            let survey_id = response.into_json::<Survey>().unwrap().id;
+
+            let response = client.get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
 }
