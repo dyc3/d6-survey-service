@@ -43,7 +43,111 @@ paths:
                     type: string
                 required:
                   - token
+  "/api/survey/{survey}":
+    parameters:
+      - $ref: "#/components/parameters/survey"
+    get:
+      summary: Get a survey.
+      description: |
+        Get a survey. If the survey is not published, only the owner can get it. If the survey is published, anyone can get it.
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  published:
+                    type: boolean
+                  owner_id:
+                    type: number
+                  questions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SurveyQuestion"
+                required:
+                  - id
+                  - title
+                  - description
+                  - published
+                  - owner_id
+                  - questions
+        "403":
+          description: Forbidden, survey is not published and you are not the owner
+        "404":
+          description: Survey not found
+    post:
+      summary: Create a new survey
+      responses:
+        "201":
+          description: The survey was created. Returns the survey object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  published:
+                    type: boolean
+                  owner_id:
+                    type: number
+                  questions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SurveyQuestion"
+                required:
+                  - id
+                  - title
+                  - description
+                  - published
+                  - owner_id
+                  - questions
+    patch:
+      summary: Update a survey
+      description: |
+        Update a survey. Only the owner of the survey can update it. If the survey is published, it cannot be updated unless it is unpublished first.
+
+        The request body can contain any of the top level fields, but they are not required. If a field is not present, it will not be updated.
+      responses:
+        "200":
+          description: The survey was updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                title:
+                  type: string
+                published:
+                  type: boolean
+                questions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/SurveyQuestion"
 components:
+  parameters:
+    survey:
+      name: survey
+      in: path
+      required: true
+      description: The survey ID
+      schema:
+        type: string
   schemas:
     UserLoginParams:
       type: object
@@ -55,3 +159,42 @@ components:
       required:
         - username
         - password
+    SurveyQuestion:
+      type: object
+      properties:
+        uuid:
+          type: string
+        required:
+          type: boolean
+        question:
+          $ref: "#/components/schemas/Question"
+    Question:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - Text
+            - Rating
+        content:
+          oneOf:
+            - $ref: "#/components/schemas/QText"
+            - $ref: "#/components/schemas/QRating"
+    QText:
+      type: object
+      properties:
+        prompt:
+          type: string
+        description:
+          type: string
+        multiline:
+          type: boolean
+    QRating:
+      type: object
+      properties:
+        prompt:
+          type: string
+        description:
+          type: string
+        max_rating:
+          type: integer

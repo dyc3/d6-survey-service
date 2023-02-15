@@ -9,6 +9,7 @@ pub mod api;
 mod db;
 pub mod jwt;
 mod questions;
+mod survey;
 mod user;
 
 #[get("/")]
@@ -20,6 +21,14 @@ fn index() -> &'static str {
 fn rocket() -> _ {
     rocket::build().attach(db::stage()).mount(
         "/api",
-        routes![index, user::register_user, user::login_user],
+        routes![
+            index,
+            user::register_user,
+            user::login_user,
+            survey::create_survey,
+            survey::get_survey,
+            survey::get_survey_auth,
+            survey::edit_survey
+        ],
     )
 }
