@@ -145,3 +145,39 @@ async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Surv
     })
     .await
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use jsonwebtoken::EncodingKey;
+    use rocket::local::blocking::Client;
+
+    fn create_test_user(client: &Client) -> String {
+        let response = client
+            .post(uri!("/api", crate::user::register_user))
+            .header(rocket::http::ContentType::JSON)
+            .body(r#"{"username": "test", "password": "test"}"#).dispatch();
+        response.into_json::<crate::user::UserToken>().unwrap().token
+    }
+
+    fn make_jwt(client: &Client, user_id: i32) -> String {
+        let key =
+            EncodingKey::from_secret(client.rocket().config().secret_key.to_string().as_bytes());
+        let claims = Claims::new(user_id);
+        let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims, &key).unwrap();
+        "Bearer ".to_string() + &token
+    }
+
+    #[test]
+    fn test_create_survey() {
+        let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
+
+        let token = create_test_user(&client);
+        let response = client.post(uri!("/api", create_survey))
+            .header(rocket::http::ContentType::JSON)
+            .header(rocket::http::Header::new("Authorization", token))
+            .dispatch();
+
+        assert_eq!(response.status(), rocket::http::Status::Created);
+    }
+}
