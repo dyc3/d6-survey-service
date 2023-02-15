@@ -58,4 +58,4 @@ export interface UserToken {
 export type Question =
 	| { type: 'Text'; content: QText }
 	| { type: 'Rating'; content: QRating }
-	| { type: 'Multiple Choice'; content: QMultipleChoice };
+	| { type: 'MultipleChoice'; content: QMultipleChoice };

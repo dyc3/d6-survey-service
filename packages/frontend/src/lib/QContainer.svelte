@@ -12,6 +12,6 @@
 	<QTextInput {...question.content} {editmode} />
 {:else if question.type === 'Rating'}
 	<QRating {...question.content} {editmode} />
-{:else if question.type == 'Multiple Choice'}
+{:else if question.type == 'MultipleChoice'}
 	<QMultipleChoice {...question.content} {editmode} />
 {/if}

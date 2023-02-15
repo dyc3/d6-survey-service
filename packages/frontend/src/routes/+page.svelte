@@ -19,8 +19,8 @@
 			content: { prompt: 'Rate your experience', description: '', max_rating: 10 }
 		},
 		{
-			type: 'Multiple Choice',
-			content: { prompt: 'Do you like tacos?', description: ''}
+			type: 'MultipleChoice',
+			content: { prompt: 'Do you like tacos?', description: '' }
 		}
 	];
 	let selected_question = 0;
