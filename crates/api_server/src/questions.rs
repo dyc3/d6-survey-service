@@ -16,7 +16,7 @@ pub struct SurveyQuestion {
 pub enum Question {
     Text(QText),
     Rating(QRating),
-    MultipleChoice(QMultipleChoice)
+    MultipleChoice(QMultipleChoice),
 }
 
 #[typeshare]
