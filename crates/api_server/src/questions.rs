@@ -16,7 +16,7 @@ pub struct SurveyQuestion {
 pub enum Question {
     Text(QText),
     Rating(QRating),
-    MultipleChoice(QMultChoice)
+    MultipleChoice(QMultipleChoice)
 }
 
 #[typeshare]
@@ -38,7 +38,7 @@ pub struct QRating {
 
 #[typeshare]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct QMultChoice {
+pub struct QMultipleChoice {
     prompt: String,
     description: String,
 }
