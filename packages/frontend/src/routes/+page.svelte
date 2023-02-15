@@ -5,6 +5,7 @@
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import QTextInput from '../lib/questions/QTextInput.svelte';
 	import type { Question } from '../lib/common';
+	import QMultipleChoice from '$lib/questions/QMultipleChoice.svelte';
 
 	let editmode = false;
 
@@ -16,6 +17,10 @@
 		{
 			type: 'Rating',
 			content: { prompt: 'Rate your experience', description: '', max_rating: 10 }
+		},
+		{
+			type: 'Multiple Choice',
+			content: { prompt: 'Do you like tacos?', description: ''}
 		}
 	];
 	let selected_question = 0;
@@ -60,6 +65,7 @@ Textboxes
 <QTextInput prompt="What is your name?" description="" {editmode} />
 <QTextInput prompt="Describe your shoes." description="" multiline={true} {editmode} />
 <QRating prompt="Rate your experience" description="" max_rating={10} {editmode} />
+<QMultipleChoice prompt="Do you like tacos?" description="" {editmode} />
 
 <h3>QContainer</h3>
 
