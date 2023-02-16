@@ -48,7 +48,6 @@ pub struct SurveyPatch {
     pub title: Option<String>,
     pub description: Option<String>,
     pub published: Option<bool>,
-    pub owner_id: Option<i32>,
     pub questions: Option<SurveyQuestions>,
 }
 
