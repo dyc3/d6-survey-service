@@ -306,6 +306,52 @@ sequenceDiagram
     Note over Client: Client remains logged in, shows error
 ```
 
+### Access Control
+
+Not Authorized: Means the identity of the user is not known.
+Forbidden: Means the identity of the user is known, but they don't have permission to access the resource.
+
+```mermaid
+---
+title: Getting a survey
+---
+
+graph TD
+    recv[GET /api/survey/1] --> hasjwt{JWT present?}
+    hasjwt -->|No| unauth[User is unauthorized]
+    hasjwt -->|Yes| auth[User is authorized]
+    auth --> isowner{Is owner?}
+    unauth --> ispublished{Is published?}
+    ispublished -->|Yes| success[Success, return survey]
+    ispublished -->|No| forbidden[Forbidden]
+    isowner -->|Yes| success[Success, return survey]
+    isowner -->|No| forbidden[Forbidden]
+```
+
+```mermaid
+---
+title: Editing a survey
+---
+
+graph TD
+    recv[PATCH /api/survey/1] --> hasjwt{JWT present?}
+    hasjwt -->|No| unauth[User is unauthorized]
+    hasjwt -->|Yes| auth[User is authorized]
+    auth --> isowner
+    isowner{Is owner?}
+    ispublished{Is published?}
+    forbidden[Forbidden]
+    success[Success, Survey updated]
+    unauth --> forbidden
+    ispublished -->|No| success
+    qUpdated{Are Questions being changed?}
+    ispublished -->|Yes| qUpdated
+    isowner -->|Yes| ispublished
+    isowner -->|No| forbidden
+    qUpdated -->|Yes| forbidden
+    qUpdated -->|No| success
+```
+
 # Survey Questions
 
 These are the types of questions that we will support:
