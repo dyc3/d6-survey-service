@@ -27,7 +27,7 @@ pub struct UserLoginParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Responder)]
 #[response(content_type = "json")]
 pub struct UserToken {
-    token: String,
+    pub(crate) token: String,
 }
 
 #[derive(Debug, Clone, Error, Serialize, Deserialize)]

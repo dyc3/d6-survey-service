@@ -18,7 +18,7 @@ fn index() -> &'static str {
 }
 
 #[launch]
-fn rocket() -> _ {
+pub fn rocket() -> _ {
     rocket::build().attach(db::stage()).mount(
         "/api",
         routes![

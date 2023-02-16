@@ -42,13 +42,12 @@ pub struct Survey {
 
 /// Represents a partial update to a survey
 #[typeshare]
-#[derive(AsChangeset, Serialize, Deserialize)]
+#[derive(AsChangeset, Serialize, Deserialize, Default)]
 #[diesel(table_name=surveys)]
 pub struct SurveyPatch {
     pub title: Option<String>,
     pub description: Option<String>,
     pub published: Option<bool>,
-    pub owner_id: Option<i32>,
     pub questions: Option<SurveyQuestions>,
 }
 
