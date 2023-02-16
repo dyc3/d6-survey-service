@@ -3,6 +3,7 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import type { PageData } from './$types';
+	import { goto } from '$app/navigation';
 
 	export let data: PageData;
 
@@ -16,4 +17,12 @@
 	<QContainer question={surveyquestion.question} />
 {/each}
 
-<Button size="large" kind="primary">Submit</Button>
+<!-- TODO: actually submit survey to get the response UUID -->
+<Button
+	size="large"
+	kind="primary"
+	on:click={() =>
+		goto(`/survey/${data.slug}/submitted?response=1d3fd956-2c6b-4439-9c8f-c6933f6d895c`)}
+>
+	Submit
+</Button>
