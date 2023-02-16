@@ -18,7 +18,6 @@ export interface SurveyPatch {
 	title?: string;
 	description?: string;
 	published?: boolean;
-	owner_id?: number;
 	questions?: SurveyQuestions;
 }
 
