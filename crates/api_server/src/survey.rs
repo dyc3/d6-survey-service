@@ -150,6 +150,8 @@ async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Surv
 mod tests {
     use std::panic;
 
+    use crate::db::models::SurveyQuestions;
+
     use super::*;
     use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
     use jsonwebtoken::EncodingKey;
@@ -258,6 +260,54 @@ mod tests {
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
+
+    #[test]
+    fn test_edit_survey() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let response = client
+                .post(uri!("/api", create_survey))
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Created);
+
+            let survey_id = response.into_json::<Survey>().unwrap().id;
+
+            let response = client
+                .patch(uri!("/api", edit_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .body(
+                    serde_json::to_vec(&SurveyPatch {
+                        title: Some("test".to_owned()),
+                        description: Some(":)".to_owned()),
+                        published: Some(true),
+                        questions: Some(SurveyQuestions(vec![])),
+                    })
+                    .unwrap(),
+                )
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+            let survey = response.into_json::<Survey>().unwrap();
+            assert_eq!(survey.title, "test");
+            assert_eq!(survey.description, ":)");
+            assert_eq!(survey.published, true);
+            assert_eq!(survey.questions.0.len(), 0);
         });
     }
 }
