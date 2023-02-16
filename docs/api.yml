@@ -48,8 +48,9 @@ paths:
       - $ref: "#/components/parameters/survey"
     get:
       summary: Get a survey.
-      description: |
-        Get a survey. If the survey is not published, only the owner can get it. If the survey is published, anyone can get it.
+      description: >
+        Get a survey. If the survey is not published, only the owner can
+        get it. If the survey is published, anyone can get it.
       responses:
         "200":
           description: 200 response
@@ -116,13 +117,27 @@ paths:
                   - questions
     patch:
       summary: Update a survey
-      description: |
-        Update a survey. Only the owner of the survey can update it. If the survey is published, it cannot be updated unless it is unpublished first.
+      description: >
+        Update a survey. Only the owner of the survey can update it. If the
+        survey is published, it cannot be updated unless it is unpublished
+        first.
+
 
         The request body can contain any of the top level fields, but they are not required. If a field is not present, it will not be updated.
       responses:
         "200":
           description: The survey was updated
+        "403":
+          description: 403 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
       requestBody:
         content:
           application/json:
