@@ -71,15 +71,21 @@ pub async fn create_survey(
 pub async fn get_survey_auth(
     survey_id: i32,
     db: Storage,
-    claims: Claims,
+    claims: Option<Claims>,
 ) -> Result<Json<Survey>, ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
     })?;
 
-    if survey.owner_id != claims.user_id() {
-        return Err(SurveyError::NotOwner.into());
+    if let Some(claims) = claims {
+        if survey.owner_id != claims.user_id() && !survey.published {
+            return Err(SurveyError::NotOwner.into());
+        }
+    } else {
+        if !survey.published {
+            return Err(SurveyError::NotPublished.into());
+        }
     }
 
     Ok(Json(survey))
@@ -221,6 +227,30 @@ mod tests {
         return rocket.configure(config);
     }
 
+    fn create_survey(client: &Client, token: &String) -> i32 {
+        let response = client
+            .post(uri!("/api", create_survey))
+            .header(rocket::http::ContentType::JSON)
+            .header(rocket::http::Header::new("Authorization", token.clone()))
+            .dispatch();
+        response.into_json::<Survey>().unwrap().id
+    }
+
+    fn publish_survey(client: &Client, token: &String, survey_id: i32) {
+        client
+            .patch(uri!("/api", edit_survey(survey_id)).to_string())
+            .header(rocket::http::ContentType::JSON)
+            .header(rocket::http::Header::new("Authorization", token.clone()))
+            .body(
+                serde_json::to_vec(&SurveyPatch {
+                    published: Some(true),
+                    ..Default::default()
+                })
+                .unwrap(),
+            )
+            .dispatch();
+    }
+
     #[test]
     fn test_create_survey() {
         run_test_with_db(|db_name| {
@@ -238,20 +268,87 @@ mod tests {
     }
 
     #[test]
-    fn test_get_survey() {
+    fn test_get_survey_owner_unpublished() {
         run_test_with_db(|db_name| {
             let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
 
             let token = create_test_user(&client);
+            let survey_id = create_survey(&client, &token);
+
             let response = client
-                .post(uri!("/api", create_survey))
+                .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
                 .header(rocket::http::Header::new("Authorization", token.clone()))
                 .dispatch();
 
-            assert_eq!(response.status(), rocket::http::Status::Created);
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
 
-            let survey_id = response.into_json::<Survey>().unwrap().id;
+    #[test]
+    fn test_get_survey_anonymous_published() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = create_survey(&client, &token);
+            publish_survey(&client, &token, survey_id);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
+
+    #[test]
+    fn test_get_survey_forbidden_unpublished_not_owner() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = create_survey(&client, &token);
+            let token = make_jwt(&client, 58008);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Forbidden);
+        });
+    }
+
+    #[test]
+    fn test_get_survey_forbidden_unpublished_anonymous() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = create_survey(&client, &token);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Forbidden);
+        });
+    }
+
+    #[test]
+    fn test_get_survey_not_owner_but_published() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = create_survey(&client, &token);
+            publish_survey(&client, &token, survey_id);
+
+            let token = make_jwt(&client, 58008);
 
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
@@ -269,15 +366,7 @@ mod tests {
             let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
 
             let token = create_test_user(&client);
-            let response = client
-                .post(uri!("/api", create_survey))
-                .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
-                .dispatch();
-
-            assert_eq!(response.status(), rocket::http::Status::Created);
-
-            let survey_id = response.into_json::<Survey>().unwrap().id;
+            let survey_id = create_survey(&client, &token);
 
             let response = client
                 .patch(uri!("/api", edit_survey(survey_id)).to_string())
