@@ -78,14 +78,13 @@ Each frontend service would be paired with exactly 1 backend service, running on
 
 ```mermaid
 ---
-title: Entity Relationship Diagram
+title: Entity Relationship Diagram for data storage
 ---
 erDiagram
     User {
         int id PK
         String username
-        byte[] password_hash
-        byte[] password_salt
+        String password_hash
     }
 
     Responder {
@@ -97,14 +96,18 @@ erDiagram
         String title
         String description
         int owner_id FK
-        Question[] questions "JSON serialized"
+        SurveyQuestion[] questions "JSON serialized"
+    }
+
+    SurveyQuestion {
+        UUID uuid
+        bool required
+        Question question
     }
 
     Question {
-        UUID uuid
-        int type
-        bool required
-        String content
+      String type
+      Object content
     }
 
     SurveyResponse {
@@ -114,7 +117,8 @@ erDiagram
     }
 
     User ||--o{ Survey : owns
-    Survey ||--o{ Question : contains
+    Survey ||--o{ SurveyQuestion : contains
+    SurveyQuestion ||--|| Question : contains
     Responder ||--|| SurveyResponse : submits
     Survey ||--o{ SurveyResponse : has
 ```
