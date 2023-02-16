@@ -123,6 +123,127 @@ erDiagram
     Survey ||--o{ SurveyResponse : has
 ```
 
+```mermaid
+---
+title: Type relationships
+---
+classDiagram
+    class User {
+        +id: i32
+        +username: String
+        +password_hash: String
+        +created_at: NaiveDateTime
+        +updated_at: NaiveDateTime
+    }
+
+    class NewUser {
+        +username: String
+        +password_hash: String
+    }
+
+    class Survey {
+        +id: i32
+        +title: String
+        +description: String
+        +published: bool
+        +owner_id: i32
+        +questions: SurveyQuestions
+    }
+
+    class SurveyPatch {
+        +title: Option~String~
+        +description: Option~String~
+        +published: Option~bool~
+        +questions: Option~SurveyQuestions~
+    }
+
+    class NewSurvey {
+        +owner_id: i32
+    }
+
+    class SurveyQuestion {
+        +uuid: Uuid
+        +required: bool
+        +question: Question
+    }
+
+    class Question {
+        <<Enumeration>>
+        Text
+        Rating
+        MultipleChoice
+    }
+
+    class QText {
+        +prompt: String
+        +description: String
+        +multiline: bool
+    }
+
+    class QRating {
+        +prompt: String
+        +description: String
+        +max_rating: u8
+    }
+
+    class QMultipleChoice {
+        +prompt: String
+        +description: String
+        +choices: Vec~Choice~
+    }
+
+    class Choice {
+        +uuid: UUID
+        +text: String
+    }
+
+    User .. NewUser
+    SurveyPatch ..> Survey
+    Survey .. NewSurvey
+    Survey "1" --* "0..*" SurveyQuestion
+    SurveyQuestion "1" --* "1" Question
+    Question --* QText
+    Question --* QRating
+    Question --* QMultipleChoice
+    QMultipleChoice ..* Choice
+    User --o Survey
+
+    class SurveyResponse {
+        survey_id: i32
+        responder: UUID
+        content: HashMap~UUID, Response~
+    }
+
+    class Response {
+        <<Enumeration>>
+        Text
+        Rating
+        MultipleChoice
+    }
+
+    class RText {
+        text: String
+    }
+
+    class RRating {
+        rating: u32
+    }
+
+    class RMultipleChoice {
+        selected: Vec~UUID~
+    }
+
+    SurveyResponse --* Response
+    Survey --o SurveyResponse
+    SurveyQuestion --> Response
+    Response --* RText
+    Response --* RRating
+    Response --* RMultipleChoice
+    RText .. QText
+    RRating .. QRating
+    RMultipleChoice .. QMultipleChoice
+```
+
 - Users can create and own surveys.
 
 ## Data Storage
