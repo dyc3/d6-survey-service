@@ -279,6 +279,8 @@ Must be capable of the following:
   - Create a new response
   - Edit an existing response
 
+The API is documented in OpenAPI format in [api.yml](api.yml).
+
 ### Authentication and Authorization
 
 Users will be authenticated using JWTs.
