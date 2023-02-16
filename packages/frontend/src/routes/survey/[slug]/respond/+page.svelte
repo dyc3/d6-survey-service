@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Survey } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
+	import Button from '$lib/ui/Button.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -14,3 +15,5 @@
 {#each survey.questions as surveyquestion}
 	<QContainer question={surveyquestion.question} />
 {/each}
+
+<Button size="large" kind="primary">Submit</Button>
