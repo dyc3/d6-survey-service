@@ -1,10 +1,10 @@
 use api_server::db::models::SurveyPatch;
 use api_server::questions::{QMultipleChoice, QRating, QText, SurveyQuestion};
 use api_server::test_helpers::*;
-use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
+use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
+use pprof::criterion::{Output, PProfProfiler};
 use rocket::local::blocking::Client;
 use rocket::uri;
-use pprof::criterion::{PProfProfiler, Output};
 
 fn get_survey(c: &mut Criterion) {
     let questions = vec![
@@ -81,14 +81,18 @@ fn get_survey(c: &mut Criterion) {
 
     for survey_size in [2, 4, 8, 16, 32].iter() {
         let survey_id = make_test_survey(&client, &token, &questions, *survey_size);
-        c.bench_with_input(BenchmarkId::new("get_survey", survey_size), survey_size, |b, _| {
-            b.iter(|| {
-                let resp = client
-                    .get(uri!("/api", api_server::survey::get_survey(survey_id)).to_string())
-                    .dispatch();
-                black_box(resp);
-            })
-        });
+        c.bench_with_input(
+            BenchmarkId::new("get_survey", survey_size),
+            survey_size,
+            |b, _| {
+                b.iter(|| {
+                    let resp = client
+                        .get(uri!("/api", api_server::survey::get_survey(survey_id)).to_string())
+                        .dispatch();
+                    black_box(resp);
+                })
+            },
+        );
     }
 
     drop_test_db(db_name);
@@ -164,23 +168,27 @@ fn patch_survey(c: &mut Criterion) {
     for survey_size in [2, 4, 8, 16, 32].iter() {
         let (survey_id, body) = make_test_survey(&client, &token, &questions, *survey_size);
 
-        c.bench_with_input(BenchmarkId::new("patch_survey", survey_size), survey_size, |b, _| {
-            b.iter(|| {
-                let resp = client
-                    .get(uri!("/api", api_server::survey::edit_survey(survey_id)).to_string())
-                    .header(rocket::http::ContentType::JSON)
-                    .header(rocket::http::Header::new("Authorization", token.clone()))
-                    .body(body.clone())
-                    .dispatch();
-                black_box(resp);
-            })
-        });
+        c.bench_with_input(
+            BenchmarkId::new("patch_survey", survey_size),
+            survey_size,
+            |b, _| {
+                b.iter(|| {
+                    let resp = client
+                        .get(uri!("/api", api_server::survey::edit_survey(survey_id)).to_string())
+                        .header(rocket::http::ContentType::JSON)
+                        .header(rocket::http::Header::new("Authorization", token.clone()))
+                        .body(body.clone())
+                        .dispatch();
+                    black_box(resp);
+                })
+            },
+        );
     }
 
     drop_test_db(db_name);
 }
 
-criterion_group!{
+criterion_group! {
     name = benches;
     config = Criterion::default().with_profiler(PProfProfiler::new(100, Output::Flamegraph(None)));
     targets = get_survey, patch_survey
