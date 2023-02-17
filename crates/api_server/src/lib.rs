@@ -6,13 +6,13 @@ extern crate typeshare;
 extern crate diesel;
 
 pub mod api;
-mod db;
+pub mod db;
 pub mod jwt;
-mod questions;
-mod survey;
-#[cfg(test)]
-mod test_helpers;
-mod user;
+pub mod questions;
+pub mod survey;
+// #[cfg(any(test, bench))]
+pub mod test_helpers;
+pub mod user;
 
 #[get("/")]
 fn index() -> &'static str {
