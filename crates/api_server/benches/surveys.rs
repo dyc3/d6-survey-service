@@ -1,7 +1,7 @@
 use api_server::db::models::SurveyPatch;
 use api_server::questions::{QMultipleChoice, QRating, QText, SurveyQuestion};
 use api_server::test_helpers::*;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
 use rocket::local::blocking::Client;
 use rocket::uri;
 use pprof::criterion::{PProfProfiler, Output};
@@ -81,7 +81,7 @@ fn get_survey(c: &mut Criterion) {
 
     for survey_size in [2, 4, 8, 16, 32].iter() {
         let survey_id = make_test_survey(&client, &token, &questions, *survey_size);
-        c.bench_function(&format!("get survey: {} questions", survey_size), |b| {
+        c.bench_with_input(BenchmarkId::new("get_survey", survey_size), survey_size, |b, _| {
             b.iter(|| {
                 let resp = client
                     .get(uri!("/api", api_server::survey::get_survey(survey_id)).to_string())
@@ -164,7 +164,7 @@ fn patch_survey(c: &mut Criterion) {
     for survey_size in [2, 4, 8, 16, 32].iter() {
         let (survey_id, body) = make_test_survey(&client, &token, &questions, *survey_size);
 
-        c.bench_function(&format!("patch survey: {} questions", survey_size), |b| {
+        c.bench_with_input(BenchmarkId::new("patch_survey", survey_size), survey_size, |b, _| {
             b.iter(|| {
                 let resp = client
                     .get(uri!("/api", api_server::survey::edit_survey(survey_id)).to_string())
