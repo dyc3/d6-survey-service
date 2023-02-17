@@ -4,6 +4,7 @@ use api_server::test_helpers::*;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use rocket::local::blocking::Client;
 use rocket::uri;
+use pprof::criterion::{PProfProfiler, Output};
 
 fn get_survey(c: &mut Criterion) {
     let questions = vec![
@@ -179,5 +180,9 @@ fn patch_survey(c: &mut Criterion) {
     drop_test_db(db_name);
 }
 
-criterion_group!(benches, get_survey, patch_survey);
+criterion_group!{
+    name = benches;
+    config = Criterion::default().with_profiler(PProfProfiler::new(100, Output::Flamegraph(None)));
+    targets = get_survey, patch_survey
+}
 criterion_main!(benches);

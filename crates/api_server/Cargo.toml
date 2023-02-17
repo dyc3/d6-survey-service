@@ -26,7 +26,11 @@ features = ["diesel_postgres_pool"]
 
 [dev-dependencies]
 criterion = "0.4"
+pprof = { version = "0.11", features = ["flamegraph", "criterion"] }
 
 [[bench]]
 name = "surveys"
 harness = false
+
+[profile.bench]
+debug = true
