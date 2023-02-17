@@ -10,9 +10,9 @@ mod db;
 pub mod jwt;
 mod questions;
 mod survey;
-mod user;
 #[cfg(test)]
 mod test_helpers;
+mod user;
 
 #[get("/")]
 fn index() -> &'static str {

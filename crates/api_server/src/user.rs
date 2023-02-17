@@ -7,12 +7,11 @@ use rocket::http::Status;
 use rocket::response::status::Created;
 use rocket::response::Responder;
 use rocket::serde::json::Json;
-use rocket::{Orbit, Rocket};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::api::ApiErrorResponse;
-use crate::db::models::{NewUser, User};
+use crate::db::models::{ListedSurvey, NewUser, User};
 use crate::db::{schema, Storage};
 use crate::jwt::Claims;
 
@@ -149,4 +148,83 @@ fn generate_jwt_for_user(secret: &SecretKey, user_id: i32) -> anyhow::Result<Str
     let key = jsonwebtoken::EncodingKey::from_secret(secret.to_string().as_bytes());
     let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims, &key)?;
     Ok(token)
+}
+
+#[get("/user/surveys")]
+pub async fn list_surveys(
+    db: Storage,
+    claims: Claims,
+) -> Result<Json<Vec<ListedSurvey>>, ApiErrorResponse<UserLoginError>> {
+    let surveys = db
+        .run(move |conn| {
+            schema::surveys::table
+                .filter(schema::surveys::dsl::owner_id.eq(claims.user_id()))
+                .select((
+                    schema::surveys::dsl::id,
+                    schema::surveys::dsl::title,
+                    schema::surveys::dsl::description,
+                    schema::surveys::dsl::published,
+                    schema::surveys::dsl::owner_id,
+                ))
+                .load::<ListedSurvey>(conn)
+        })
+        .await
+        .map_err(|e| {
+            error!("{e:?}");
+            UserLoginError::InternalError
+        })?;
+    Ok(Json(surveys))
+}
+
+#[cfg(test)]
+mod tests {
+    use rocket::local::blocking::Client;
+
+    use super::*;
+    use crate::test_helpers::*;
+
+    #[test]
+    fn test_list_surveys_authorized() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            make_survey(&client, &token);
+            make_survey(&client, &token);
+
+            let resp = client
+                .get(uri!("/api", list_surveys))
+                .header(rocket::http::Header::new("Authorization", token))
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::Ok);
+            let list = resp
+                .into_json::<Vec<ListedSurvey>>()
+                .expect("expected list of surveys");
+            assert_eq!(list.len(), 2);
+        })
+    }
+
+    #[test]
+    fn test_list_surveys_only_for_self() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            make_survey(&client, &token);
+            make_survey(&client, &token);
+
+            let token2 = create_test_user(&client);
+            make_survey(&client, &token2);
+
+            let resp = client
+                .get(uri!("/api", list_surveys))
+                .header(rocket::http::Header::new("Authorization", token2))
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::Ok);
+            let list = resp
+                .into_json::<Vec<ListedSurvey>>()
+                .expect("expected list of surveys");
+            assert_eq!(list.len(), 1);
+        })
+    }
 }
