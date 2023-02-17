@@ -154,6 +154,18 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/SurveyQuestion"
+  /api/user/surveys:
+    summary: Get all surveys owned by the user
+    get:
+      responses:
+        "200":
+          description: List of surveys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ListedSurvey"
 components:
   parameters:
     survey:
@@ -174,6 +186,25 @@ components:
       required:
         - username
         - password
+    ListedSurvey:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        published:
+          type: boolean
+        owner_id:
+          type: number
+      required:
+        - id
+        - title
+        - description
+        - published
+        - owner_id
     SurveyQuestion:
       type: object
       properties:
