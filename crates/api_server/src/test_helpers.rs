@@ -82,7 +82,7 @@ pub fn bench_rocket(db_name: &String) -> rocket::Rocket<rocket::Build> {
             "databases.survey_app.url",
             format!("postgres://vscode:notsecure@db/{}", db_name),
         ))
-        .merge(("databases.survey_app.pool_size", 5))
+        .merge(("databases.survey_app.pool_size", 1))
         .merge(("secret_key", vec![12u8; 64]));
     return rocket.configure(config);
 }
