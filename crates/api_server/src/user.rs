@@ -271,25 +271,31 @@ mod tests {
                 ];
 
                 let argon2 = Argon2::default();
-                let users = users.iter().map(|user_params| {
-                    let salt = SaltString::generate(&mut OsRng);
-                    let password_hash = argon2
-                        .hash_password(&user_params.password.as_bytes(), &salt).expect("valid password hash");
-                    NewUser {
-                        username: user_params.username.clone(),
-                        password_hash: password_hash.to_string(),
-                    }
-                }).collect::<Vec<NewUser>>();
-
-                db
-                    .run(move |conn| {
-                        diesel::insert_into(schema::users::table)
-                            .values(&users)
-                            .execute(conn)
+                let users = users
+                    .iter()
+                    .map(|user_params| {
+                        let salt = SaltString::generate(&mut OsRng);
+                        let password_hash = argon2
+                            .hash_password(&user_params.password.as_bytes(), &salt)
+                            .expect("valid password hash");
+                        NewUser {
+                            username: user_params.username.clone(),
+                            password_hash: password_hash.to_string(),
+                        }
                     })
-                    .await.expect("successful insert");
+                    .collect::<Vec<NewUser>>();
+
+                db.run(move |conn| {
+                    diesel::insert_into(schema::users::table)
+                        .values(&users)
+                        .execute(conn)
+                })
+                .await
+                .expect("successful insert");
             }
-            let client = Client::tracked(test_rocket(db_name).mount("/", routes![make_invalid_users])).expect("valid rocket instance");
+            let client =
+                Client::tracked(test_rocket(db_name).mount("/", routes![make_invalid_users]))
+                    .expect("valid rocket instance");
 
             let resp = client.post(uri!(make_invalid_users)).dispatch();
             assert_eq!(resp.status(), rocket::http::Status::Ok);
