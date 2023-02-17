@@ -57,6 +57,10 @@ pub async fn register_user(
     secret: &SecretKey,
 ) -> Result<Created<Json<UserToken>>, ApiErrorResponse<UserLoginError>> {
     let user_params = user.into_inner();
+    if user_params.username.is_empty() || user_params.password.is_empty() {
+        return Err(UserLoginError::InvalidCredentials.into());
+    }
+
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let password_hash = argon2
@@ -103,6 +107,9 @@ pub async fn login_user(
     secret: &SecretKey,
 ) -> Result<Json<UserToken>, ApiErrorResponse<UserLoginError>> {
     let user_params = user.into_inner();
+    if user_params.username.is_empty() || user_params.password.is_empty() {
+        return Err(UserLoginError::InvalidCredentials.into());
+    }
 
     let user_id = db
         .run(move |conn| {
@@ -182,6 +189,124 @@ mod tests {
 
     use super::*;
     use crate::test_helpers::*;
+
+    #[test]
+    fn test_user_register() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let resp = client
+                .post(uri!("/api", register_user))
+                .body(r#"{"username": "a", "password": "a"}"#)
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::Created);
+        })
+    }
+
+    #[test]
+    fn test_user_login_valid() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let resp = client
+                .post(uri!("/api", register_user))
+                .body(r#"{"username": "a", "password": "a"}"#)
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::Created);
+
+            let resp = client
+                .post(uri!("/api", login_user))
+                .body(r#"{"username": "a", "password": "a"}"#)
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::Ok);
+        })
+    }
+
+    #[test]
+    fn test_user_login_invalid() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let resp = client
+                .post(uri!("/api", login_user))
+                .body(r#"{"username": "a", "password": "a"}"#)
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::BadRequest);
+        })
+    }
+
+    #[test]
+    fn test_user_deny_register_blank_credentials() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let resp = client
+                .post(uri!("/api", register_user))
+                .body(r#"{"username": "a", "password": ""}"#)
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::BadRequest);
+
+            let resp = client
+                .post(uri!("/api", register_user))
+                .body(r#"{"username": "", "password": "a"}"#)
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::BadRequest);
+        })
+    }
+
+    #[test]
+    fn test_user_deny_login_blank_credentials() {
+        run_test_with_db(|db_name| {
+            #[post("/make_invalid_users")]
+            async fn make_invalid_users(db: Storage) {
+                let users = vec![
+                    UserLoginParams {
+                        username: "a".to_string(),
+                        password: "".to_string(),
+                    },
+                    UserLoginParams {
+                        username: "".to_string(),
+                        password: "a".to_string(),
+                    },
+                ];
+
+                let argon2 = Argon2::default();
+                let users = users.iter().map(|user_params| {
+                    let salt = SaltString::generate(&mut OsRng);
+                    let password_hash = argon2
+                        .hash_password(&user_params.password.as_bytes(), &salt).expect("valid password hash");
+                    NewUser {
+                        username: user_params.username.clone(),
+                        password_hash: password_hash.to_string(),
+                    }
+                }).collect::<Vec<NewUser>>();
+
+                db
+                    .run(move |conn| {
+                        diesel::insert_into(schema::users::table)
+                            .values(&users)
+                            .execute(conn)
+                    })
+                    .await.expect("successful insert");
+            }
+            let client = Client::tracked(test_rocket(db_name).mount("/", routes![make_invalid_users])).expect("valid rocket instance");
+
+            let resp = client.post(uri!(make_invalid_users)).dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::Ok);
+
+            let resp = client
+                .post(uri!("/api", login_user))
+                .body(r#"{"username": "a", "password": ""}"#)
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::BadRequest);
+
+            let resp = client
+                .post(uri!("/api", login_user))
+                .body(r#"{"username": "", "password": "a"}"#)
+                .dispatch();
+            assert_eq!(resp.status(), rocket::http::Status::BadRequest);
+        })
+    }
 
     #[test]
     fn test_list_surveys_authorized() {
