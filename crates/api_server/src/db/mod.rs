@@ -7,8 +7,7 @@ use rocket_sync_db_pools::database;
 pub mod models;
 pub mod schema;
 
-#[cfg_attr(not(test), database("survey_app"))]
-#[cfg_attr(test, database("survey_app_test"))]
+#[database("survey_app")]
 pub struct Storage(rocket_sync_db_pools::diesel::PgConnection);
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");

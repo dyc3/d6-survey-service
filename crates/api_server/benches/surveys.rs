@@ -41,7 +41,7 @@ fn get_survey(c: &mut Criterion) {
     }).collect::<Vec<_>>();
 
     let db_name = create_db_for_tests();
-    let client = Client::untracked(test_rocket(&db_name)).expect("valid rocket instance");
+    let client = Client::untracked(bench_rocket(&db_name)).expect("valid rocket instance");
     let token = create_test_user(&client);
     fn make_test_survey(client: &Client, token: &String, questions: &Vec<SurveyQuestion>, mut amount: usize) -> i32 {
         let survey_id = make_survey(&client, &token);

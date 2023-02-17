@@ -66,10 +66,23 @@ pub fn test_rocket(db_name: &String) -> rocket::Rocket<rocket::Build> {
         .figment()
         .clone()
         .merge((
-            "databases.survey_app_test.url",
+            "databases.survey_app.url",
             format!("postgres://vscode:notsecure@db/{}", db_name),
         ))
-        .merge(("databases.survey_app_test.pool_size", 1))
+        .merge(("databases.survey_app.pool_size", 1));
+    return rocket.configure(config);
+}
+
+pub fn bench_rocket(db_name: &String) -> rocket::Rocket<rocket::Build> {
+    let rocket = crate::rocket();
+    let config = rocket
+        .figment()
+        .clone()
+        .merge((
+            "databases.survey_app.url",
+            format!("postgres://vscode:notsecure@db/{}", db_name),
+        ))
+        .merge(("databases.survey_app.pool_size", 5))
         .merge(("secret_key", vec![12u8; 64]));
     return rocket.configure(config);
 }
