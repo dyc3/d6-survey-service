@@ -11,6 +11,8 @@ pub mod jwt;
 mod questions;
 mod survey;
 mod user;
+#[cfg(test)]
+mod test_helpers;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -25,6 +27,7 @@ pub fn rocket() -> _ {
             index,
             user::register_user,
             user::login_user,
+            user::list_surveys,
             survey::create_survey,
             survey::get_survey,
             survey::get_survey_auth,
