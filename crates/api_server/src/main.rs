@@ -10,6 +10,8 @@ mod db;
 pub mod jwt;
 mod questions;
 mod survey;
+#[cfg(test)]
+mod test_helpers;
 mod user;
 
 #[get("/")]
@@ -25,6 +27,7 @@ pub fn rocket() -> _ {
             index,
             user::register_user,
             user::login_user,
+            user::list_surveys,
             survey::create_survey,
             survey::get_survey,
             survey::get_survey_auth,

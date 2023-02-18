@@ -63,6 +63,18 @@ impl NewSurvey {
     }
 }
 
+/// Used to list surveys, like on the page where you can see all your surveys
+#[typeshare]
+#[derive(Queryable, Serialize, Deserialize)]
+#[diesel(table_name=surveys)]
+pub struct ListedSurvey {
+    pub id: i32,
+    pub title: String,
+    pub description: String,
+    pub published: bool,
+    pub owner_id: i32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
 #[diesel(sql_type = Jsonb)]
 #[typeshare(serialized_as = "Vec<SurveyQuestion>")]

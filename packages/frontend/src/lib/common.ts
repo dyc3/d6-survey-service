@@ -21,6 +21,15 @@ export interface SurveyPatch {
 	questions?: SurveyQuestions;
 }
 
+/** Used to list surveys, like on the page where you can see all your surveys */
+export interface ListedSurvey {
+	id: number;
+	title: string;
+	description: string;
+	published: boolean;
+	owner_id: number;
+}
+
 export interface SurveyQuestion {
 	uuid: string;
 	required: boolean;
