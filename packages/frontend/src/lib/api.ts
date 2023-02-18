@@ -13,7 +13,7 @@ export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 export type ApiResponse<T> = Result<T, ApiErrorResponse<any>>;
 
 async function apiReq<T>(path: string, options?: RequestInit | undefined): Promise<ApiResponse<T>> {
-	let response = await fetch(`${API_URL}${path}`, options);
+	const response = await fetch(`${API_URL}${path}`, options);
 
 	let apiResponse: ApiResponse<T>;
 	if (response.ok) {
@@ -28,7 +28,7 @@ async function apiReqAuth<T>(
 	path: string,
 	options?: RequestInit | undefined
 ): Promise<ApiResponse<T>> {
-	let token = jwt.get();
+	const token = jwt.get();
 	if (!token) {
 		throw new Error(`Not logged in, cannot make authenticated request to ${path}`);
 	}

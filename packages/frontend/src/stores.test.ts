@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { jwt } from './stores';
 
 const localStorageMock = (function () {
-	var store: { [key: string]: string | null } = {};
+	let store: { [key: string]: string | null } = {};
 
 	return {
 		getItem(key: string): string | null {
