@@ -1,15 +1,24 @@
+import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import type { Survey } from '$lib/common';
+import { getSurvey } from '$lib/api';
 
 export const load = (async ({ params }) => {
-	// TODO: don't hardcode api host
-	// TODO: handle errors returned by the API
-	const survey: Survey = await fetch(`http://localhost:5173/api/survey/${params.slug}`).then((r) =>
-		r.json()
-	);
+	let surveyId = parseInt(params.slug);
+	const response = await getSurvey(surveyId);
+	if (!response.ok) {
+		// TODO: make status codes accessible instead?
+		if (response.error.message === 'NotFound') {
+			throw error(404, 'Survey not found');
+		} else if (response.error.message === 'NotPublished') {
+			throw error(403, 'Survey not published');
+		} else {
+			throw error(500, 'Internal server error');
+		}
+	}
 
 	return {
 		slug: params.slug,
-		survey
+		surveyId,
+		survey: response.value
 	};
 }) satisfies PageLoad;
