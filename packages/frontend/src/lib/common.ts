@@ -4,6 +4,10 @@
 
 export type SurveyQuestions = SurveyQuestion[];
 
+export interface ApiErrorResponse<R> {
+	message: R;
+}
+
 export interface Survey {
 	id: number;
 	title: string;
