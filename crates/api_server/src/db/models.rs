@@ -80,6 +80,18 @@ pub struct ListedSurvey {
 #[typeshare(serialized_as = "Vec<SurveyQuestion>")]
 pub struct SurveyQuestions(pub Vec<SurveyQuestion>);
 
+impl From<Vec<SurveyQuestion>> for SurveyQuestions {
+    fn from(v: Vec<SurveyQuestion>) -> Self {
+        Self(v)
+    }
+}
+
+impl From<SurveyQuestions> for Vec<SurveyQuestion> {
+    fn from(v: SurveyQuestions) -> Self {
+        v.0
+    }
+}
+
 impl FromSql<Jsonb, Pg> for SurveyQuestions {
     fn from_sql(value: PgValue) -> diesel::deserialize::Result<Self> {
         let value = <serde_json::Value as FromSql<Jsonb, Pg>>::from_sql(value)?;

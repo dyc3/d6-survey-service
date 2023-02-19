@@ -20,6 +20,11 @@ pub fn create_db_for_tests() -> String {
 pub fn drop_test_db(db_name: String) {
     let mut conn = PgConnection::establish("postgres://vscode:notsecure@db/survey_app")
         .expect("Failed to connect to database");
+    sql_query(format!(
+        "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{db_name}' AND pid <> pg_backend_pid();"
+    ))
+    .execute(&mut conn)
+    .expect("Failed to kill connections to test database");
     sql_query(format!("DROP DATABASE IF EXISTS {db_name}"))
         .execute(&mut conn)
         .expect("Failed to drop test database");
@@ -66,10 +71,24 @@ pub fn test_rocket(db_name: &String) -> rocket::Rocket<rocket::Build> {
         .figment()
         .clone()
         .merge((
-            "databases.survey_app_test.url",
+            "databases.survey_app.url",
             format!("postgres://vscode:notsecure@db/{}", db_name),
         ))
-        .merge(("databases.survey_app_test.pool_size", 1));
+        .merge(("databases.survey_app.pool_size", 1));
+    return rocket.configure(config);
+}
+
+pub fn bench_rocket(db_name: &String) -> rocket::Rocket<rocket::Build> {
+    let rocket = crate::rocket();
+    let config = rocket
+        .figment()
+        .clone()
+        .merge((
+            "databases.survey_app.url",
+            format!("postgres://vscode:notsecure@db/{}", db_name),
+        ))
+        .merge(("databases.survey_app.pool_size", 1))
+        .merge(("secret_key", vec![12u8; 64]));
     return rocket.configure(config);
 }
 
