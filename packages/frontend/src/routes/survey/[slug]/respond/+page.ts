@@ -2,9 +2,9 @@ import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { getSurvey } from '$lib/api';
 
-export const load = (async ({ params }) => {
+export const load = (async ({ params, fetch }) => {
 	let surveyId = parseInt(params.slug);
-	const response = await getSurvey(surveyId);
+	const response = await getSurvey(surveyId, { fetch });
 	if (!response.ok) {
 		// TODO: make status codes accessible instead?
 		if (response.error.message === 'NotFound') {
