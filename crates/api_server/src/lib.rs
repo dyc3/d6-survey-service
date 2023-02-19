@@ -6,6 +6,7 @@ extern crate typeshare;
 extern crate diesel;
 
 pub mod api;
+mod cache;
 mod cors;
 pub mod db;
 pub mod jwt;
