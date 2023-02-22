@@ -226,7 +226,7 @@ classDiagram
     }
 
     class RRating {
-        rating: u32
+        rating: u8
     }
 
     class RMultipleChoice {
