@@ -1,5 +1,5 @@
 use api_server::db::models::SurveyPatch;
-use api_server::questions::{QMultipleChoice, QRating, QText, SurveyQuestion};
+use api_server::questions::{Choice, QMultipleChoice, QRating, QText, SurveyQuestion};
 use api_server::test_helpers::*;
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
 use pprof::criterion::{Output, PProfProfiler};
@@ -23,6 +23,17 @@ fn get_survey(c: &mut Criterion) {
         QMultipleChoice {
             prompt: "Pick one".to_string(),
             description: "yes".to_string(),
+            multiple: false,
+            choices: vec![
+                Choice {
+                    uuid: uuid::Uuid::new_v4(),
+                    text: "amogus".to_string(),
+                },
+                Choice {
+                    uuid: uuid::Uuid::new_v4(),
+                    text: "fortnight".to_string(),
+                },
+            ],
         }
         .into(),
         QText {
@@ -115,6 +126,17 @@ fn patch_survey(c: &mut Criterion) {
         QMultipleChoice {
             prompt: "Pick one".to_string(),
             description: "yes".to_string(),
+            multiple: false,
+            choices: vec![
+                Choice {
+                    uuid: uuid::Uuid::new_v4(),
+                    text: "amogus".to_string(),
+                },
+                Choice {
+                    uuid: uuid::Uuid::new_v4(),
+                    text: "fortnight".to_string(),
+                },
+            ],
         }
         .into(),
         QText {

@@ -56,6 +56,31 @@ export interface QRating {
 export interface QMultipleChoice {
 	prompt: string;
 	description: string;
+	multiple: boolean;
+	choices: Choice[];
+}
+
+export interface Choice {
+	uuid: string;
+	text: string;
+}
+
+export interface SurveyResponse {
+	survey_id: number;
+	responder: string;
+	content: Record<string, Response>;
+}
+
+export interface RText {
+	text: string;
+}
+
+export interface RRating {
+	rating: number;
+}
+
+export interface RMultipleChoice {
+	selected: string[];
 }
 
 export interface UserLoginParams {
