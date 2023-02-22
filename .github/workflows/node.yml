@@ -3,8 +3,14 @@ name: Node
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "packages/**"
+      - ".github/workflows/**"
   pull_request:
     branches: [ "main" ]
+    paths:
+      - "packages/**"
+      - ".github/workflows/**"
 
 jobs:
   build:

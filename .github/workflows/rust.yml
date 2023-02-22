@@ -3,8 +3,14 @@ name: Rust
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "crates/**"
+      - ".github/workflows/**"
   pull_request:
     branches: [ "main" ]
+    paths:
+      - "crates/**"
+      - ".github/workflows/**"
 
 env:
   CARGO_TERM_COLOR: always
