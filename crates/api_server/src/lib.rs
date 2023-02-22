@@ -11,6 +11,7 @@ pub mod db;
 pub mod jwt;
 pub mod questions;
 pub mod survey;
+pub mod survey_response;
 // #[cfg(any(test, bench))]
 pub mod test_helpers;
 pub mod user;
