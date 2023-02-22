@@ -73,16 +73,6 @@ impl From<QMultipleChoice> for Question {
     }
 }
 
-#[typeshare]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SurveyResponse {
-    pub survey_id: i32,
-    #[typeshare(serialized_as = "String")]
-    pub responder: Uuid,
-    #[typeshare(serialized_as = "HashMap<String, Response>")]
-    pub content: HashMap<Uuid, Response>,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "content")]
 pub enum Response {

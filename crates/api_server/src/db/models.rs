@@ -113,9 +113,12 @@ impl ToSql<Jsonb, Pg> for SurveyQuestions {
     }
 }
 
+#[typeshare]
 #[derive(Queryable, Serialize, Deserialize)]
-pub struct Response {
+#[diesel(table_name=responses)]
+pub struct SurveyResponse {
     pub survey_id: i32,
+    #[typeshare(serialized_as = "String")]
     pub responder_uuid: Uuid,
     pub content: SurveyResponses,
     pub created_at: chrono::NaiveDateTime,
@@ -124,7 +127,7 @@ pub struct Response {
 
 #[derive(Insertable)]
 #[diesel(table_name=responses)]
-pub struct NewResponse {
+pub struct NewSurveyResponse {
     pub survey_id: i32,
     pub responder_uuid: Uuid,
     pub content: SurveyResponses,
@@ -132,6 +135,7 @@ pub struct NewResponse {
 
 #[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
 #[diesel(sql_type = Jsonb)]
+#[typeshare(serialized_as = "HashMap<String, Response>")]
 pub struct SurveyResponses(pub HashMap<Uuid, crate::questions::Response>);
 
 impl From<HashMap<Uuid, crate::questions::Response>> for SurveyResponses {
