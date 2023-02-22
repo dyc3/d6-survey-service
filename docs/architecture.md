@@ -189,6 +189,7 @@ classDiagram
     class QMultipleChoice {
         +prompt: String
         +description: String
+        +multiple: bool
         +choices: Vec~Choice~
     }
 

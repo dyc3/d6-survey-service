@@ -43,6 +43,16 @@ pub struct QRating {
 pub struct QMultipleChoice {
     pub prompt: String,
     pub description: String,
+    pub multiple: bool,
+    pub choices: Vec<Choice>,
+}
+
+#[typeshare]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Choice {
+    #[typeshare(serialized_as = "String")]
+    pub uuid: Uuid,
+    pub text: String,
 }
 
 impl From<QText> for Question {
