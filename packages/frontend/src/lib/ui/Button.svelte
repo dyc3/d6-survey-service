@@ -39,13 +39,17 @@
 <style lang="scss">
 	button {
 		cursor: pointer;
-		border: #000 3px solid;
+		border: #426881 3px solid;
 		border-radius: 5px;
 		background-color: #fff;
+		color: #426881;
 	}
 
 	button:active {
-		background-color: #000;
+		background: rgb(66, 104, 129);
+		background: -moz-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: -webkit-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
 		color: #fff;
 		position: relative;
 		top: 1px;
@@ -72,12 +76,15 @@
 	}
 
 	.kind-primary {
-		background-color: #000;
-		color: #fff;
+		background-color: #fff;
+		color: #426881;
 	}
 
 	.kind-primary:active {
-		background-color: #fff;
-		color: #000;
+		background: rgb(66, 104, 129);
+		background: -moz-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: -webkit-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		color: #fff;
 	}
 </style>
