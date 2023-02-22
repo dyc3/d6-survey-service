@@ -11,9 +11,13 @@ const API_URL = 'http://localhost:5347'; // TODO: see #42
 
 export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 export type ApiResponse<T> = Result<T, ApiErrorResponse<any>>;
+export type ExtraOptions = { fetch?: typeof fetch };
 
-async function apiReq<T>(path: string, options?: RequestInit | undefined): Promise<ApiResponse<T>> {
-	const response = await fetch(`${API_URL}${path}`, options);
+type ApiRequestOptions = RequestInit & ExtraOptions;
+
+async function apiReq<T>(path: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
+	const realfetch = options?.fetch ?? fetch;
+	const response = await realfetch(`${API_URL}${path}`, options);
 
 	let apiResponse: ApiResponse<T>;
 	if (response.ok) {
@@ -24,10 +28,7 @@ async function apiReq<T>(path: string, options?: RequestInit | undefined): Promi
 	return apiResponse;
 }
 
-async function apiReqAuth<T>(
-	path: string,
-	options?: RequestInit | undefined
-): Promise<ApiResponse<T>> {
+async function apiReqAuth<T>(path: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
 	const token = jwt.get();
 	if (!token) {
 		throw new Error(`Not logged in, cannot make authenticated request to ${path}`);
@@ -41,34 +42,47 @@ async function apiReqAuth<T>(
 	});
 }
 
-export async function loginUser(params: UserLoginParams): Promise<ApiResponse<UserToken>> {
+export async function loginUser(
+	params: UserLoginParams,
+	opts?: ExtraOptions
+): Promise<ApiResponse<UserToken>> {
 	return apiReq(`/api/user/login`, {
 		method: 'POST',
-		body: JSON.stringify(params)
+		body: JSON.stringify(params),
+		...opts
 	});
 }
 
-export async function registerUser(params: UserLoginParams): Promise<ApiResponse<UserToken>> {
+export async function registerUser(
+	params: UserLoginParams,
+	opts?: ExtraOptions
+): Promise<ApiResponse<UserToken>> {
 	return apiReq(`/api/user/register`, {
 		method: 'POST',
-		body: JSON.stringify(params)
+		body: JSON.stringify(params),
+		...opts
 	});
 }
 
-export async function getSurvey(survey_id: number): Promise<ApiResponse<Survey>> {
-	return apiReq(`/api/survey/${survey_id}`);
+export async function getSurvey(
+	survey_id: number,
+	opts?: ExtraOptions
+): Promise<ApiResponse<Survey>> {
+	return apiReq(`/api/survey/${survey_id}`, { ...opts });
 }
 
-export async function createSurvey(): Promise<ApiResponse<Survey>> {
-	return apiReqAuth(`/api/survey/create`, { method: 'POST' });
+export async function createSurvey(opts?: ExtraOptions): Promise<ApiResponse<Survey>> {
+	return apiReqAuth(`/api/survey/create`, { method: 'POST', ...opts });
 }
 
 export async function editSurvey(
 	survey_id: number,
-	survey: SurveyPatch
+	survey: SurveyPatch,
+	opts?: ExtraOptions
 ): Promise<ApiResponse<Survey>> {
 	return apiReqAuth(`/api/survey/${survey_id}`, {
 		method: 'PATCH',
-		body: JSON.stringify(survey)
+		body: JSON.stringify(survey),
+		...opts
 	});
 }

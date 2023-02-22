@@ -189,6 +189,7 @@ classDiagram
     class QMultipleChoice {
         +prompt: String
         +description: String
+        +multiple: bool
         +choices: Vec~Choice~
     }
 
@@ -226,7 +227,7 @@ classDiagram
     }
 
     class RRating {
-        rating: u32
+        rating: u8
     }
 
     class RMultipleChoice {

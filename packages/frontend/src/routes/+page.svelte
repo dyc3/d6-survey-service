@@ -20,7 +20,21 @@
 		},
 		{
 			type: 'MultipleChoice',
-			content: { prompt: 'Do you like tacos?', description: '' }
+			content: {
+				prompt: 'Do you like tacos?',
+				description: '',
+				multiple: false,
+				choices: [
+					{
+						uuid: '1',
+						text: 'Yes'
+					},
+					{
+						uuid: '2',
+						text: 'No'
+					}
+				]
+			}
 		}
 	];
 	let selected_question = 0;
