@@ -10,9 +10,11 @@
 	 */
 	export let pressed = false;
 	export let size: 'small' | 'normal' | 'large' = 'normal';
-	export let kind: 'primary' | 'default' = 'default';
+	export let kind: 'primary' | 'danger' | 'default' = 'default';
 
 	$: classes = `sz-${size} kind-${kind}`;
+	$: wrapclasses = `border-wrap wrapkind-${kind}`
+	
 
 	const dispatch = createEventDispatcher();
 
@@ -27,22 +29,30 @@
 </script>
 
 {#if toggleable}
-	<button class={classes} aria-pressed={pressed} on:click={handleClick}>
-		<slot />
-	</button>
+	<div class={wrapclasses}>
+		<button class={classes} aria-pressed={pressed} on:click={handleClick}>
+			<slot />
+		</button>
+	</div>
 {:else}
-	<button class={classes} on:click>
-		<slot />
-	</button>
+	<div class={wrapclasses}>
+		<button class={classes} on:click>
+			<slot />
+		</button>
+	</div>
 {/if}
 
 <style lang="scss">
 	button {
 		cursor: pointer;
-		border: #426881 3px solid;
-		border-radius: 5px;
+		display: grid;
+		width: 100%;
+		height: 100%;
+		border-radius: 3px;
+		place-items: center;
 		background-color: #fff;
 		color: #426881;
+		border: none;
 	}
 
 	button:active {
@@ -60,6 +70,22 @@
 		color: #fff;
 	}
 
+	.border-wrap{
+		display: flex;
+		position: relative;
+ 	 	padding: 3px;
+		border-radius: 5px;
+	}
+
+	.wrapkind-default, .wrapkind-primary{
+		background: rgb(66, 104, 129);
+		background: -moz-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: -webkit-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+	}
+	.wrapkind-danger{
+		background: #CD311E;
+	}
 	.sz-small {
 		font-size: 0.8em;
 		padding: 0.2em 0.5em;
@@ -85,6 +111,16 @@
 		background: -moz-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
 		background: -webkit-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
 		background: linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		color: #fff;
+	}
+
+	.kind-danger{
+		background-color: #fff;
+		color: #CD311E;
+	}
+
+	.kind-danger:active {
+		background: #CD311E;
 		color: #fff;
 	}
 </style>

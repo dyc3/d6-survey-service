@@ -24,7 +24,7 @@
 				<td class="share-link"><TextBox value="https://www.survey.com/123" /></td>
 				<td class="actions">
 					<Button>Edit</Button>
-					<Button>Delete</Button>
+					<Button kind='danger'>Delete</Button>
 				</td>
 			</tr>
 			<tr class="survey">
@@ -33,7 +33,7 @@
 				<td class="share-link"><TextBox value="https://www.survey.com/123" /></td>
 				<td class="actions">
 					<Button>Edit</Button>
-					<Button>Delete</Button>
+					<Button kind='danger'>Delete</Button>
 				</td>
 			</tr>
 		</tbody>
@@ -56,6 +56,11 @@
 		font-weight: 500;
 		color: #426881;
 		border-bottom: 2px solid #426881;
+	}
+	.actions{
+		display: flex;
+		max-width: 250px;
+		justify-content: space-around;
 	}
 	.survey {
 		align-items: center;
