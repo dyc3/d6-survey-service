@@ -18,5 +18,11 @@
 		"generate": "typeshare ./crates/api_server/ --lang=typescript --output-file=packages/frontend/src/lib/common.ts",
 		"optic:capture": "optic oas capture docs/api.yml http://localhost:5347",
 		"optic:verify": "optic oas verify docs/api.yml"
+	},
+	"devDependencies": {
+		"sass": "^1.58.1"
+	},
+	"dependencies": {
+		"@headlessui/tailwindcss": "^0.1.2"
 	}
 }
