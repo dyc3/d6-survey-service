@@ -41,9 +41,10 @@
 </div>
 
 <style lang="scss">
+	@import '../../lib/ui/main.scss';
 	.main-container {
 		height: 70vh;
-		border: 2px solid #426881;
+		border: 2px solid $main-blue;
 	}
 	.container {
 		width: 100%;
@@ -52,15 +53,15 @@
 	.header {
 		align-items: center;
 		text-align: left;
-		font-family: 'DM Sans', sans-serif;
+		font-family: $main-font;
 		font-weight: 500;
-		color: #426881;
-		border-bottom: 2px solid #426881;
+		color: $main-blue;
+		border-bottom: 2px solid $main-blue;
 	}
 	.actions{
 		display: flex;
 		max-width: 250px;
-		justify-content: space-around;
+		justify-content: space-between;
 	}
 	.survey {
 		align-items: center;
@@ -79,14 +80,14 @@
 	}
 
 	h1 {
-		font-family: 'DM Sans', sans-serif;
+		font-family: $main-font;
 		font-weight: 700;
-		color: #426881;
+		color: $main-blue;
 	}
 
 	td {
-		font-family: 'DM Sans', sans-serif;
+		font-family: $main-font;
 		font-weight: 400;
-		color: #426881;
+		color: $main-blue;
 	}
 </style>

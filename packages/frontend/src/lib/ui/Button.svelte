@@ -43,48 +43,42 @@
 {/if}
 
 <style lang="scss">
+
+	@import 'main.scss';
+
 	button {
 		cursor: pointer;
 		display: grid;
-		width: 100%;
-		height: 100%;
 		border-radius: 3px;
 		place-items: center;
 		background-color: #fff;
-		color: #426881;
+		color: $main-blue;
 		border: none;
 	}
 
 	button:active {
-		background: rgb(66, 104, 129);
-		background: -moz-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
-		background: -webkit-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
-		background: linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: $main-gradient;
 		color: #fff;
 		position: relative;
 		top: 1px;
 	}
 
 	[aria-pressed='true'] {
-		background-color: #000;
+		background: $main-gradient;
 		color: #fff;
 	}
 
 	.border-wrap{
-		display: flex;
-		position: relative;
- 	 	padding: 3px;
+		display: inline-block;
+ 	 	padding: 1px;
 		border-radius: 5px;
 	}
 
 	.wrapkind-default, .wrapkind-primary{
-		background: rgb(66, 104, 129);
-		background: -moz-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
-		background: -webkit-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
-		background: linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: $main-gradient;
 	}
 	.wrapkind-danger{
-		background: #CD311E;
+		background: $main-red;
 	}
 	.sz-small {
 		font-size: 0.8em;
@@ -103,24 +97,21 @@
 
 	.kind-primary {
 		background-color: #fff;
-		color: #426881;
+		color: $main-blue;
 	}
 
 	.kind-primary:active {
-		background: rgb(66, 104, 129);
-		background: -moz-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
-		background: -webkit-linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
-		background: linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
+		background: $main-gradient;
 		color: #fff;
 	}
 
 	.kind-danger{
 		background-color: #fff;
-		color: #CD311E;
+		color: $main-red;
 	}
 
 	.kind-danger:active {
-		background: #CD311E;
+		background: $main-red;
 		color: #fff;
 	}
 </style>

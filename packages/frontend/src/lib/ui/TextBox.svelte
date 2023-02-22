@@ -12,15 +12,16 @@
 {/if}
 
 <style lang="scss">
+	@import 'main.scss';
 	input,
 	textarea {
-		border: 3px solid #426881;
+		border: 3px solid $main-blue;
 		border-radius: 3px;
 		background-color: #fff;
 		min-width: 70%;
-		font-family: 'DM Sans', sans-serif;
+		font-family: $main-font;
 		font-weight: 700;
-		color: #426881;
+		color: $main-blue;
 		padding: 0.5em;
 	}
 </style>
