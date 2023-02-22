@@ -1,6 +1,16 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    responses (responder_uuid) {
+        survey_id -> Int4,
+        responder_uuid -> Uuid,
+        content -> Jsonb,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
     surveys (id) {
         id -> Int4,
         title -> Text,
@@ -23,6 +33,11 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(responses -> surveys (survey_id));
 diesel::joinable!(surveys -> users (owner_id));
 
-diesel::allow_tables_to_appear_in_same_query!(surveys, users,);
+diesel::allow_tables_to_appear_in_same_query!(
+    responses,
+    surveys,
+    users,
+);

@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::{io::Write, collections::HashMap};
 
 use diesel::{
     deserialize::FromSql,
@@ -7,10 +7,11 @@ use diesel::{
     sql_types::Jsonb,
 };
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
-    db::schema::{surveys, users},
-    questions::SurveyQuestion,
+    db::schema::{surveys, users, responses},
+    questions::{SurveyQuestion},
 };
 
 #[derive(Queryable)]
@@ -104,6 +105,55 @@ impl FromSql<Jsonb, Pg> for SurveyQuestions {
 }
 
 impl ToSql<Jsonb, Pg> for SurveyQuestions {
+    fn to_sql(&self, out: &mut diesel::serialize::Output<Pg>) -> diesel::serialize::Result {
+        out.write_all(&[1])?;
+        serde_json::to_writer(out, self)
+            .map(|_| diesel::serialize::IsNull::No)
+            .map_err(Into::into)
+    }
+}
+
+#[derive(Queryable, Serialize, Deserialize)]
+pub struct Response {
+    pub survey_id: i32,
+    pub responder_uuid: Uuid,
+    pub content: SurveyResponses,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name=responses)]
+pub struct NewResponse {
+    pub survey_id: i32,
+    pub responder_uuid: Uuid,
+    pub content: SurveyResponses,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
+#[diesel(sql_type = Jsonb)]
+pub struct SurveyResponses(pub HashMap<Uuid, crate::questions::Response>);
+
+impl From<HashMap<Uuid, crate::questions::Response>> for SurveyResponses {
+    fn from(v: HashMap<Uuid, crate::questions::Response>) -> Self {
+        Self(v)
+    }
+}
+
+impl From<SurveyResponses> for HashMap<Uuid, crate::questions::Response> {
+    fn from(v: SurveyResponses) -> Self {
+        v.0
+    }
+}
+
+impl FromSql<Jsonb, Pg> for SurveyResponses {
+    fn from_sql(value: PgValue) -> diesel::deserialize::Result<Self> {
+        let value = <serde_json::Value as FromSql<Jsonb, Pg>>::from_sql(value)?;
+        Ok(serde_json::from_value(value)?)
+    }
+}
+
+impl ToSql<Jsonb, Pg> for SurveyResponses {
     fn to_sql(&self, out: &mut diesel::serialize::Output<Pg>) -> diesel::serialize::Result {
         out.write_all(&[1])?;
         serde_json::to_writer(out, self)
