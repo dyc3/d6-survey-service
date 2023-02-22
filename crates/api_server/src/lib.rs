@@ -6,6 +6,7 @@ extern crate typeshare;
 extern crate diesel;
 
 pub mod api;
+mod cors;
 pub mod db;
 pub mod jwt;
 pub mod questions;
@@ -21,17 +22,20 @@ fn index() -> &'static str {
 
 #[launch]
 pub fn rocket() -> _ {
-    rocket::build().attach(db::stage()).mount(
-        "/api",
-        routes![
-            index,
-            user::register_user,
-            user::login_user,
-            user::list_surveys,
-            survey::create_survey,
-            survey::get_survey,
-            survey::get_survey_auth,
-            survey::edit_survey
-        ],
-    )
+    rocket::build()
+        .attach(db::stage())
+        .attach(cors::CORS)
+        .mount(
+            "/api",
+            routes![
+                index,
+                user::register_user,
+                user::login_user,
+                user::list_surveys,
+                survey::create_survey,
+                survey::get_survey,
+                survey::get_survey_auth,
+                survey::edit_survey
+            ],
+        )
 }
