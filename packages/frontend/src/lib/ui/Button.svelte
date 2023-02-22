@@ -12,8 +12,8 @@
 	export let size: 'small' | 'normal' | 'large' = 'normal';
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
 
-	$: classes = `sz-${size} kind-${kind}`;
-	$: wrapclasses = `border-wrap wrapkind-${kind}`
+	$: classes = `kind-${kind} wrapkind-${kind}`;
+	$: surfaceclasses = `surface sz-${size} innerkind-${kind}`
 	
 
 	const dispatch = createEventDispatcher();
@@ -29,17 +29,17 @@
 </script>
 
 {#if toggleable}
-	<div class={wrapclasses}>
-		<button class={classes} aria-pressed={pressed} on:click={handleClick}>
+	<button class={classes} on:click={handleClick}>
+		<div class={surfaceclasses} aria-pressed={pressed}>
 			<slot />
-		</button>
-	</div>
+		</div>
+	</button>
 {:else}
-	<div class={wrapclasses}>
-		<button class={classes} on:click>
+	<button class={classes} on:click>
+		<div class={surfaceclasses}>
 			<slot />
-		</button>
-	</div>
+		</div>
+	</button>
 {/if}
 
 <style lang="scss">
@@ -48,65 +48,63 @@
 
 	button {
 		cursor: pointer;
-		display: grid;
-		border-radius: 3px;
-		place-items: center;
-		background-color: #fff;
-		color: $main-blue;
+		display: inline-block;
+ 	 	padding: 3px;
+		border-radius: 5px;
 		border: none;
 	}
 
-	button:active {
+	.surface{
+		background: #fff;
+		border-radius: 3px;
+		font-family: $main-font;
+		font-weight: 500;
+	}
+
+	button:active, [aria-pressed = true] {
 		background: $main-gradient;
 		color: #fff;
 		position: relative;
 		top: 1px;
+		.innerkind-primary{
+			background: $main-gradient;
+		}
+		.innerkind-default{
+			background: $main-gradient;
+		}
+		.innerkind-danger{
+			background: $main-red;
+		}
 	}
 
-	[aria-pressed='true'] {
-		background: $main-gradient;
-		color: #fff;
-	}
 
-	.border-wrap{
-		display: inline-block;
- 	 	padding: 1px;
-		border-radius: 5px;
-	}
-
-	.wrapkind-default, .wrapkind-primary{
-		background: $main-gradient;
-	}
-	.wrapkind-danger{
-		background: $main-red;
-	}
 	.sz-small {
-		font-size: 0.8em;
+		font-size: 1em;
 		padding: 0.2em 0.5em;
 	}
 
 	.sz-normal {
-		font-size: 1em;
+		font-size: 1.4em;
 		padding: 0.5em 2em;
 	}
 
 	.sz-large {
-		font-size: 1.4em;
+		font-size: 1.6em;
 		padding: 0.6em 4em;
 	}
-
-	.kind-primary {
-		background-color: #fff;
+	.kind-primary, .kind-default {
+		background: $main-gradient;
 		color: $main-blue;
 	}
 
-	.kind-primary:active {
+	.kind-primary:active, .kind-default:active {
 		background: $main-gradient;
 		color: #fff;
 	}
 
 	.kind-danger{
 		background-color: #fff;
+		background: $main-red;
 		color: $main-red;
 	}
 
