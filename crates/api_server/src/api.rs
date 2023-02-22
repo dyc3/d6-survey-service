@@ -5,6 +5,7 @@ use rocket::request::Request;
 use rocket::response::{self, Responder, Response};
 use serde::Serialize;
 
+#[typeshare]
 #[derive(Debug, Clone, Serialize)]
 pub struct ApiErrorResponse<R> {
     #[serde(skip)]

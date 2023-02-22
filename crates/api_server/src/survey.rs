@@ -14,6 +14,8 @@ use crate::{
 
 #[derive(Debug, Error, Serialize, Deserialize)]
 pub enum SurveyError {
+    #[error("Can't edit questions on a published survey")]
+    CantEditPublished,
     #[error("Not published")]
     NotPublished,
     #[error("Not owner")]
@@ -27,6 +29,7 @@ pub enum SurveyError {
 impl From<SurveyError> for ApiErrorResponse<SurveyError> {
     fn from(value: SurveyError) -> Self {
         let status = match &value {
+            SurveyError::CantEditPublished => Status::Forbidden,
             SurveyError::NotPublished => Status::Forbidden,
             SurveyError::NotOwner => Status::Forbidden,
             SurveyError::NotFound => Status::NotFound,
@@ -71,15 +74,21 @@ pub async fn create_survey(
 pub async fn get_survey_auth(
     survey_id: i32,
     db: Storage,
-    claims: Claims,
+    claims: Option<Claims>,
 ) -> Result<Json<Survey>, ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
     })?;
 
-    if survey.owner_id != claims.user_id() {
-        return Err(SurveyError::NotOwner.into());
+    if let Some(claims) = claims {
+        if survey.owner_id != claims.user_id() && !survey.published {
+            return Err(SurveyError::NotOwner.into());
+        }
+    } else {
+        if !survey.published {
+            return Err(SurveyError::NotPublished.into());
+        }
     }
 
     Ok(Json(survey))
@@ -118,6 +127,12 @@ pub async fn edit_survey(
         return Err(SurveyError::NotOwner.into());
     }
 
+    if survey.published {
+        if new_survey.questions.is_some() {
+            return Err(SurveyError::CantEditPublished.into());
+        }
+    }
+
     // TODO: validate questions
 
     db.run(move |conn| -> anyhow::Result<()> {
@@ -144,4 +159,242 @@ async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Surv
         Ok(survey)
     })
     .await
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::db::models::SurveyQuestions;
+
+    use super::*;
+    use crate::test_helpers::*;
+    use rocket::local::blocking::Client;
+
+    #[test]
+    fn test_create_survey() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let response = client
+                .post(uri!("/api", create_survey))
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Created);
+        });
+    }
+
+    #[test]
+    fn test_get_survey_owner_unpublished() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
+
+    #[test]
+    fn test_get_survey_anonymous_published() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+            publish_survey(&client, &token, survey_id);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
+
+    #[test]
+    fn test_get_survey_forbidden_unpublished_not_owner() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+            let token = make_jwt(&client, 58008);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Forbidden);
+        });
+    }
+
+    #[test]
+    fn test_get_survey_forbidden_unpublished_anonymous() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Forbidden);
+        });
+    }
+
+    #[test]
+    fn test_get_survey_not_owner_but_published() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+            publish_survey(&client, &token, survey_id);
+
+            let token = make_jwt(&client, 58008);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
+
+    #[test]
+    fn test_edit_survey() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+
+            let response = client
+                .patch(uri!("/api", edit_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .body(
+                    serde_json::to_vec(&SurveyPatch {
+                        title: Some("test".to_owned()),
+                        description: Some(":)".to_owned()),
+                        published: Some(true),
+                        questions: Some(SurveyQuestions(vec![])),
+                    })
+                    .unwrap(),
+                )
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+            let survey = response.into_json::<Survey>().unwrap();
+            assert_eq!(survey.title, "test");
+            assert_eq!(survey.description, ":)");
+            assert_eq!(survey.published, true);
+            assert_eq!(survey.questions.0.len(), 0);
+        });
+    }
+
+    #[test]
+    fn test_edit_survey_owner_published() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+            publish_survey(&client, &token, survey_id);
+
+            let response = client
+                .patch(uri!("/api", edit_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .body(
+                    serde_json::to_vec(&SurveyPatch {
+                        questions: Some(SurveyQuestions(vec![])),
+                        ..Default::default()
+                    })
+                    .unwrap(),
+                )
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Forbidden);
+        });
+    }
+
+    #[test]
+    fn test_edit_survey_owner_published_unpublish() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+            publish_survey(&client, &token, survey_id);
+
+            let response = client
+                .patch(uri!("/api", edit_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .body(
+                    serde_json::to_vec(&SurveyPatch {
+                        published: Some(false),
+                        ..Default::default()
+                    })
+                    .unwrap(),
+                )
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
+
+    #[test]
+    fn test_edit_survey_not_owner() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+            publish_survey(&client, &token, survey_id);
+
+            let token = make_jwt(&client, 58008);
+
+            let response = client
+                .patch(uri!("/api", edit_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .body(
+                    serde_json::to_vec(&SurveyPatch {
+                        questions: Some(SurveyQuestions(vec![])),
+                        ..Default::default()
+                    })
+                    .unwrap(),
+                )
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Forbidden);
+        });
+    }
 }

@@ -4,6 +4,10 @@
 
 export type SurveyQuestions = SurveyQuestion[];
 
+export interface ApiErrorResponse<R> {
+	message: R;
+}
+
 export interface Survey {
 	id: number;
 	title: string;
@@ -18,8 +22,16 @@ export interface SurveyPatch {
 	title?: string;
 	description?: string;
 	published?: boolean;
-	owner_id?: number;
 	questions?: SurveyQuestions;
+}
+
+/** Used to list surveys, like on the page where you can see all your surveys */
+export interface ListedSurvey {
+	id: number;
+	title: string;
+	description: string;
+	published: boolean;
+	owner_id: number;
 }
 
 export interface SurveyQuestion {
@@ -41,6 +53,11 @@ export interface QRating {
 	max_rating: number;
 }
 
+export interface QMultipleChoice {
+	prompt: string;
+	description: string;
+}
+
 export interface UserLoginParams {
 	username: string;
 	password: string;
@@ -50,4 +67,7 @@ export interface UserToken {
 	token: string;
 }
 
-export type Question = { type: 'Text'; content: QText } | { type: 'Rating'; content: QRating };
+export type Question =
+	| { type: 'Text'; content: QText }
+	| { type: 'Rating'; content: QRating }
+	| { type: 'MultipleChoice'; content: QMultipleChoice };

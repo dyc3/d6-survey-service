@@ -13,13 +13,28 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    container: rust:1-buster
+
+    services:
+      db:
+        image: postgres:15
+        env:
+          POSTGRES_USER: vscode
+          POSTGRES_PASSWORD: notsecure
+          POSTGRES_DB: survey_app
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
+    - run: rustup component add clippy rustfmt
     - uses: actions/checkout@v3
     - name: Check format
       run: cargo fmt --all -- --check
-    - name: Build
-      run: cargo build --verbose
+    - name: Check
+      run: cargo check --verbose
     - name: Clippy
       run: cargo clippy
     - name: Run tests

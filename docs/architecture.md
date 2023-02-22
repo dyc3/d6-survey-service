@@ -78,14 +78,13 @@ Each frontend service would be paired with exactly 1 backend service, running on
 
 ```mermaid
 ---
-title: Entity Relationship Diagram
+title: Entity Relationship Diagram for data storage
 ---
 erDiagram
     User {
         int id PK
         String username
-        byte[] password_hash
-        byte[] password_salt
+        String password_hash
     }
 
     Responder {
@@ -97,14 +96,18 @@ erDiagram
         String title
         String description
         int owner_id FK
-        Question[] questions "JSON serialized"
+        SurveyQuestion[] questions "JSON serialized"
+    }
+
+    SurveyQuestion {
+        UUID uuid
+        bool required
+        Question question
     }
 
     Question {
-        UUID uuid
-        int type
-        bool required
-        String content
+      String type
+      Object content
     }
 
     SurveyResponse {
@@ -114,9 +117,131 @@ erDiagram
     }
 
     User ||--o{ Survey : owns
-    Survey ||--o{ Question : contains
+    Survey ||--o{ SurveyQuestion : contains
+    SurveyQuestion ||--|| Question : contains
     Responder ||--|| SurveyResponse : submits
     Survey ||--o{ SurveyResponse : has
+```
+
+```mermaid
+---
+title: Type relationships
+---
+classDiagram
+    class User {
+        +id: i32
+        +username: String
+        +password_hash: String
+        +created_at: NaiveDateTime
+        +updated_at: NaiveDateTime
+    }
+
+    class NewUser {
+        +username: String
+        +password_hash: String
+    }
+
+    class Survey {
+        +id: i32
+        +title: String
+        +description: String
+        +published: bool
+        +owner_id: i32
+        +questions: SurveyQuestions
+    }
+
+    class SurveyPatch {
+        +title: Option~String~
+        +description: Option~String~
+        +published: Option~bool~
+        +questions: Option~SurveyQuestions~
+    }
+
+    class NewSurvey {
+        +owner_id: i32
+    }
+
+    class SurveyQuestion {
+        +uuid: Uuid
+        +required: bool
+        +question: Question
+    }
+
+    class Question {
+        <<Enumeration>>
+        Text
+        Rating
+        MultipleChoice
+    }
+
+    class QText {
+        +prompt: String
+        +description: String
+        +multiline: bool
+    }
+
+    class QRating {
+        +prompt: String
+        +description: String
+        +max_rating: u8
+    }
+
+    class QMultipleChoice {
+        +prompt: String
+        +description: String
+        +choices: Vec~Choice~
+    }
+
+    class Choice {
+        +uuid: UUID
+        +text: String
+    }
+
+    User .. NewUser
+    SurveyPatch ..> Survey
+    Survey .. NewSurvey
+    Survey "1" --* "0..*" SurveyQuestion
+    SurveyQuestion "1" --* "1" Question
+    Question --* QText
+    Question --* QRating
+    Question --* QMultipleChoice
+    QMultipleChoice ..* Choice
+    User --o Survey
+
+    class SurveyResponse {
+        survey_id: i32
+        responder: UUID
+        content: HashMap~UUID, Response~
+    }
+
+    class Response {
+        <<Enumeration>>
+        Text
+        Rating
+        MultipleChoice
+    }
+
+    class RText {
+        text: String
+    }
+
+    class RRating {
+        rating: u32
+    }
+
+    class RMultipleChoice {
+        selected: Vec~UUID~
+    }
+
+    SurveyResponse --* Response
+    Survey --o SurveyResponse
+    SurveyQuestion --> Response
+    Response --* RText
+    Response --* RRating
+    Response --* RMultipleChoice
+    RText .. QText
+    RRating .. QRating
+    RMultipleChoice .. QMultipleChoice
 ```
 
 - Users can create and own surveys.
@@ -154,6 +279,8 @@ Must be capable of the following:
   - Create a new response
   - Edit an existing response
 
+The API is documented in OpenAPI format in [api.yml](api.yml).
+
 ### Authentication and Authorization
 
 Users will be authenticated using JWTs.
@@ -177,6 +304,52 @@ sequenceDiagram
     Client->>+Server: PATCH /api/survey/2
     Server->>-Client: 403 Forbidden
     Note over Client: Client remains logged in, shows error
+```
+
+### Access Control
+
+Not Authorized: Means the identity of the user is not known.
+Forbidden: Means the identity of the user is known, but they don't have permission to access the resource.
+
+```mermaid
+---
+title: Getting a survey
+---
+
+graph TD
+    recv[GET /api/survey/1] --> hasjwt{JWT present?}
+    hasjwt -->|No| unauth[User is unauthorized]
+    hasjwt -->|Yes| auth[User is authorized]
+    auth --> isowner{Is owner?}
+    unauth --> ispublished{Is published?}
+    ispublished -->|Yes| success[Success, return survey]
+    ispublished -->|No| forbidden[Forbidden]
+    isowner -->|Yes| success[Success, return survey]
+    isowner -->|No| forbidden[Forbidden]
+```
+
+```mermaid
+---
+title: Editing a survey
+---
+
+graph TD
+    recv[PATCH /api/survey/1] --> hasjwt{JWT present?}
+    hasjwt -->|No| unauth[User is unauthorized]
+    hasjwt -->|Yes| auth[User is authorized]
+    auth --> isowner
+    isowner{Is owner?}
+    ispublished{Is published?}
+    forbidden[Forbidden]
+    success[Success, Survey updated]
+    unauth --> forbidden
+    ispublished -->|No| success
+    qUpdated{Are Questions being changed?}
+    ispublished -->|Yes| qUpdated
+    isowner -->|Yes| ispublished
+    isowner -->|No| forbidden
+    qUpdated -->|Yes| forbidden
+    qUpdated -->|No| success
 ```
 
 # Survey Questions

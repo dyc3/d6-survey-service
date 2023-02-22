@@ -6,11 +6,13 @@ extern crate typeshare;
 extern crate diesel;
 
 pub mod api;
-mod db;
+pub mod db;
 pub mod jwt;
-mod questions;
-mod survey;
-mod user;
+pub mod questions;
+pub mod survey;
+// #[cfg(any(test, bench))]
+pub mod test_helpers;
+pub mod user;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -18,13 +20,14 @@ fn index() -> &'static str {
 }
 
 #[launch]
-fn rocket() -> _ {
+pub fn rocket() -> _ {
     rocket::build().attach(db::stage()).mount(
         "/api",
         routes![
             index,
             user::register_user,
             user::login_user,
+            user::list_surveys,
             survey::create_survey,
             survey::get_survey,
             survey::get_survey_auth,

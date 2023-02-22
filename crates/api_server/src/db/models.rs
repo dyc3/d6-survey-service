@@ -42,13 +42,12 @@ pub struct Survey {
 
 /// Represents a partial update to a survey
 #[typeshare]
-#[derive(AsChangeset, Serialize, Deserialize)]
+#[derive(AsChangeset, Serialize, Deserialize, Default)]
 #[diesel(table_name=surveys)]
 pub struct SurveyPatch {
     pub title: Option<String>,
     pub description: Option<String>,
     pub published: Option<bool>,
-    pub owner_id: Option<i32>,
     pub questions: Option<SurveyQuestions>,
 }
 
@@ -64,10 +63,34 @@ impl NewSurvey {
     }
 }
 
+/// Used to list surveys, like on the page where you can see all your surveys
+#[typeshare]
+#[derive(Queryable, Serialize, Deserialize)]
+#[diesel(table_name=surveys)]
+pub struct ListedSurvey {
+    pub id: i32,
+    pub title: String,
+    pub description: String,
+    pub published: bool,
+    pub owner_id: i32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
 #[diesel(sql_type = Jsonb)]
 #[typeshare(serialized_as = "Vec<SurveyQuestion>")]
 pub struct SurveyQuestions(pub Vec<SurveyQuestion>);
+
+impl From<Vec<SurveyQuestion>> for SurveyQuestions {
+    fn from(v: Vec<SurveyQuestion>) -> Self {
+        Self(v)
+    }
+}
+
+impl From<SurveyQuestions> for Vec<SurveyQuestion> {
+    fn from(v: SurveyQuestions) -> Self {
+        v.0
+    }
+}
 
 impl FromSql<Jsonb, Pg> for SurveyQuestions {
     fn from_sql(value: PgValue) -> diesel::deserialize::Result<Self> {

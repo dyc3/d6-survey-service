@@ -16,21 +16,47 @@ pub struct SurveyQuestion {
 pub enum Question {
     Text(QText),
     Rating(QRating),
+    MultipleChoice(QMultipleChoice),
 }
 
 #[typeshare]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QText {
-    prompt: String,
-    description: String,
-    multiline: bool,
+    pub prompt: String,
+    pub description: String,
+    pub multiline: bool,
 }
 
 /// Represents a question like "On a scale of 1 to N, how do you feel about X?"
 #[typeshare]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QRating {
-    prompt: String,
-    description: String,
-    max_rating: u8,
+    pub prompt: String,
+    pub description: String,
+    pub max_rating: u8,
+}
+
+#[typeshare]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QMultipleChoice {
+    pub prompt: String,
+    pub description: String,
+}
+
+impl From<QText> for Question {
+    fn from(q: QText) -> Self {
+        Self::Text(q)
+    }
+}
+
+impl From<QRating> for Question {
+    fn from(q: QRating) -> Self {
+        Self::Rating(q)
+    }
+}
+
+impl From<QMultipleChoice> for Question {
+    fn from(q: QMultipleChoice) -> Self {
+        Self::MultipleChoice(q)
+    }
 }
