@@ -57,7 +57,10 @@ fn survey_text_questions(c: &mut Criterion) {
     c.bench_function("survey with text questions", |b| {
         b.iter(|| {
             let resp = client
-                .post(uri!("/api", api_server::survey_response::create_survey_response(survey_id)))
+                .post(uri!(
+                    "/api",
+                    api_server::survey_response::create_survey_response(survey_id)
+                ))
                 .header(rocket::http::ContentType::JSON)
                 .body(
                     serde_json::to_vec(&serde_json::json!({
@@ -105,7 +108,7 @@ fn survey_rating_questions(c: &mut Criterion) {
             question: QRating {
                 prompt: "Rate your fun.".to_string(),
                 description: "please".to_string(),
-                max_rating: 5
+                max_rating: 5,
             }
             .into(),
         },
@@ -116,7 +119,10 @@ fn survey_rating_questions(c: &mut Criterion) {
     c.bench_function("survey with rating questions", |b| {
         b.iter(|| {
             let resp = client
-                .post(uri!("/api", api_server::survey_response::create_survey_response(survey_id)))
+                .post(uri!(
+                    "/api",
+                    api_server::survey_response::create_survey_response(survey_id)
+                ))
                 .header(rocket::http::ContentType::JSON)
                 .body(
                     serde_json::to_vec(&serde_json::json!({
