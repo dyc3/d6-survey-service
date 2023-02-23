@@ -1,4 +1,4 @@
-use std::{io::Write, collections::HashMap};
+use std::{collections::HashMap, io::Write};
 
 use diesel::{
     deserialize::FromSql,
@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    db::schema::{surveys, users, responses},
-    questions::{SurveyQuestion},
+    db::schema::{responses, surveys, users},
+    questions::SurveyQuestion,
 };
 
 #[derive(Queryable)]
