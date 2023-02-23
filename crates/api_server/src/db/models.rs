@@ -165,3 +165,9 @@ impl ToSql<Jsonb, Pg> for SurveyResponses {
             .map_err(Into::into)
     }
 }
+
+#[derive(Debug, Clone, AsChangeset)]
+#[diesel(table_name=responses)]
+pub struct PatchSurveyResponse {
+    pub content: SurveyResponses,
+}
