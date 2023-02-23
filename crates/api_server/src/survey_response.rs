@@ -22,6 +22,8 @@ pub struct ResponseAccepted {
 pub enum SurveyResponseError {
     #[error("Survey not found")]
     SurveyNotFound,
+    #[error("Survey not published")]
+    SurveyNotPublished,
     #[error("Survey responder not found")]
     ResponderNotFound,
     #[error("Validation failed")]
@@ -34,6 +36,7 @@ impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
     fn from(value: SurveyResponseError) -> Self {
         let status = match &value {
             SurveyResponseError::SurveyNotFound => Status::NotFound,
+            SurveyResponseError::SurveyNotPublished => Status::Forbidden,
             SurveyResponseError::ResponderNotFound => Status::NotFound,
             SurveyResponseError::ValidationFailed => Status::BadRequest,
             SurveyResponseError::Unknown => Status::InternalServerError,
