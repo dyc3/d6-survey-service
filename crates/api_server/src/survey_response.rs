@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use rocket::{http::Status, serde::json::Json};
+use rocket::{http::Status, serde::json::Json, request::FromParam, form::{ValueField, FromFormField}};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
@@ -46,7 +46,7 @@ impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
 }
 
 #[post("/survey/<survey_id>/respond", data = "<survey_response>")]
-async fn create_survey_response(
+pub async fn create_survey_response(
     db: Storage,
     survey_id: i32,
     survey_response: Json<SurveyResponses>,
@@ -76,7 +76,7 @@ async fn create_survey_response(
     }))
 }
 
-// #[patch("/survey/<survey_id>/respond?responder=<responder_uuid>", data = "<survey_response>")]
-// async fn edit_survey_response(db: Storage, survey_id: i32, survey_response: Json<SurveyResponses>, responder_uuid: Uuid) {
+#[patch("/survey/<survey_id>/respond?<responder>", data = "<survey_response>")]
+pub async fn edit_survey_response(db: Storage, survey_id: i32, survey_response: Json<SurveyResponses>, responder: Uuid) {
 
-// }
+}
