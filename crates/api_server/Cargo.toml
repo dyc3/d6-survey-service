@@ -32,5 +32,9 @@ pprof = { version = "0.11", features = ["flamegraph", "criterion"] }
 name = "surveys"
 harness = false
 
+[[bench]]
+name = "responses"
+harness = false
+
 [profile.bench]
 debug = true
