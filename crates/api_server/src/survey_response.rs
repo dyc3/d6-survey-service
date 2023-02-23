@@ -7,7 +7,7 @@ use uuid::Uuid;
 use crate::{
     api::ApiErrorResponse,
     db::{
-        models::{NewSurveyResponse, SurveyResponses},
+        models::{NewSurveyResponse, SurveyResponses, PatchSurveyResponse},
         Storage,
     },
 };
@@ -77,6 +77,23 @@ pub async fn create_survey_response(
 }
 
 #[patch("/survey/<survey_id>/respond?<responder>", data = "<survey_response>")]
-pub async fn edit_survey_response(db: Storage, survey_id: i32, survey_response: Json<SurveyResponses>, responder: Uuid) {
+pub async fn edit_survey_response(db: Storage, survey_id: i32, survey_response: Json<SurveyResponses>, responder: Uuid) -> Result<(), ApiErrorResponse<SurveyResponseError>> {
+    let survey_response = survey_response.into_inner();
+    db.run(move |conn| {
+        let patch_survey_response = PatchSurveyResponse {
+            content: survey_response,
+        };
+        diesel::update(crate::db::schema::responses::table)
+            .filter(crate::db::schema::responses::survey_id.eq(survey_id))
+            .filter(crate::db::schema::responses::responder_uuid.eq(responder))
+            .set(&patch_survey_response)
+            .execute(conn)
+    })
+    .await
+    .map_err(|e| {
+        error!("{e:?}");
+        SurveyResponseError::Unknown
+    })?;
 
+    Ok(())
 }
