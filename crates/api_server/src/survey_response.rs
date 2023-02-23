@@ -7,7 +7,7 @@ use uuid::Uuid;
 use crate::{
     api::ApiErrorResponse,
     db::{
-        models::{NewSurveyResponse, SurveyResponses, PatchSurveyResponse},
+        models::{NewSurveyResponse, PatchSurveyResponse, SurveyResponses},
         Storage,
     },
 };
@@ -15,6 +15,7 @@ use crate::{
 #[typeshare]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ResponseAccepted {
+    #[typeshare(serialized_as = "String")]
     responder_uuid: Uuid,
 }
 
@@ -80,7 +81,12 @@ pub async fn create_survey_response(
 }
 
 #[patch("/survey/<survey_id>/respond?<responder>", data = "<survey_response>")]
-pub async fn edit_survey_response(db: Storage, survey_id: i32, survey_response: Json<SurveyResponses>, responder: Uuid) -> Result<(), ApiErrorResponse<SurveyResponseError>> {
+pub async fn edit_survey_response(
+    db: Storage,
+    survey_id: i32,
+    survey_response: Json<SurveyResponses>,
+    responder: Uuid,
+) -> Result<(), ApiErrorResponse<SurveyResponseError>> {
     let survey_response = survey_response.into_inner();
     db.run(move |conn| {
         let patch_survey_response = PatchSurveyResponse {
