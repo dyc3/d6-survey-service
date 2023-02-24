@@ -35,8 +35,8 @@
 	<TabGroup>
 		Welcome to the Survey App!
 		<TabList>
-			<Tab style="background-color: white; border: 0px;"><Button>Log In</Button></Tab>
-			<Tab style="background-color: white; border: 0px;"><Button>Register</Button></Tab>
+			<Tab>Log In</Tab>
+			<Tab>Register</Tab>
 		</TabList>
 		<TabPanels>
 			<TabPanel style="width: max-content; margin: auto">
