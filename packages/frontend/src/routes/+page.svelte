@@ -40,6 +40,7 @@ Buttons
 </div>
 <div>
 	<Button toggleable={true}>Toggle Button</Button>
+	<Button kind="danger">Danger Button</Button>
 </div>
 
 Textboxes

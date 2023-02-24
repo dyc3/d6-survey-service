@@ -12,7 +12,7 @@
 	export let size: 'small' | 'normal' | 'large' = 'normal';
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
 
-	$: classes = `kind-${kind} wrapkind-${kind}`;
+	$: classes = `kind-${kind}`;
 	$: surfaceclasses = `surface sz-${size} innerkind-${kind}`
 	
 
@@ -29,8 +29,8 @@
 </script>
 
 {#if toggleable}
-	<button class={classes} on:click={handleClick}>
-		<div class="surface" aria-pressed={pressed}>
+	<button class={classes} on:click={handleClick} aria-pressed={pressed}>
+		<div class={surfaceclasses}>
 			<slot />
 		</div>
 	</button>
@@ -45,11 +45,12 @@
 <style lang="scss">
 
 	@import 'main.scss';
+	$btn-border-size: 3px;
 
 	button {
 		cursor: pointer;
 		display: inline-block;
- 	 	padding: 3px;
+ 	 	padding: $btn-border-size;
 		border-radius: 5px;
 		border: none;
 	}
@@ -62,18 +63,11 @@
 	}
 
 	button:active, [aria-pressed = true] {
-		background: $main-gradient;
-		color: #fff;
 		position: relative;
 		top: 1px;
-		.innerkind-primary{
-			background: $main-gradient;
-		}
-		.innerkind-default{
-			background: $main-gradient;
-		}
-		.innerkind-danger{
-			background: $main-red;
+		.surface{
+			background: transparent;
+			color: #fff;
 		}
 	}
 
@@ -97,19 +91,10 @@
 		color: $main-blue;
 	}
 
-	.kind-primary:active, .kind-default:active {
-		background: $main-gradient;
-		color: #fff;
-	}
 
 	.kind-danger{
-		background-color: #fff;
 		background: $main-red;
 		color: $main-red;
 	}
 
-	.kind-danger:active {
-		background: $main-red;
-		color: #fff;
-	}
 </style>
