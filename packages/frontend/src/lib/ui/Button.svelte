@@ -29,8 +29,8 @@
 </script>
 
 {#if toggleable}
-	<button class={classes} on:click={handleClick} aria-pressed={pressed}>
-		<div class="surface">
+	<button class={classes} on:click={handleClick}>
+		<div class="surface" aria-pressed={pressed}>
 			<slot />
 		</div>
 	</button>
