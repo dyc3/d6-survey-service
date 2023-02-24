@@ -86,7 +86,13 @@
 		font-size: 1.6em;
 		padding: 0.6em 4em;
 	}
-	.kind-primary, .kind-default {
+
+	.kind-primary{
+		background: $main-blue;
+		color: $main-blue;
+	}
+	
+	.kind-default {
 		background: $main-gradient;
 		color: $main-blue;
 	}
