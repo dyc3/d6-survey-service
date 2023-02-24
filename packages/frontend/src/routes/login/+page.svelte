@@ -5,47 +5,38 @@
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import { loginUser, registerUser } from '$lib/api';
 	import { jwt } from '../../stores';
+	import { goto } from '$app/navigation';
+	import type{UserToken} from '$lib/common';
+	import type{ApiResponse} from '$lib/api';
 
 	let username = '';
 	let password = '';
 	let response = '';
 
-	/** @type {import('./$types').LayoutServerLoad} */
-	// git commit to update
-	async function doLogin() {
-		let resp = await loginUser({ username, password });
-		console.log('hi');
+	function handleLogin(resp: ApiResponse<UserToken>) {
 		if (resp.ok) {
-			// save token into jwt in stores.ts if successful
+			response = 'Successfully logged in.';
 			jwt.login(resp.value.token);
-			try {
-				window.location.href = '/mysurveys';
-			} catch (error) {
-				console.log(error);
-			}
+			goto('/mysurveys');
 		}
+	}
+
+	async function doLogin() {
+		handleLogin(await loginUser({ username, password }));
+
 	}
 
 	async function doRegister() {
-		try {
-			let resp = await registerUser({ username, password });
-			if (resp.ok) {
-				jwt.login(resp.value.token);
-			}
-		} catch (error) {
-			console.log(error);
-			response = 'Error while registering.';
-		}
+		handleLogin(await registerUser({ username, password }));
 	}
-
 </script>
 
 <Main>
 	<TabGroup>
 		Welcome to the Survey App!
 		<TabList>
-			<Tab style="background-color: white; border: 0px;"><Button toggleable={true}>Log In</Button></Tab>
-			<Tab style="background-color: white; border: 0px;"><Button toggleable={true}>Register</Button></Tab>
+			<Tab style="background-color: white; border: 0px;"><Button>Log In</Button></Tab>
+			<Tab style="background-color: white; border: 0px;"><Button>Register</Button></Tab>
 		</TabList>
 		<TabPanels>
 			<TabPanel style="width: max-content; margin: auto">
