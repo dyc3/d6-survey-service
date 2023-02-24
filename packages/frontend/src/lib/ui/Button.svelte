@@ -13,7 +13,7 @@
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
 
 	$: classes = `kind-${kind}`;
-	$: surfaceclasses = `surface sz-${size} innerkind-${kind}`
+	$: surfaceclasses = `surface sz-${size}`
 	
 
 	const dispatch = createEventDispatcher();
