@@ -6,3 +6,5 @@ CREATE TABLE responses (
 	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	UNIQUE(survey_id, responder_uuid)
 );
+
+SELECT diesel_manage_updated_at('responses');
