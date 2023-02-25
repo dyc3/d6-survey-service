@@ -38,6 +38,8 @@ pub struct Survey {
     pub published: bool,
     pub owner_id: i32,
     pub questions: SurveyQuestions,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 /// Represents a partial update to a survey
