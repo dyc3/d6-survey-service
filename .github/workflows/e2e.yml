@@ -10,7 +10,7 @@ jobs:
   e2e:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    container: node:18-buster
+    container: mcr.microsoft.com/playwright:v1.31.0-focal
     services:
       db:
         image: postgres:15
