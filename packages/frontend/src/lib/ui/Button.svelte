@@ -10,9 +10,9 @@
 	 */
 	export let pressed = false;
 	export let size: 'small' | 'normal' | 'large' = 'normal';
-	export let kind: 'primary' | 'default' = 'default';
+	export let kind: 'primary' | 'danger' | 'default' = 'default';
 
-	$: classes = `sz-${size} kind-${kind}`;
+	$: classes = `kind-${kind} sz-${size}`;
 
 	const dispatch = createEventDispatcher();
 
@@ -27,57 +27,84 @@
 </script>
 
 {#if toggleable}
-	<button class={classes} aria-pressed={pressed} on:click={handleClick}>
-		<slot />
+	<button class={classes} on:click={handleClick} aria-pressed={pressed}>
+		<div class="surface">
+			<slot />
+		</div>
 	</button>
 {:else}
 	<button class={classes} on:click>
-		<slot />
+		<div class="surface">
+			<slot />
+		</div>
 	</button>
 {/if}
 
 <style lang="scss">
+	@import 'main.scss';
+	$btn-border-size: 3px;
+
 	button {
 		cursor: pointer;
-		border: #000 3px solid;
+		display: inline-block;
+		padding: $btn-border-size;
 		border-radius: 5px;
-		background-color: #fff;
+		border: none;
+	}
+
+	.surface {
+		background: #fff;
+		border-radius: 3px;
+		font-family: $main-font;
+		font-weight: 500;
 	}
 
 	button:active {
-		background-color: #000;
-		color: #fff;
 		position: relative;
 		top: 1px;
 	}
 
+	button:active,
 	[aria-pressed='true'] {
-		background-color: #000;
-		color: #fff;
+		.surface {
+			background: transparent;
+			color: #fff;
+		}
 	}
 
 	.sz-small {
-		font-size: 0.8em;
-		padding: 0.2em 0.5em;
+		font-size: 1em;
+		.surface {
+			padding: 0.2em 0.5em;
+		}
 	}
 
 	.sz-normal {
-		font-size: 1em;
-		padding: 0.5em 2em;
+		font-size: 1.4em;
+		.surface {
+			padding: 0.5em 2em;
+		}
 	}
 
 	.sz-large {
-		font-size: 1.4em;
-		padding: 0.6em 4em;
+		font-size: 1.6em;
+		.surface {
+			padding: 0.6em 4em;
+		}
 	}
 
 	.kind-primary {
-		background-color: #000;
-		color: #fff;
+		background: $main-blue;
+		color: $main-blue;
 	}
 
-	.kind-primary:active {
-		background-color: #fff;
-		color: #000;
+	.kind-default {
+		background: $main-gradient;
+		color: $main-blue;
+	}
+
+	.kind-danger {
+		background: $main-red;
+		color: $main-red;
 	}
 </style>

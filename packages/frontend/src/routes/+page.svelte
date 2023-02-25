@@ -51,6 +51,7 @@ Buttons
 <div>
 	<Button>Default</Button>
 	<Button kind="primary">Primary</Button>
+	<Button kind="danger">Danger Button</Button>
 </div>
 <div>
 	<Button size="small">Small</Button>
