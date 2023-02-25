@@ -45,14 +45,14 @@
 				Log in <br />
 				<TextBox placeholder="Username" bind:value={username} /> <br />
 				<TextBox placeholder="Password" bind:value={password} /> <br />
-				<Button on:click={doLogin}>Submit</Button>
+				<Button kind="primary" on:click={doLogin}>Submit</Button>
 				<span>{response}</span>
 			</TabPanel>
 			<TabPanel style="width: max-content; margin: auto">
 				Create a New User <br />
 				<TextBox placeholder="New Username" bind:value={username} /> <br />
 				<TextBox placeholder="New Password" bind:value={password} /> <br />
-				<Button on:click={doRegister}>Submit</Button>
+				<Button kind="primary" on:click={doRegister}>Submit</Button>
 				<span>{response}</span>
 			</TabPanel>
 		</TabPanels>
