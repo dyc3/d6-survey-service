@@ -15,6 +15,8 @@ export interface Survey {
 	published: boolean;
 	owner_id: number;
 	questions: SurveyQuestions;
+	created_at: NaiveDateTime;
+	updated_at: NaiveDateTime;
 }
 
 /** Represents a partial update to a survey */
