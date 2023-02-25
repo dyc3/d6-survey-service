@@ -10,6 +10,7 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container: rust:1-buster
     services:
       db:
         image: postgres:15
