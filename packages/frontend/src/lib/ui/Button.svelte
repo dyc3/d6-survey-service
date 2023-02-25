@@ -59,10 +59,13 @@
 		font-weight: 500;
 	}
 
-	button:active,
-	[aria-pressed='true'] {
+	button:active {
 		position: relative;
 		top: 1px;
+	}
+
+	button:active,
+	[aria-pressed='true'] {
 		.surface {
 			background: transparent;
 			color: #fff;
