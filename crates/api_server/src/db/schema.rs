@@ -8,6 +8,8 @@ diesel::table! {
         published -> Bool,
         owner_id -> Int4,
         questions -> Jsonb,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
