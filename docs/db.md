@@ -11,6 +11,11 @@ Generate a new migration
 diesel migration generate NAME
 ```
 
+Run all pending migrations
+```
+diesel migration run --database-url postgres://vscode:notsecure@db/survey_app
+```
+
 Redo the last migration
 ```
 diesel migration redo --database-url postgres://vscode:notsecure@db/survey_app
