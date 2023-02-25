@@ -38,7 +38,9 @@ pub struct Survey {
     pub published: bool,
     pub owner_id: i32,
     pub questions: SurveyQuestions,
+    #[typeshare(serialized_as = "String")]
     pub created_at: chrono::NaiveDateTime,
+    #[typeshare(serialized_as = "String")]
     pub updated_at: chrono::NaiveDateTime,
 }
 
