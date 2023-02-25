@@ -18,6 +18,9 @@
 			response = 'Successfully logged in.';
 			jwt.login(resp.value.token);
 			goto('/mysurveys');
+		} else {
+			console.error(resp.error);
+			response = resp.error.message;
 		}
 	}
 
