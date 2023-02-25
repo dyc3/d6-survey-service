@@ -32,6 +32,7 @@ Buttons
 <div>
 	<Button>Default</Button>
 	<Button kind="primary">Primary</Button>
+	<Button kind="danger">Danger Button</Button>
 </div>
 <div>
 	<Button size="small">Small</Button>
@@ -40,7 +41,6 @@ Buttons
 </div>
 <div>
 	<Button toggleable={true}>Toggle Button</Button>
-	<Button kind="danger">Danger Button</Button>
 </div>
 
 Textboxes
