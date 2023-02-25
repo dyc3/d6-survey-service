@@ -13,8 +13,7 @@
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
 
 	$: classes = `kind-${kind}`;
-	$: surfaceclasses = `surface sz-${size}`
-	
+	$: surfaceclasses = `surface sz-${size}`;
 
 	const dispatch = createEventDispatcher();
 
@@ -43,34 +42,33 @@
 {/if}
 
 <style lang="scss">
-
 	@import 'main.scss';
 	$btn-border-size: 3px;
 
 	button {
 		cursor: pointer;
 		display: inline-block;
- 	 	padding: $btn-border-size;
+		padding: $btn-border-size;
 		border-radius: 5px;
 		border: none;
 	}
 
-	.surface{
+	.surface {
 		background: #fff;
 		border-radius: 3px;
 		font-family: $main-font;
 		font-weight: 500;
 	}
 
-	button:active, [aria-pressed = true] {
+	button:active,
+	[aria-pressed='true'] {
 		position: relative;
 		top: 1px;
-		.surface{
+		.surface {
 			background: transparent;
 			color: #fff;
 		}
 	}
-
 
 	.sz-small {
 		font-size: 1em;
@@ -87,20 +85,18 @@
 		padding: 0.6em 4em;
 	}
 
-	.kind-primary{
+	.kind-primary {
 		background: $main-blue;
 		color: $main-blue;
 	}
-	
+
 	.kind-default {
 		background: $main-gradient;
 		color: $main-blue;
 	}
 
-
-	.kind-danger{
+	.kind-danger {
 		background: $main-red;
 		color: $main-red;
 	}
-
 </style>
