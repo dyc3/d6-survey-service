@@ -8,6 +8,8 @@ diesel::table! {
         published -> Bool,
         owner_id -> Int4,
         questions -> Jsonb,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -23,4 +25,7 @@ diesel::table! {
 
 diesel::joinable!(surveys -> users (owner_id));
 
-diesel::allow_tables_to_appear_in_same_query!(surveys, users,);
+diesel::allow_tables_to_appear_in_same_query!(
+    surveys,
+    users,
+);
