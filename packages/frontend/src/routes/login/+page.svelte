@@ -6,8 +6,8 @@
 	import { loginUser, registerUser } from '$lib/api';
 	import { jwt } from '../../stores';
 	import { goto } from '$app/navigation';
-	import type{UserToken} from '$lib/common';
-	import type{ApiResponse} from '$lib/api';
+	import type { UserToken } from '$lib/common';
+	import type { ApiResponse } from '$lib/api';
 
 	let username = '';
 	let password = '';
@@ -23,7 +23,6 @@
 
 	async function doLogin() {
 		handleLogin(await loginUser({ username, password }));
-
 	}
 
 	async function doRegister() {
@@ -44,6 +43,7 @@
 				<TextBox placeholder="Username" bind:value={username} /> <br />
 				<TextBox placeholder="Password" bind:value={password} /> <br />
 				<Button on:click={doLogin}>Submit</Button>
+				<span>{response}</span>
 			</TabPanel>
 			<TabPanel style="width: max-content; margin: auto">
 				Create a New User <br />
