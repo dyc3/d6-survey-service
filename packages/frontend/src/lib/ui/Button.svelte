@@ -12,8 +12,7 @@
 	export let size: 'small' | 'normal' | 'large' = 'normal';
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
 
-	$: classes = `kind-${kind}`;
-	$: surfaceclasses = `surface sz-${size}`;
+	$: classes = `kind-${kind} sz-${size}`;
 
 	const dispatch = createEventDispatcher();
 
@@ -29,13 +28,13 @@
 
 {#if toggleable}
 	<button class={classes} on:click={handleClick} aria-pressed={pressed}>
-		<div class={surfaceclasses}>
+		<div class="surface">
 			<slot />
 		</div>
 	</button>
 {:else}
 	<button class={classes} on:click>
-		<div class={surfaceclasses}>
+		<div class="surface">
 			<slot />
 		</div>
 	</button>
@@ -72,17 +71,23 @@
 
 	.sz-small {
 		font-size: 1em;
-		padding: 0.2em 0.5em;
+		.surface {
+			padding: 0.2em 0.5em;
+		}
 	}
 
 	.sz-normal {
 		font-size: 1.4em;
-		padding: 0.5em 2em;
+		.surface {
+			padding: 0.5em 2em;
+		}
 	}
 
 	.sz-large {
 		font-size: 1.6em;
-		padding: 0.6em 4em;
+		.surface {
+			padding: 0.6em 4em;
+		}
 	}
 
 	.kind-primary {
