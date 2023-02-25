@@ -7,21 +7,10 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: cargo build
-      - uses: actions/upload-artifact@v3
-        with:
-          name: target
-          path: target/
-          retention-days: 30
   e2e:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container: node:18-buster
-    needs: build
     services:
       db:
         image: postgres:15
@@ -40,10 +29,12 @@ jobs:
         with:
           node-version: 18
           cache: "yarn"
-      - uses: actions/download-artifact@v3
+      - uses: actions-rs/toolchain@v1
         with:
-          name: target
-          path: target/
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
       - run: npm install -g yarn
       - run: yarn install --frozen-lockfile
       - name: Install Playwright Browsers
