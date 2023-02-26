@@ -96,6 +96,15 @@
 	.kind-primary {
 		background: $main-blue;
 		color: $main-blue;
+		.surface{
+			background: $main-blue;
+			color: #fff;
+		}
+	}
+	.kind-primary:active{
+		.surface{
+			color: #c4c4c4;
+		}
 	}
 
 	.kind-default {
