@@ -16,7 +16,7 @@
 	input,
 	textarea {
 		border: 3px solid $main-blue;
-		border-radius: 3px;
+		border-radius: 10px;
 		background-color: #fff;
 		min-width: 70%;
 		font-family: $main-font;

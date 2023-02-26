@@ -36,7 +36,7 @@
 <Main>
 	<TabGroup>
 		Welcome to the Survey App!
-		<TabList>
+		<TabList class='TabContainer' style="background: red;">
 			<Tab>Log In</Tab>
 			<Tab>Register</Tab>
 		</TabList>
@@ -58,3 +58,13 @@
 		</TabPanels>
 	</TabGroup>
 </Main>
+
+<style lang="scss">
+	@import '../../lib/ui/main.scss';
+
+	.TabContainer{
+		display: flex;
+		flex-direction: row;
+		background:red;
+	}
+</style>
