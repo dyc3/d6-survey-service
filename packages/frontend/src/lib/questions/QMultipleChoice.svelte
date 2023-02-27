@@ -11,6 +11,9 @@
 	function addChoice() {
 		choices = [...choices, { uuid: crypto.randomUUID(), text: '' }];
 	}
+	function removeChoice(index: number) {
+		choices = choices.filter((_, i) => i !== index);
+	}
 </script>
 
 <div>
@@ -32,9 +35,12 @@
 
 	<div class="choices">
 		<!-- TODO: make this a button group, see #75 -->
-		{#each choices as choice}
+		{#each choices as choice, i}
 			{#if editmode}
-				<TextBox bind:value={choice.text} placeholder="Enter text..." />
+				<div class="editable-choice">
+					<TextBox bind:value={choice.text} placeholder="Enter text..." />
+					<Button kind="danger" size="small" on:click={() => removeChoice(i)}>x</Button>
+				</div>
 			{:else}
 				<Button>{choice.text}</Button>
 			{/if}
@@ -49,5 +55,10 @@
 	.choices {
 		display: flex;
 		flex-direction: column;
+	}
+
+	.editable-choice {
+		display: flex;
+		flex-direction: row;
 	}
 </style>
