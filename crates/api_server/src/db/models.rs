@@ -113,14 +113,17 @@ impl ToSql<Jsonb, Pg> for SurveyQuestions {
     }
 }
 
+#[typeshare]
 #[derive(Queryable, Serialize, Deserialize)]
 #[diesel(table_name=responses)]
 pub struct SurveyResponse {
     pub survey_id: i32,
-    // #[typeshare(serialized_as = "String")]
+    #[typeshare(serialized_as = "String")]
     pub responder_uuid: Uuid,
     pub content: SurveyResponses,
+    #[typeshare(serialized_as = "String")]
     pub created_at: chrono::NaiveDateTime,
+    #[typeshare(serialized_as = "String")]
     pub updated_at: chrono::NaiveDateTime,
 }
 

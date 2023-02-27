@@ -7,7 +7,7 @@ use uuid::Uuid;
 use crate::{
     api::ApiErrorResponse,
     db::{
-        models::{NewSurveyResponse, PatchSurveyResponse, SurveyResponses},
+        models::{NewSurveyResponse, PatchSurveyResponse, SurveyResponse, SurveyResponses},
         Storage,
     },
 };
@@ -105,4 +105,26 @@ pub async fn edit_survey_response(
     })?;
 
     Ok(())
+}
+
+#[get("/survey/<survey_id>/respond?<responder>")]
+pub async fn get_survey_response(
+    db: Storage,
+    survey_id: i32,
+    responder: Uuid,
+) -> Result<Json<SurveyResponse>, ApiErrorResponse<SurveyResponseError>> {
+    let survey_response = db
+        .run(move |conn| {
+            crate::db::schema::responses::table
+                .filter(crate::db::schema::responses::survey_id.eq(survey_id))
+                .filter(crate::db::schema::responses::responder_uuid.eq(responder))
+                .first::<SurveyResponse>(conn)
+        })
+        .await
+        .map_err(|e| {
+            error!("{e:?}");
+            SurveyResponseError::Unknown
+        })?;
+
+    Ok(Json(survey_response))
 }

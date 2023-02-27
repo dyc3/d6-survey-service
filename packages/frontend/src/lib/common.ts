@@ -38,6 +38,14 @@ export interface ListedSurvey {
 	owner_id: number;
 }
 
+export interface SurveyResponse {
+	survey_id: number;
+	responder_uuid: string;
+	content: SurveyResponses;
+	created_at: string;
+	updated_at: string;
+}
+
 export interface SurveyQuestion {
 	uuid: string;
 	required: boolean;

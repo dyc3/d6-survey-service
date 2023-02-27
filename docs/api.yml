@@ -208,6 +208,34 @@ paths:
           description: Updated survey response has been saved
       requestBody:
         $ref: "#/components/requestBodies/SurveyResponse"
+    get:
+      summary: Get a survey response
+      responses:
+        "200":
+          description: Response exists, here it is
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  survey_id:
+                    type: number
+                  responder_uuid:
+                    type: string
+                  content:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/Response"
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                  - survey_id
+                  - responder_uuid
+                  - content
+                  - created_at
+                  - updated_at
 components:
   parameters:
     survey:
@@ -349,4 +377,3 @@ components:
           items:
             type: string
             format: uuid
-
