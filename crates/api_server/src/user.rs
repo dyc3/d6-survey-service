@@ -64,7 +64,7 @@ pub async fn register_user(
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let password_hash = argon2
-        .hash_password(&user_params.password.as_bytes(), &salt)
+        .hash_password(user_params.password.as_bytes(), &salt)
         .map_err(|e| {
             error!("{e:?}");
             match e {
@@ -133,7 +133,7 @@ pub async fn login_user(
                     _ => UserLoginError::InternalError,
                 })?;
             Argon2::default()
-                .verify_password(&user_params.password.as_bytes(), &parsed_hash)
+                .verify_password(user_params.password.as_bytes(), &parsed_hash)
                 .map_err(|e| match e {
                     ::password_hash::Error::Password => UserLoginError::InvalidCredentials,
                     _ => UserLoginError::InternalError,

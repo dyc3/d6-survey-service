@@ -85,10 +85,8 @@ pub async fn get_survey_auth(
         if survey.owner_id != claims.user_id() && !survey.published {
             return Err(SurveyError::NotOwner.into());
         }
-    } else {
-        if !survey.published {
-            return Err(SurveyError::NotPublished.into());
-        }
+    } else if !survey.published {
+        return Err(SurveyError::NotPublished.into());
     }
 
     Ok(Json(survey))
@@ -127,10 +125,8 @@ pub async fn edit_survey(
         return Err(SurveyError::NotOwner.into());
     }
 
-    if survey.published {
-        if new_survey.questions.is_some() {
-            return Err(SurveyError::CantEditPublished.into());
-        }
+    if survey.published && new_survey.questions.is_some() {
+        return Err(SurveyError::CantEditPublished.into());
     }
 
     // TODO: validate questions

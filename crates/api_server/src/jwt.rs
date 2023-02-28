@@ -49,7 +49,7 @@ impl<'r> FromRequest<'r> for Claims {
         if !auth_header.starts_with("Bearer") {
             return Outcome::Failure((Status::BadRequest, JwtError::InvalidToken));
         }
-        let Some(token) = auth_header.split(" ").last() else {
+        let Some(token) = auth_header.split(' ').last() else {
             return Outcome::Failure((Status::BadRequest, JwtError::InvalidToken));
         };
         let key = req.rocket().config().secret_key.to_string();
@@ -68,9 +68,10 @@ impl<'r> FromRequest<'r> for Claims {
     }
 }
 
+#[cfg(test)]
 mod tests {
-    use jsonwebtoken::{DecodingKey, EncodingKey};
-    use rocket::{http::Header, local::blocking::Client, Config};
+    use jsonwebtoken::EncodingKey;
+    use rocket::{http::Header, local::blocking::Client};
 
     use super::*;
 
