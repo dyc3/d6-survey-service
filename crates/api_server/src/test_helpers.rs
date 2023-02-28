@@ -1,3 +1,5 @@
+use std::panic::AssertUnwindSafe;
+
 use diesel::{sql_query, Connection, PgConnection, RunQueryDsl};
 use jsonwebtoken::EncodingKey;
 use rocket::local::blocking::Client;
@@ -57,10 +59,10 @@ pub fn make_jwt(client: &Client, user_id: i32) -> String {
 
 pub fn run_test_with_db<T>(test: T)
 where
-    T: FnOnce(&String) -> () + std::panic::UnwindSafe,
+    T: FnOnce(&String),
 {
     let db_name = create_db_for_tests();
-    let result = std::panic::catch_unwind(|| test(&db_name));
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| test(&db_name)));
     drop_test_db(db_name);
     assert!(result.is_ok())
 }
