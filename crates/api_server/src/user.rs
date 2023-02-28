@@ -256,6 +256,7 @@ mod tests {
 
     #[test]
     fn test_user_deny_login_blank_credentials() {
+        #[allow(clippy::let_unit_value)]
         run_test_with_db(|db_name| {
             #[post("/make_invalid_users")]
             async fn make_invalid_users(db: Storage) {
