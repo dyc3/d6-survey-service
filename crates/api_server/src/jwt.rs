@@ -100,14 +100,19 @@ mod tests {
         format!("Hello, {}!", claims.user_id)
     }
 
-    #[launch]
-    fn jwt_rocket() -> _ {
-        rocket::build().mount("/", routes![test_get])
+    #[allow(dead_code)]
+    mod jwt_rocket {
+        use super::*;
+
+        #[launch]
+        pub fn jwt_rocket() -> _ {
+            rocket::build().mount("/", routes![test_get])
+        }
     }
 
     #[test]
     fn test_need_jwt() {
-        let client = Client::tracked(jwt_rocket()).expect("valid rocket instance");
+        let client = Client::tracked(jwt_rocket::jwt_rocket()).expect("valid rocket instance");
 
         let response = client.get("/").dispatch();
         assert_eq!(response.status(), Status::Unauthorized);
@@ -115,7 +120,7 @@ mod tests {
 
     #[test]
     fn test_accept_valid_jwt() {
-        let client = Client::tracked(jwt_rocket()).expect("valid rocket instance");
+        let client = Client::tracked(jwt_rocket::jwt_rocket()).expect("valid rocket instance");
 
         let key =
             EncodingKey::from_secret(client.rocket().config().secret_key.to_string().as_bytes());
@@ -133,7 +138,7 @@ mod tests {
 
     #[test]
     fn test_deny_malformed_header() {
-        let client = Client::tracked(jwt_rocket()).expect("valid rocket instance");
+        let client = Client::tracked(jwt_rocket::jwt_rocket()).expect("valid rocket instance");
 
         let key =
             EncodingKey::from_secret(client.rocket().config().secret_key.to_string().as_bytes());
@@ -153,7 +158,7 @@ mod tests {
 
     #[test]
     fn test_deny_expired_jwt() {
-        let client = Client::tracked(jwt_rocket()).expect("valid rocket instance");
+        let client = Client::tracked(jwt_rocket::jwt_rocket()).expect("valid rocket instance");
 
         let key =
             EncodingKey::from_secret(client.rocket().config().secret_key.to_string().as_bytes());
