@@ -276,7 +276,7 @@ mod tests {
                     .map(|user_params| {
                         let salt = SaltString::generate(&mut OsRng);
                         let password_hash = argon2
-                            .hash_password(&user_params.password.as_bytes(), &salt)
+                            .hash_password(user_params.password.as_bytes(), &salt)
                             .expect("valid password hash");
                         NewUser {
                             username: user_params.username.clone(),

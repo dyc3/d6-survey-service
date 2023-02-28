@@ -192,7 +192,7 @@ mod tests {
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
@@ -229,7 +229,7 @@ mod tests {
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Forbidden);
@@ -267,7 +267,7 @@ mod tests {
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
@@ -302,14 +302,14 @@ mod tests {
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
             let survey = response.into_json::<Survey>().unwrap();
             assert_eq!(survey.title, "test");
             assert_eq!(survey.description, ":)");
-            assert_eq!(survey.published, true);
+            assert!(survey.published);
             assert_eq!(survey.questions.0.len(), 0);
         });
     }
@@ -326,7 +326,7 @@ mod tests {
             let response = client
                 .patch(uri!("/api", edit_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .body(
                     serde_json::to_vec(&SurveyPatch {
                         questions: Some(SurveyQuestions(vec![])),
@@ -352,7 +352,7 @@ mod tests {
             let response = client
                 .patch(uri!("/api", edit_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .body(
                     serde_json::to_vec(&SurveyPatch {
                         published: Some(false),
@@ -380,7 +380,7 @@ mod tests {
             let response = client
                 .patch(uri!("/api", edit_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .body(
                     serde_json::to_vec(&SurveyPatch {
                         questions: Some(SurveyQuestions(vec![])),

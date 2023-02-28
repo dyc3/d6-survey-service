@@ -90,8 +90,8 @@ mod tests {
         fn type_name_of_val<T>(_: T) -> &'static str {
             std::any::type_name::<T>()
         }
-        let type_claim = format!("{}", type_name_of_val(claims.user_id));
-        let type_user = format!("{}", type_name_of_val(user.id));
+        let type_claim = type_name_of_val(claims.user_id).to_string();
+        let type_user = type_name_of_val(user.id).to_string();
         assert_eq!(type_claim, type_user);
     }
 
@@ -143,7 +143,7 @@ mod tests {
         };
         let token = jsonwebtoken::encode(&jsonwebtoken::Header::default(), &claims, &key).unwrap();
 
-        for h in [format!("{token}"), format!(" {token}")] {
+        for h in [token.to_string(), format!(" {token}")] {
             let mut req = client.get("/");
             req.add_header(Header::new("Authorization", h));
             let response = req.dispatch();
