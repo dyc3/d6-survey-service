@@ -1,6 +1,10 @@
 <script lang="ts">
 	import Button from '../../lib/ui/Button.svelte';
 	import TextBox from '../../lib/ui/TextBox.svelte';
+	import type { ListedSurvey } from '../../lib/common';
+
+	let surveys: ListedSurvey[];
+
 </script>
 
 <div class="toolbar">
@@ -16,26 +20,24 @@
 			<th class="actions">Actions</th>
 		</thead>
 		<tbody>
+			{#each surveys as survey}
 			<tr class="survey">
-				<td class="name">Survey 1</td>
+				<td class="name">survey.title</td>
 				<!-- TODO: replace with check box-->
+				{#if survey.published}
 				<td class="published">Yes</td>
+				{:else}
+				<td class="published">No</td>
+				{/if}
+
 				<!-- TODO: make this read only-->
-				<td class="share-link"><TextBox value="https://www.survey.com/123" /></td>
+				<td class="share-link"><TextBox value="{window.location.origin}/survey/{survey.id}/respond"/></td>
 				<td class="actions">
 					<Button>Edit</Button>
-					<Button kind='danger'>Delete</Button>
+					<Button kind="danger">Delete</Button>
 				</td>
 			</tr>
-			<tr class="survey">
-				<td class="name">Survey 2</td>
-				<td class="published">Yes</td>
-				<td class="share-link"><TextBox value="https://www.survey.com/123" /></td>
-				<td class="actions">
-					<Button>Edit</Button>
-					<Button kind='danger'>Delete</Button>
-				</td>
-			</tr>
+			{/each}
 		</tbody>
 	</table>
 </div>
