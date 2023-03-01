@@ -24,11 +24,7 @@
 			<tr class="survey">
 				<td class="name">survey.title</td>
 				<!-- TODO: replace with check box-->
-				{#if survey.published}
-				<td class="published">Yes</td>
-				{:else}
-				<td class="published">No</td>
-				{/if}
+				<td class="published">{survey.published ? "Yes" : "No"}</td>
 
 				<!-- TODO: make this read only-->
 				<td class="share-link"><TextBox value="{window.location.origin}/survey/{survey.id}/respond"/></td>
