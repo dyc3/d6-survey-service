@@ -22,7 +22,7 @@
 		<tbody>
 			{#each surveys as survey}
 			<tr class="survey">
-				<td class="name">survey.title</td>
+				<td class="name">{survey.title}</td>
 				<!-- TODO: replace with check box-->
 				<td class="published">{survey.published ? "Yes" : "No"}</td>
 
