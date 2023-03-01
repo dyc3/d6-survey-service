@@ -25,3 +25,8 @@ Revert a migration
 ```
 diesel migration revert --database-url postgres://vscode:notsecure@db/survey_app
 ```
+
+Manually update schema if you already ran the migrations
+```
+diesel print-schema --database-url postgres://vscode:notsecure@db/survey_app > crates/api_server/src/db/schema.rs
+```

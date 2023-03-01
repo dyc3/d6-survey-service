@@ -166,6 +166,76 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ListedSurvey"
+  "/api/survey/{survey}/respond":
+    parameters:
+      - $ref: "#/components/parameters/survey"
+      - in: query
+        name: responder
+        required: false
+        description: The UUID of the responder
+        schema:
+          type: string
+          format: uuid
+    post:
+      summary: Submit a survey response
+      description: >
+        Submit a survey response. The request body is a JSON object with
+        the question IDs as keys and the response as the value.
+      responses:
+        "200":
+          description: Survey response has been saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responder_uuid:
+                    type: string
+                    format: uuid
+                required:
+                  - responder_uuid
+      requestBody:
+        $ref: "#/components/requestBodies/SurveyResponse"
+    patch:
+      summary: Update a survey response
+      description: >
+        Update a survey response. The request body is a JSON object with
+        the question IDs as keys and the response as the value.
+
+        The `responder` query parameter is required.
+      responses:
+        "200":
+          description: Updated survey response has been saved
+      requestBody:
+        $ref: "#/components/requestBodies/SurveyResponse"
+    get:
+      summary: Get a survey response
+      responses:
+        "200":
+          description: Response exists, here it is
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  survey_id:
+                    type: number
+                  responder_uuid:
+                    type: string
+                  content:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/Response"
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+                required:
+                  - survey_id
+                  - responder_uuid
+                  - content
+                  - created_at
+                  - updated_at
 components:
   parameters:
     survey:
@@ -175,6 +245,14 @@ components:
       description: The survey ID
       schema:
         type: string
+  requestBodies:
+    SurveyResponse:
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties:
+              $ref: "#/components/schemas/Response"
   schemas:
     UserLoginParams:
       type: object
@@ -222,10 +300,12 @@ components:
           enum:
             - Text
             - Rating
+            - MultipleChoice
         content:
           oneOf:
             - $ref: "#/components/schemas/QText"
             - $ref: "#/components/schemas/QRating"
+            - $ref: "#/components/schemas/QMultipleChoice"
     QText:
       type: object
       properties:
@@ -244,3 +324,56 @@ components:
           type: string
         max_rating:
           type: integer
+    QMultipleChoice:
+      type: object
+      properties:
+        prompt:
+          type: string
+        description:
+          type: string
+        multiple:
+          type: boolean
+        choices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Choice"
+    Choice:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        text:
+          type: string
+    Response:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - Text
+            - Rating
+            - MultipleChoice
+        content:
+          oneOf:
+            - $ref: "#/components/schemas/RText"
+            - $ref: "#/components/schemas/RRating"
+            - $ref: "#/components/schemas/RMultipleChoice"
+    RText:
+      type: object
+      properties:
+        text:
+          type: string
+    RRating:
+      type: object
+      properties:
+        rating:
+          type: integer
+    RMultipleChoice:
+      type: object
+      properties:
+        selected:
+          type: array
+          items:
+            type: string
+            format: uuid

@@ -11,6 +11,7 @@ pub mod db;
 pub mod jwt;
 pub mod questions;
 pub mod survey;
+pub mod survey_response;
 // #[cfg(any(test, bench))]
 pub mod test_helpers;
 pub mod user;
@@ -35,7 +36,10 @@ pub fn rocket() -> _ {
                 survey::create_survey,
                 survey::get_survey,
                 survey::get_survey_auth,
-                survey::edit_survey
+                survey::edit_survey,
+                survey_response::create_survey_response,
+                survey_response::edit_survey_response,
+                survey_response::get_survey_response,
             ],
         )
 }

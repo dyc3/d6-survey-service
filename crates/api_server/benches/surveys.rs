@@ -196,7 +196,7 @@ fn patch_survey(c: &mut Criterion) {
             |b, _| {
                 b.iter(|| {
                     let resp = client
-                        .get(uri!("/api", api_server::survey::edit_survey(survey_id)).to_string())
+                        .patch(uri!("/api", api_server::survey::edit_survey(survey_id)).to_string())
                         .header(rocket::http::ContentType::JSON)
                         .header(rocket::http::Header::new("Authorization", token.clone()))
                         .body(body.clone())

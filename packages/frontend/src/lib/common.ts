@@ -4,6 +4,8 @@
 
 export type SurveyQuestions = SurveyQuestion[];
 
+export type SurveyResponses = Record<string, Response>;
+
 export interface ApiErrorResponse<R> {
 	message: R;
 }
@@ -34,6 +36,14 @@ export interface ListedSurvey {
 	description: string;
 	published: boolean;
 	owner_id: number;
+}
+
+export interface SurveyResponse {
+	survey_id: number;
+	responder_uuid: string;
+	content: SurveyResponses;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface SurveyQuestion {
@@ -67,12 +77,6 @@ export interface Choice {
 	text: string;
 }
 
-export interface SurveyResponse {
-	survey_id: number;
-	responder: string;
-	content: Record<string, Response>;
-}
-
 export interface RText {
 	text: string;
 }
@@ -83,6 +87,10 @@ export interface RRating {
 
 export interface RMultipleChoice {
 	selected: string[];
+}
+
+export interface ResponseAccepted {
+	responder_uuid: string;
 }
 
 export interface UserLoginParams {
