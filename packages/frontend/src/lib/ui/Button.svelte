@@ -18,6 +18,9 @@
 
 	function toggle() {
 		pressed = !pressed;
+		dispatch('message', {
+			text: 'toggled'
+		})
 	}
 
 	function handleClick(e: Event) {

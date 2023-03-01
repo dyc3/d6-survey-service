@@ -33,38 +33,32 @@
 	}
 </script>
 
-<Main>
-	<TabGroup>
-		Welcome to the Survey App!
-		<TabList class='TabContainer' style="background: red;">
-			<Tab>Log In</Tab>
-			<Tab>Register</Tab>
-		</TabList>
-		<TabPanels>
-			<TabPanel style="width: max-content; margin: auto">
-				Log in <br />
-				<TextBox placeholder="Username" bind:value={username} /> <br />
-				<TextBox placeholder="Password" bind:value={password} /> <br />
-				<Button kind="primary" on:click={doLogin}>Submit</Button>
-				<span>{response}</span>
-			</TabPanel>
-			<TabPanel style="width: max-content; margin: auto">
-				Create a New User <br />
-				<TextBox placeholder="New Username" bind:value={username} /> <br />
-				<TextBox placeholder="New Password" bind:value={password} /> <br />
-				<Button kind="primary" on:click={doRegister}>Submit</Button>
-				<span>{response}</span>
-			</TabPanel>
-		</TabPanels>
-	</TabGroup>
-</Main>
+	<Main>
+		<TabGroup>
+			Welcome to the Survey App!
+			<TabList class='TabContainer'>
+				<Tab>Log In</Tab>
+				<Tab>Register</Tab>
+			</TabList>
+			<TabPanels>
+				<TabPanel style="width: max-content; margin: auto">
+					Log in <br />
+					<TextBox placeholder="Username" bind:value={username} /> <br />
+					<TextBox placeholder="Password" bind:value={password} /> <br />
+					<Button kind="primary" on:click={doLogin}>Submit</Button>
+					<span>{response}</span>
+				</TabPanel>
+				<TabPanel style="width: max-content; margin: auto">
+					Create a New User <br />
+					<TextBox placeholder="New Username" bind:value={username} /> <br />
+					<TextBox placeholder="New Password" bind:value={password} /> <br />
+					<Button kind="primary" on:click={doRegister}>Submit</Button>
+					<span>{response}</span>
+				</TabPanel>
+			</TabPanels>
+		</TabGroup>
+	</Main>
 
 <style lang="scss">
 	@import '../../lib/ui/main.scss';
-
-	.TabContainer{
-		display: flex;
-		flex-direction: row;
-		background:red;
-	}
 </style>
