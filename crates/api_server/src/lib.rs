@@ -24,7 +24,7 @@ fn index() -> &'static str {
 pub fn rocket() -> _ {
     rocket::build()
         .attach(db::stage())
-        .attach(cors::CORS)
+        .attach(cors::Cors)
         .mount(
             "/api",
             routes![
