@@ -3,7 +3,7 @@
 	import TextBox from '../../lib/ui/TextBox.svelte';
 	import type { ListedSurvey } from '../../lib/common';
 
-	let surveys: ListedSurvey[];
+	let surveys: ListedSurvey[] = [];
 
 </script>
 
