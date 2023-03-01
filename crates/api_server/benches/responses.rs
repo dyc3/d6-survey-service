@@ -1,16 +1,16 @@
 use std::str::FromStr;
 
 use api_server::db::models::{SurveyPatch, SurveyQuestions};
-use api_server::questions::{Choice, QMultipleChoice, QRating, QText, SurveyQuestion};
+use api_server::questions::{QRating, QText, SurveyQuestion};
 use api_server::test_helpers::*;
-use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use pprof::criterion::{Output, PProfProfiler};
 use rocket::local::blocking::Client;
 use rocket::uri;
 
 fn make_test_survey(client: &Client, questions: SurveyQuestions) -> i32 {
-    let token = create_test_user(&client);
-    let survey_id = make_survey(&client, &token);
+    let token = create_test_user(client);
+    let survey_id = make_survey(client, &token);
     let patch = SurveyPatch {
         published: Some(true),
         questions: Some(questions),
@@ -19,10 +19,10 @@ fn make_test_survey(client: &Client, questions: SurveyQuestions) -> i32 {
     client
         .patch(uri!("/api", api_server::survey::edit_survey(survey_id)))
         .header(rocket::http::ContentType::JSON)
-        .header(rocket::http::Header::new("Authorization", token.clone()))
+        .header(rocket::http::Header::new("Authorization", token))
         .body(serde_json::to_vec(&patch).unwrap())
         .dispatch();
-    return survey_id;
+    survey_id
 }
 
 fn survey_text_questions(c: &mut Criterion) {
