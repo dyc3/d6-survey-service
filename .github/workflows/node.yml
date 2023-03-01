@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: "yarn"
       - run: npm install -g yarn
       - run: yarn install --frozen-lockfile
       - run: yarn run build
@@ -25,11 +26,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: "yarn"
       - run: npm install -g yarn
       - run: yarn install --frozen-lockfile
       - run: yarn run check
       - run: yarn run lint
-      - run: cargo install typeshare-cli
+      - name: cargo-install
+        uses: baptiste0928/cargo-install@v1
+        with:
+          crate: typeshare-cli
       - name: Ensure generated files are up to date
         run: ./scripts/ensure-generated.sh
 
@@ -40,6 +45,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: "yarn"
       - run: npm install -g yarn
       - run: yarn install --frozen-lockfile
       - run: yarn run test:unit

@@ -1,4 +1,5 @@
 <script lang="ts">
+	export let name = '';
 	export let multiline = false;
 	export let placeholder = '';
 	export let value = '';
@@ -6,9 +7,9 @@
 </script>
 
 {#if multiline}
-	<textarea rows="4" cols="50" {placeholder} {disabled} bind:value />
+	<textarea {name} {placeholder} {disabled} bind:value />
 {:else}
-	<input type="text" {placeholder} {disabled} bind:value />
+	<input {name} type="text" {placeholder} {disabled} bind:value />
 {/if}
 
 <style lang="scss">

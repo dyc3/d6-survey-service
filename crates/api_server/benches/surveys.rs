@@ -62,11 +62,11 @@ fn get_survey(c: &mut Criterion) {
     let token = create_test_user(&client);
     fn make_test_survey(
         client: &Client,
-        token: &String,
+        token: &str,
         questions: &Vec<SurveyQuestion>,
         mut amount: usize,
     ) -> i32 {
-        let survey_id = make_survey(&client, &token);
+        let survey_id = make_survey(client, token);
         let mut q = vec![];
         while amount > questions.len() {
             q.extend(questions.clone());
@@ -76,7 +76,7 @@ fn get_survey(c: &mut Criterion) {
         client
             .patch(uri!("/api", api_server::survey::edit_survey(survey_id)).to_string())
             .header(rocket::http::ContentType::JSON)
-            .header(rocket::http::Header::new("Authorization", token.clone()))
+            .header(rocket::http::Header::new("Authorization", token.to_owned()))
             .body(
                 serde_json::to_vec(&SurveyPatch {
                     title: Some("Benchmark Survey".to_string()),
@@ -165,11 +165,11 @@ fn patch_survey(c: &mut Criterion) {
     let token = create_test_user(&client);
     fn make_test_survey(
         client: &Client,
-        token: &String,
+        token: &str,
         questions: &Vec<SurveyQuestion>,
         mut amount: usize,
     ) -> (i32, Vec<u8>) {
-        let survey_id = make_survey(&client, &token);
+        let survey_id = make_survey(client, token);
         let mut q = vec![];
         while amount > questions.len() {
             q.extend(questions.clone());

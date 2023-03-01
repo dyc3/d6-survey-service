@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
+	export let type: 'button' | 'submit' | 'reset' | undefined = undefined;
 	/**
 	 * Makes the button toggle when clicked.
 	 */
@@ -27,13 +28,13 @@
 </script>
 
 {#if toggleable}
-	<button class={classes} on:click={handleClick} aria-pressed={pressed}>
+	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed}>
 		<div class="surface">
 			<slot />
 		</div>
 	</button>
 {:else}
-	<button class={classes} on:click>
+	<button {type} class={classes} on:click>
 		<div class="surface">
 			<slot />
 		</div>
@@ -96,6 +97,15 @@
 	.kind-primary {
 		background: $main-blue;
 		color: $main-blue;
+		.surface{
+			background: $main-blue;
+			color: #fff;
+		}
+	}
+	.kind-primary:active{
+		.surface{
+			color: #c4c4c4;
+		}
 	}
 
 	.kind-default {
