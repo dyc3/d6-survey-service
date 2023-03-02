@@ -1,34 +1,38 @@
 <script lang="ts">
-    function handleToggle(event: { detail: { text: string; }; }){
-        if(event.detail.text == 'toggled'){
-            alert('test')
-        }
-    }
+	import Button from './Button.svelte';
+
 	/**
 	 * Whether the button group should show vertically or horizontally.
 	 */
 	export let orientation: 'horizontal' | 'vertical';
+	export let buttons: string[];
+	export let selected: number | undefined = undefined;
 
+	function select(i: number) {
+		selected = i;
+	}
 </script>
 
-<div class = 'buttonGroup {orientation}'>
-    <slot on:message={handleToggle}/>
+<div class="buttonGroup {orientation}">
+	{#each buttons as button, i}
+		<Button toggleable={true} pressed={selected == i} on:click={() => select(i)}>{button}</Button>
+	{/each}
 </div>
 
 <style lang="scss">
-    @import 'main.scss';
-    
-    .buttonGroup{
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-    }
+	@import 'main.scss';
 
-    .horizontal{
-        flex-direction: row;
-    }
+	.buttonGroup {
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+	}
 
-    .vertical{
-        flex-direction: column;
-    }
+	.horizontal {
+		flex-direction: row;
+	}
+
+	.vertical {
+		flex-direction: column;
+	}
 </style>
