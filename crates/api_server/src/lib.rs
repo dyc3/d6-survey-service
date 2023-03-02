@@ -15,6 +15,7 @@ pub mod survey_response;
 // #[cfg(any(test, bench))]
 pub mod test_helpers;
 pub mod user;
+pub mod validate;
 
 #[get("/")]
 fn index() -> &'static str {
