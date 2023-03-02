@@ -32,6 +32,28 @@ We may be able to easily share type definitions between the frontend and backend
 
 # User Stories
 
+```mermaid
+---
+title: Use Case Diagram
+---
+flowchart LR
+    UseA([Create/Edit Survey])
+    UseB([View Survey Responses])
+    UseC([Take Survey])
+    UseD([Edit Survey Response])
+    UseE([Share Survey])
+    Creator[fa:fa-person Creator]
+    Responder[fa:fa-person Responder]
+
+    Creator --> UseA
+    Creator --> UseB
+    Creator --> UseE
+    Responder --> UseC
+    Responder --> UseD
+    UseC -->|requires| UseE
+    UseD -->|requires| UseC
+```
+
 ### Survey Creator
 
 Wants to create a survey and share it with others to gather responses.
