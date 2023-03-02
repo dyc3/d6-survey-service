@@ -6,6 +6,7 @@
 	 * Makes the button toggle when clicked.
 	 */
 	export let toggleable = false;
+
 	/**
 	 * Whether the button is currently pressed.
 	 */
