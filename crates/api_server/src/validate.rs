@@ -74,7 +74,7 @@ impl Validate for Survey {
 
 impl Validate for SurveyQuestion {
     fn validate(&self) -> Result<(), Vec<ValidationError>> {
-        self.question.validate().map_err(|mut e| {
+        self.question.validate().map_err(|e| {
             e.into_iter()
                 .map(|v| ValidationError::Inner {
                     field: "question".to_string(),
