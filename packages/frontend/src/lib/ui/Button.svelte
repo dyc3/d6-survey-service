@@ -6,8 +6,6 @@
 	 * Makes the button toggle when clicked.
 	 */
 	export let toggleable = false;
-	export let selectable = false;
-	export let value = 1;
 
 	/**
 	 * Whether the button is currently pressed.
@@ -27,20 +25,11 @@
 	function handleClick(e: Event) {
 		toggle();
 		dispatch('click', e);
-		if (selectable) {
-			console.log({value});
-		}
 	}
 </script>
 
 {#if toggleable}
 	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed}>
-		<div class="surface">
-			<slot />
-		</div>
-	</button>
-{:else if selectable}
-	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed} {value} style="margin: 2px;">
 		<div class="surface">
 			<slot />
 		</div>

@@ -40,10 +40,10 @@
 
 	<div style="width: max-content;">
 			{#each Array(max_rating) as value, i}
-				<Button size="small" selectable={true}>{i+1}</Button>
+				<Button size="small">{i+1}</Button>
 				{/each}
 			<br>
-			<span class="flexBox">
+			<span class="align-rating-text">
 			<span>{minText}</span>
 			<span>{maxText}</span>
 			</span>
@@ -51,7 +51,7 @@
 </div>
 
 <style>
-	.flexBox {
+	.align-rating-text {
 		display: flex;
 		justify-content: space-between;
 	}
