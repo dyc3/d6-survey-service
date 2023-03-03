@@ -247,8 +247,7 @@ mod tests {
         ];
         let errors = qs
             .iter()
-            .map(|q| q.validate().unwrap_err())
-            .flatten()
+            .flat_map(|q| q.validate().unwrap_err())
             .collect::<Vec<_>>();
         for (i, error) in errors.iter().enumerate() {
             match error {
@@ -355,11 +354,11 @@ mod tests {
             description: "".to_owned(),
             choices: vec![
                 Choice {
-                    uuid: uuid.clone(),
+                    uuid,
                     text: "Choice 1".to_owned(),
                 },
                 Choice {
-                    uuid: uuid.clone(),
+                    uuid,
                     text: "Choice 2".to_owned(),
                 },
             ],
@@ -398,14 +397,14 @@ mod tests {
         let qs = SurveyPatch {
             questions: Some(SurveyQuestions(vec![
                 SurveyQuestion {
-                    uuid: uuid.clone(),
+                    uuid,
                     required: false,
                     question: q.clone(),
                 },
                 SurveyQuestion {
-                    uuid: uuid.clone(),
+                    uuid,
                     required: false,
-                    question: q.clone(),
+                    question: q,
                 },
             ])),
             ..Default::default()
