@@ -109,34 +109,34 @@ export type Question =
 
 export type ValidationError =
 	| {
-		type: 'Required';
-		data: {
-			field: string;
-		};
-	}
+			type: 'Required';
+			data: {
+				field: string;
+			};
+	  }
 	| {
-		type: 'NotInRange';
-		data: {
-			field: string;
-			value: number;
-			min: number;
-			max: number;
-		};
-	}
+			type: 'NotInRange';
+			data: {
+				field: string;
+				value: number;
+				min: number;
+				max: number;
+			};
+	  }
 	| {
-		type: 'NotUnique';
-		data: {
-			field: string;
-			value: string;
-		};
-	}
+			type: 'NotUnique';
+			data: {
+				field: string;
+				value: string;
+			};
+	  }
 	| {
-		type: 'Inner';
-		data: {
-			/** The name of the field that failed validation. */
-			field: string;
-			/** The UUID of the object inside the field that failed validation. */
-			uuid: string;
-			inner: ValidationError;
-		};
-	};
+			type: 'Inner';
+			data: {
+				/** The name of the field that failed validation. */
+				field: string;
+				/** The UUID of the object inside the field that failed validation. */
+				uuid: string;
+				inner: ValidationError;
+			};
+	  };
