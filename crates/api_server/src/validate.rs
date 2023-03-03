@@ -27,7 +27,9 @@ pub enum ValidationError {
     NotUnique { field: String, value: String },
     #[error("Error validating field `{field}`: {inner}")]
     Inner {
+        /// The name of the field that failed validation.
         field: String,
+        /// The UUID of the object inside the field that failed validation.
         #[typeshare(serialized_as = "String")]
         uuid: Uuid,
         #[typeshare(serialized_as = "ValidationError")]

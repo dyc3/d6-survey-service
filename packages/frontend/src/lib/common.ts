@@ -133,7 +133,9 @@ export type ValidationError =
 	| {
 			type: 'Inner';
 			data: {
+				/** The name of the field that failed validation. */
 				field: string;
+				/** The UUID of the object inside the field that failed validation. */
 				uuid: string;
 				inner: ValidationError;
 			};
