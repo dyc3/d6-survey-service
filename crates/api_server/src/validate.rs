@@ -30,6 +30,7 @@ pub enum ValidationError {
         field: String,
         #[typeshare(serialized_as = "String")]
         uuid: Uuid,
+        #[typeshare(serialized_as = "ValidationError")]
         inner: Box<Self>,
     },
 }

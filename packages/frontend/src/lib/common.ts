@@ -135,6 +135,6 @@ export type ValidationError =
 			data: {
 				field: string;
 				uuid: string;
-				inner: Self;
+				inner: ValidationError;
 			};
 	  };
