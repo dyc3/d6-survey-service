@@ -10,7 +10,7 @@ use crate::{
         schema, Storage,
     },
     jwt::Claims,
-    validate::{ValidationError, Validate},
+    validate::{Validate, ValidationError},
 };
 
 #[derive(Debug, Error, Serialize, Deserialize)]
