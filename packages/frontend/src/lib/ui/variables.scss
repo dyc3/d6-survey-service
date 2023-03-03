@@ -1,4 +1,6 @@
-$color-red: #cd311e;
+@use "sass:color";
+
+$color-red: rgb(205, 49, 30);
 $color-blue: rgba(66, 104, 129, 1);
 $color-green: rgba(65, 128, 83, 1);
 
@@ -9,5 +11,7 @@ $color-surface: #fff;
 $color-bg: #fff;
 
 $gradient-default: linear-gradient(90deg, $color-blue 0%, $color-green 100%);
+$gradient-primary: linear-gradient(90deg, $color-blue 0%, $color-green 100%); // TODO: make different
+$gradient-danger: linear-gradient(90deg, $color-danger 0%, color.adjust($color-danger, $hue: 30deg) 100%);
 
 $main-font: 'DM Sans', sans-serif;

@@ -94,6 +94,11 @@
 		}
 	}
 
+	.kind-default {
+		background: $gradient-default;
+		color: $color-default;
+	}
+
 	.kind-primary {
 		background: $color-primary;
 		color: $color-primary;
@@ -108,13 +113,8 @@
 		}
 	}
 
-	.kind-default {
-		background: $gradient-default;
-		color: $color-default;
-	}
-
 	.kind-danger {
-		background: $color-danger;
+		background: $gradient-danger;
 		color: $color-danger;
 	}
 </style>
