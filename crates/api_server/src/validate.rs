@@ -124,7 +124,7 @@ impl Validate for QRating {
                 field: "prompt".to_string(),
             });
         }
-        if (2..=10).contains(&self.max_rating) {
+        if !(2..=10).contains(&self.max_rating) {
             errors.push(ValidationError::NotInRange {
                 field: "max_rating".to_string(),
                 value: self.max_rating.into(),
