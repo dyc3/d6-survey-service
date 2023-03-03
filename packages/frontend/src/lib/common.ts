@@ -58,7 +58,7 @@ export interface QText {
 	multiline: boolean;
 }
 
-/** Represents a question like \"On a scale of 1 to N, how do you feel about X?\" */
+/** Represents a question like "On a scale of 1 to N, how do you feel about X?" */
 export interface QRating {
 	prompt: string;
 	description: string;
