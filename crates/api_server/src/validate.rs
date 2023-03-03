@@ -201,3 +201,206 @@ impl Validate for Choice {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use crate::db::models::SurveyQuestions;
+
+    use super::*;
+
+    #[test]
+    fn prompts_should_be_required() {
+        let qs: Vec<Question> = vec![
+            QText {
+                prompt: "".to_owned(),
+                description: "".to_owned(),
+                multiline: false,
+            }.into(),
+            QRating {
+                prompt: "".to_owned(),
+                description: "".to_owned(),
+                max_rating: 5,
+            }.into(),
+            QMultipleChoice {
+                prompt: "".to_owned(),
+                description: "".to_owned(),
+                choices: vec![
+                    Choice {
+                        uuid: Uuid::new_v4(),
+                        text: "Choice 1".to_owned(),
+                    },
+                    Choice {
+                        uuid: Uuid::new_v4(),
+                        text: "Choice 2".to_owned(),
+                    },
+                ],
+                multiple: false,
+            }.into(),
+        ];
+        let errors = qs.iter().map(|q| q.validate().unwrap_err()).flatten().collect::<Vec<_>>();
+        for (i, error) in errors.iter().enumerate() {
+            match error {
+                ValidationError::Required { field } => {
+                    assert!(field == "prompt");
+                }
+                _ => panic!("Unexpected error at {i}: {error:?}"),
+            }
+        }
+        assert_eq!(errors.len(), 3);
+    }
+
+    #[test]
+    fn max_rating_should_be_in_range() {
+        let q = QRating {
+            prompt: "Prompt".to_owned(),
+            description: "".to_owned(),
+            max_rating: 1,
+        };
+        let errors = q.validate().unwrap_err();
+        for (i, error) in errors.iter().enumerate() {
+            match error {
+                ValidationError::NotInRange { field, value, min, max } => {
+                    assert!(field == "max_rating");
+                    assert_eq!(*value, 1);
+                    assert_eq!(*min, 2);
+                    assert_eq!(*max, 10);
+                }
+                _ => panic!("Unexpected error at {i}: {error:?}"),
+            }
+        }
+        assert_eq!(errors.len(), 1);
+    }
+
+    #[test]
+    fn choices_should_be_required() {
+        let q = QMultipleChoice {
+            prompt: "Prompt".to_owned(),
+            description: "".to_owned(),
+            choices: vec![],
+            multiple: false,
+        };
+        let errors = q.validate().unwrap_err();
+        for (i, error) in errors.iter().enumerate() {
+            match error {
+                ValidationError::Required { field } => {
+                    assert!(field == "choices");
+                }
+                _ => panic!("Unexpected error at {i}: {error:?}"),
+            }
+        }
+        assert_eq!(errors.len(), 1);
+    }
+
+    #[test]
+    fn choice_text_should_be_required() {
+        let q = QMultipleChoice {
+            prompt: "Prompt".to_owned(),
+            description: "".to_owned(),
+            choices: vec![
+                Choice {
+                    uuid: Uuid::new_v4(),
+                    text: "".to_owned(),
+                },
+                Choice {
+                    uuid: Uuid::new_v4(),
+                    text: "Choice 2".to_owned(),
+                },
+            ],
+            multiple: false,
+        };
+        let errors = q.validate().unwrap_err();
+        for (i, error) in errors.iter().enumerate() {
+            match error {
+                ValidationError::Inner { field, uuid: _, inner } => {
+                    assert!(field == "choices");
+                    match inner.as_ref() {
+                        ValidationError::Required { field } => {
+                            assert!(field == "text");
+                        }
+                        _ => panic!("Unexpected error at {i}: {error:?}"),
+                    }
+                }
+                _ => panic!("Unexpected error at {i}: {error:?}"),
+            }
+        }
+        assert_eq!(errors.len(), 1);
+    }
+
+    #[test]
+    fn choice_uuids_should_be_unique() {
+        let uuid = Uuid::new_v4();
+        let q = QMultipleChoice {
+            prompt: "Prompt".to_owned(),
+            description: "".to_owned(),
+            choices: vec![
+                Choice {
+                    uuid: uuid.clone(),
+                    text: "Choice 1".to_owned(),
+                },
+                Choice {
+                    uuid: uuid.clone(),
+                    text: "Choice 2".to_owned(),
+                },
+            ],
+            multiple: false,
+        };
+        let errors = q.validate().unwrap_err();
+        for (i, error) in errors.iter().enumerate() {
+            match error {
+                ValidationError::Inner { field, uuid: _, inner } => {
+                    assert!(field == "choices");
+                    match inner.as_ref() {
+                        ValidationError::NotUnique { field, value } => {
+                            assert!(field == "uuid");
+                            assert_eq!(value, &uuid.to_string());
+                        }
+                        _ => panic!("Unexpected error at {i}: {error:?}"),
+                    }
+                }
+                _ => panic!("Unexpected error at {i}: {error:?}"),
+            }
+        }
+    }
+
+    #[test]
+    fn questions_should_be_unique() {
+        let uuid = Uuid::new_v4();
+        let q = Question::Text(QText {
+            prompt: "Prompt".to_owned(),
+            description: "".to_owned(),
+            multiline: false,
+        });
+        let qs = SurveyPatch {
+            questions: Some(SurveyQuestions(vec![
+                SurveyQuestion {
+                    uuid: uuid.clone(),
+                    required: false,
+                    question: q.clone(),
+                },
+                SurveyQuestion {
+                    uuid: uuid.clone(),
+                    required: false,
+                    question: q.clone(),
+                },
+            ])),
+            ..Default::default()
+        };
+        let errors = qs.validate().unwrap_err();
+        for (i, error) in errors.iter().enumerate() {
+            match error {
+                ValidationError::Inner { field, uuid: _, inner } => {
+                    assert!(field == "questions");
+                    match inner.as_ref() {
+                        ValidationError::NotUnique { field, value } => {
+                            assert!(field == "uuid");
+                            assert_eq!(value, &uuid.to_string());
+                        }
+                        _ => panic!("Unexpected error at {i}: {error:?}"),
+                    }
+                }
+                _ => panic!("Unexpected error at {i}: {error:?}"),
+            }
+        }
+    }
+}
