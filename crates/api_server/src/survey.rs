@@ -133,7 +133,9 @@ pub async fn edit_survey(
         return Err(SurveyError::CantEditPublished.into());
     }
 
-    new_survey.validate().map_err(SurveyError::ValidationError)?;
+    new_survey
+        .validate()
+        .map_err(SurveyError::ValidationError)?;
 
     db.run(move |conn| -> anyhow::Result<()> {
         diesel::update(schema::surveys::table)

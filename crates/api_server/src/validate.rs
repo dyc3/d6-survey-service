@@ -216,12 +216,14 @@ mod tests {
                 prompt: "".to_owned(),
                 description: "".to_owned(),
                 multiline: false,
-            }.into(),
+            }
+            .into(),
             QRating {
                 prompt: "".to_owned(),
                 description: "".to_owned(),
                 max_rating: 5,
-            }.into(),
+            }
+            .into(),
             QMultipleChoice {
                 prompt: "".to_owned(),
                 description: "".to_owned(),
@@ -236,9 +238,14 @@ mod tests {
                     },
                 ],
                 multiple: false,
-            }.into(),
+            }
+            .into(),
         ];
-        let errors = qs.iter().map(|q| q.validate().unwrap_err()).flatten().collect::<Vec<_>>();
+        let errors = qs
+            .iter()
+            .map(|q| q.validate().unwrap_err())
+            .flatten()
+            .collect::<Vec<_>>();
         for (i, error) in errors.iter().enumerate() {
             match error {
                 ValidationError::Required { field } => {
@@ -260,7 +267,12 @@ mod tests {
         let errors = q.validate().unwrap_err();
         for (i, error) in errors.iter().enumerate() {
             match error {
-                ValidationError::NotInRange { field, value, min, max } => {
+                ValidationError::NotInRange {
+                    field,
+                    value,
+                    min,
+                    max,
+                } => {
                     assert!(field == "max_rating");
                     assert_eq!(*value, 1);
                     assert_eq!(*min, 2);
@@ -312,7 +324,11 @@ mod tests {
         let errors = q.validate().unwrap_err();
         for (i, error) in errors.iter().enumerate() {
             match error {
-                ValidationError::Inner { field, uuid: _, inner } => {
+                ValidationError::Inner {
+                    field,
+                    uuid: _,
+                    inner,
+                } => {
                     assert!(field == "choices");
                     match inner.as_ref() {
                         ValidationError::Required { field } => {
@@ -348,7 +364,11 @@ mod tests {
         let errors = q.validate().unwrap_err();
         for (i, error) in errors.iter().enumerate() {
             match error {
-                ValidationError::Inner { field, uuid: _, inner } => {
+                ValidationError::Inner {
+                    field,
+                    uuid: _,
+                    inner,
+                } => {
                     assert!(field == "choices");
                     match inner.as_ref() {
                         ValidationError::NotUnique { field, value } => {
@@ -389,7 +409,11 @@ mod tests {
         let errors = qs.validate().unwrap_err();
         for (i, error) in errors.iter().enumerate() {
             match error {
-                ValidationError::Inner { field, uuid: _, inner } => {
+                ValidationError::Inner {
+                    field,
+                    uuid: _,
+                    inner,
+                } => {
                     assert!(field == "questions");
                     match inner.as_ref() {
                         ValidationError::NotUnique { field, value } => {
