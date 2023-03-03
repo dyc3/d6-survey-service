@@ -43,7 +43,7 @@
 {/if}
 
 <style lang="scss">
-	@import 'main.scss';
+	@import 'variables.scss';
 	$btn-border-size: 3px;
 
 	button {
@@ -98,13 +98,13 @@
 	.kind-primary {
 		background: $main-blue;
 		color: $main-blue;
-		.surface{
+		.surface {
 			background: $main-blue;
 			color: #fff;
 		}
 	}
-	.kind-primary:active{
-		.surface{
+	.kind-primary:active {
+		.surface {
 			color: #c4c4c4;
 		}
 	}

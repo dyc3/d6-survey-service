@@ -13,7 +13,7 @@
 {/if}
 
 <style lang="scss">
-	@import 'main.scss';
+	@import 'variables.scss';
 	input,
 	textarea {
 		border: 3px solid $main-blue;
