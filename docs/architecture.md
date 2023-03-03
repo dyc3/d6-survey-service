@@ -65,7 +65,7 @@ title: Activity Diagram - Creator
 flowchart TD
     final((fa:fa-circle))
     start((start))
-    style start fill:#000,stroke:transparent;
+    style start fill:#000,stroke:transparent,color:#000;
     style final fill:#fff,stroke:#000,color:#000;
 
     start --> hasAccount{Is user\nregistered?}
@@ -98,7 +98,7 @@ title: Activity Diagram - Responder
 flowchart TD
     final((fa:fa-circle))
     start((start))
-    style start fill:#000,stroke:transparent;
+    style start fill:#000,stroke:transparent,color:#000;
     style final fill:#fff,stroke:#000,color:#000;
 
     start -->
