@@ -14,7 +14,6 @@
 
 		border: #000 3px solid;
 		border-radius: 4px;
-		background-color: #fff;
 
 		line-height: 2;
 		color: black;

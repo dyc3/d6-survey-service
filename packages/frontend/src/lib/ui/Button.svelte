@@ -55,9 +55,8 @@
 	}
 
 	.surface {
-		background: #fff;
+		background: $color-surface;
 		border-radius: 3px;
-		font-family: $main-font;
 		font-weight: 500;
 	}
 
@@ -70,7 +69,7 @@
 	[aria-pressed='true'] {
 		.surface {
 			background: transparent;
-			color: #fff;
+			color: $color-surface;
 		}
 	}
 
@@ -96,11 +95,11 @@
 	}
 
 	.kind-primary {
-		background: $main-blue;
-		color: $main-blue;
+		background: $color-primary;
+		color: $color-primary;
 		.surface {
-			background: $main-blue;
-			color: #fff;
+			background: $color-primary;
+			color: $color-surface;
 		}
 	}
 	.kind-primary:active {
@@ -110,12 +109,12 @@
 	}
 
 	.kind-default {
-		background: $main-gradient;
-		color: $main-blue;
+		background: $gradient-default;
+		color: $color-default;
 	}
 
 	.kind-danger {
-		background: $main-red;
-		color: $main-red;
+		background: $color-danger;
+		color: $color-danger;
 	}
 </style>

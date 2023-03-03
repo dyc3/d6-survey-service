@@ -16,13 +16,12 @@
 	@import 'variables.scss';
 	input,
 	textarea {
-		border: 3px solid $main-blue;
+		border: 3px solid $color-default;
 		border-radius: 3px;
 		background-color: #fff;
 		min-width: 70%;
-		font-family: $main-font;
 		font-weight: 700;
-		color: $main-blue;
+		color: $color-default;
 		padding: 0.5em;
 	}
 </style>

@@ -1,5 +1,13 @@
-$main-gradient: linear-gradient(90deg, rgba(66, 104, 129, 1) 0%, rgba(65, 128, 83, 1) 100%);
-$main-red: #cd311e;
-$main-blue: #426881;
-$main-green: #418053;
+$color-red: #cd311e;
+$color-blue: rgba(66, 104, 129, 1);
+$color-green: rgba(65, 128, 83, 1);
+
+$color-default: $color-blue;
+$color-primary: $color-blue; // TODO: make different
+$color-danger: $color-red;
+$color-surface: #fff;
+$color-bg: #fff;
+
+$gradient-default: linear-gradient(90deg, $color-blue 0%, $color-green 100%);
+
 $main-font: 'DM Sans', sans-serif;
