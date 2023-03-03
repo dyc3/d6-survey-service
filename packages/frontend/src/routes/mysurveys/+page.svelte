@@ -4,7 +4,6 @@
 	import type { ListedSurvey } from '../../lib/common';
 
 	let surveys: ListedSurvey[] = [];
-
 </script>
 
 <div class="toolbar">
@@ -21,28 +20,30 @@
 		</thead>
 		<tbody>
 			{#each surveys as survey}
-			<tr class="survey">
-				<td class="name">{survey.title}</td>
-				<!-- TODO: replace with check box-->
-				<td class="published">{survey.published ? "Yes" : "No"}</td>
+				<tr class="survey">
+					<td class="name">{survey.title}</td>
+					<!-- TODO: replace with check box-->
+					<td class="published">{survey.published ? 'Yes' : 'No'}</td>
 
-				<!-- TODO: make this read only-->
-				<td class="share-link"><TextBox value="{window.location.origin}/survey/{survey.id}/respond"/></td>
-				<td class="actions">
-					<Button>Edit</Button>
-					<Button kind="danger">Delete</Button>
-				</td>
-			</tr>
+					<!-- TODO: make this read only-->
+					<td class="share-link">
+						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" />
+					</td>
+					<td class="actions">
+						<Button>Edit</Button>
+						<Button kind="danger">Delete</Button>
+					</td>
+				</tr>
 			{/each}
 		</tbody>
 	</table>
 </div>
 
 <style lang="scss">
-	@import '../../lib/ui/main.scss';
+	@import '../../lib/ui/variables.scss';
 	.main-container {
 		height: 70vh;
-		border: 2px solid $main-blue;
+		border: 2px solid $color-default;
 	}
 	.container {
 		width: 100%;
@@ -51,12 +52,10 @@
 	.header {
 		align-items: center;
 		text-align: left;
-		font-family: $main-font;
 		font-weight: 500;
-		color: $main-blue;
-		border-bottom: 2px solid $main-blue;
+		border-bottom: 2px solid $color-default;
 	}
-	.actions{
+	.actions {
 		display: flex;
 		max-width: 250px;
 		justify-content: space-between;
@@ -78,14 +77,11 @@
 	}
 
 	h1 {
-		font-family: $main-font;
 		font-weight: 700;
-		color: $main-blue;
 	}
 
 	td {
-		font-family: $main-font;
 		font-weight: 400;
-		color: $main-blue;
+		color: $color-default;
 	}
 </style>
