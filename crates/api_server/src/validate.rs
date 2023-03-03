@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    db::models::Survey,
+    db::models::SurveyPatch,
     questions::{Choice, QMultipleChoice, QRating, QText, Question, SurveyQuestion},
 };
 
@@ -31,37 +31,41 @@ pub enum ValidationError {
     },
 }
 
-impl Validate for Survey {
+impl Validate for SurveyPatch {
     fn validate(&self) -> Result<(), Vec<ValidationError>> {
         let mut errors = Vec::new();
-        if self.title.is_empty() {
-            errors.push(ValidationError::Required {
-                field: "title".to_string(),
-            });
+        if let Some(title) = &self.title {
+            if title.is_empty() {
+                errors.push(ValidationError::Required {
+                    field: "title".to_string(),
+                });
+            }
         }
-        let mut question_uuids = Vec::new();
-        for question in &self.questions.0 {
-            let question_errors = question.validate();
-            if let Err(mut question_errors) = question_errors {
-                for question_error in question_errors.drain(..) {
+        if let Some(questions) = &self.questions {
+            let mut question_uuids = Vec::new();
+            for question in &questions.0 {
+                let question_errors = question.validate();
+                if let Err(mut question_errors) = question_errors {
+                    for question_error in question_errors.drain(..) {
+                        errors.push(ValidationError::Inner {
+                            field: "questions".to_string(),
+                            uuid: question.uuid,
+                            inner: Box::new(question_error),
+                        });
+                    }
+                }
+                if question_uuids.contains(&question.uuid) {
                     errors.push(ValidationError::Inner {
                         field: "questions".to_string(),
                         uuid: question.uuid,
-                        inner: Box::new(question_error),
+                        inner: Box::new(ValidationError::NotUnique {
+                            field: "uuid".to_string(),
+                            value: question.uuid.to_string(),
+                        }),
                     });
+                } else {
+                    question_uuids.push(question.uuid);
                 }
-            }
-            if question_uuids.contains(&question.uuid) {
-                errors.push(ValidationError::Inner {
-                    field: "questions".to_string(),
-                    uuid: question.uuid,
-                    inner: Box::new(ValidationError::NotUnique {
-                        field: "uuid".to_string(),
-                        value: question.uuid.to_string(),
-                    }),
-                });
-            } else {
-                question_uuids.push(question.uuid);
             }
         }
         if errors.is_empty() {
