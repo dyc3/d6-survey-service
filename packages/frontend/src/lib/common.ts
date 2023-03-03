@@ -106,3 +106,35 @@ export type Question =
 	| { type: 'Text'; content: QText }
 	| { type: 'Rating'; content: QRating }
 	| { type: 'MultipleChoice'; content: QMultipleChoice };
+
+export type ValidationError =
+	| {
+			type: 'Required';
+			data: {
+				field: string;
+			};
+	  }
+	| {
+			type: 'NotInRange';
+			data: {
+				field: string;
+				value: number;
+				min: number;
+				max: number;
+			};
+	  }
+	| {
+			type: 'NotUnique';
+			data: {
+				field: string;
+				value: string;
+			};
+	  }
+	| {
+			type: 'Inner';
+			data: {
+				field: string;
+				uuid: string;
+				inner: Self;
+			};
+	  };

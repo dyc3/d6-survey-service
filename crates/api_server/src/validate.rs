@@ -10,7 +10,9 @@ pub trait Validate {
     fn validate(&self) -> Result<(), Vec<ValidationError>>;
 }
 
+#[typeshare]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, thiserror::Error)]
+#[serde(tag = "type", content = "data")]
 pub enum ValidationError {
     #[error("`{field}` is required")]
     Required { field: String },
@@ -26,6 +28,7 @@ pub enum ValidationError {
     #[error("Error validating field `{field}`: {inner}")]
     Inner {
         field: String,
+        #[typeshare(serialized_as = "String")]
         uuid: Uuid,
         inner: Box<Self>,
     },
