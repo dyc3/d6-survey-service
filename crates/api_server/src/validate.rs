@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 use crate::{
     db::models::SurveyPatch,
-    questions::{Choice, QMultipleChoice, QRating, QText, Question, SurveyQuestion},
+    questions::{Choice, QMultipleChoice, QRating, QText, Question, SurveyQuestion, RText, RMultipleChoice, RRating, Response, IsEmpty},
 };
 
 pub trait Validate {
@@ -25,6 +25,22 @@ pub enum ValidationError {
     },
     #[error("Field `{field}` is not unique")]
     NotUnique { field: String, value: String },
+    #[error("`{uuid}` was not found in `{field}`")]
+    NotFound {
+        field: String,
+        #[typeshare(serialized_as = "String")]
+        uuid: Uuid,
+    },
+    #[error("Response for Question `{uuid}` did not match the expected type")]
+    MismatchedTypes {
+        #[typeshare(serialized_as = "String")]
+        uuid: Uuid,
+    },
+    #[error("Field `{field}` has an invalid value: {message}")]
+    BadValue {
+        field: String,
+        message: String,
+    },
     #[error("Error validating field `{field}`: {inner}")]
     Inner {
         /// The name of the field that failed validation.
@@ -200,6 +216,108 @@ impl Validate for Choice {
                 field: "text".to_string(),
             });
         }
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
+impl Validate for (&SurveyQuestion, &Response) {
+    fn validate(&self) -> Result<(), Vec<ValidationError>> {
+        let (question, response) = self;
+        let mut errors = Vec::new();
+
+        let inner = match (&question.question, &response) {
+            (Question::Text(q), Response::Text(r)) => (q, r).validate(),
+            (Question::Rating(q), Response::Rating(r)) => (q, r).validate(),
+            (Question::MultipleChoice(q), Response::MultipleChoice(r)) => (q, r).validate(),
+            _ => Err(vec![ValidationError::MismatchedTypes {
+                uuid: question.uuid,
+            }]),
+        };
+        if let Err(e) = inner {
+            errors.append(&mut e.into_iter().map(|v| ValidationError::Inner {
+                field: "response".to_string(),
+                uuid: question.uuid,
+                inner: Box::new(v),
+            }).collect());
+        }
+
+        if question.required && response.is_empty() {
+            errors.push(ValidationError::Required {
+                field: "response".to_string(),
+            });
+        }
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
+impl Validate for (&QText, &RText) {
+    fn validate(&self) -> Result<(), Vec<ValidationError>> {
+        let (question, response) = self;
+        let mut errors = Vec::new();
+        if !question.multiline && response.text.contains('\n') {
+            errors.push(ValidationError::BadValue {
+                field: "text".to_string(),
+                message: "Text must not contain newlines".to_owned(),
+            });
+        }
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
+impl Validate for (&QRating, &RRating) {
+    fn validate(&self) -> Result<(), Vec<ValidationError>> {
+        let (question, response) = self;
+        let mut errors = Vec::new();
+        if !(1..=question.max_rating).contains(&response.rating) {
+            errors.push(ValidationError::NotInRange {
+                field: "rating".to_string(),
+                value: response.rating.into(),
+                min: 1,
+                max: question.max_rating.into(),
+            });
+        }
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
+impl Validate for (&QMultipleChoice, &RMultipleChoice) {
+    fn validate(&self) -> Result<(), Vec<ValidationError>> {
+        let (question, response) = self;
+        let mut errors = Vec::new();
+        for choice in &response.selected {
+            if !question.choices.iter().any(|c| c.uuid == *choice) {
+                errors.push(ValidationError::NotFound {
+                    field: "choices".to_string(),
+                    uuid: choice.clone(),
+                });
+            }
+        }
+
+        if !question.multiple && response.selected.len() > 1 {
+            errors.push(ValidationError::BadValue {
+                field: "selected".to_string(),
+                message: "Multiple choices not allowed, select only one".to_owned(),
+            });
+        }
+
         if errors.is_empty() {
             Ok(())
         } else {
@@ -434,6 +552,38 @@ mod tests {
                     _ => panic!("Unexpected error at {i}: {error:?}"),
                 }
             }
+        }
+    }
+
+    mod responses {
+        use super::*;
+
+        #[test]
+        fn text_response_should_be_required() {
+            let q = SurveyQuestion {
+                uuid: Uuid::new_v4(),
+                required: true,
+                question: Question::Text(QText {
+                    prompt: "Prompt".to_owned(),
+                    description: "".to_owned(),
+                    multiline: false,
+                }),
+            };
+
+            let r = Response::Text(RText {
+                text: "".to_owned(),
+            });
+
+            let errors = (&q, &r).validate().unwrap_err();
+            for (i, error) in errors.iter().enumerate() {
+                match error {
+                    ValidationError::Required { field } => {
+                        assert_eq!(field, "response");
+                    }
+                    _ => panic!("Unexpected error at {i}: {error:?}"),
+                }
+            }
+            assert_eq!(errors.len(), 1);
         }
     }
 }
