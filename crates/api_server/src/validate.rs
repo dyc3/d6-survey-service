@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    db::models::SurveyPatch,
+    db::models::{SurveyPatch, SurveyQuestions, SurveyResponses},
     questions::{Choice, QMultipleChoice, QRating, QText, Question, SurveyQuestion, RText, RMultipleChoice, RRating, Response, IsEmpty},
 };
 
@@ -216,6 +216,65 @@ impl Validate for Choice {
                 field: "text".to_string(),
             });
         }
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
+impl Validate for (&SurveyQuestions, &SurveyResponses) {
+    fn validate(&self) -> Result<(), Vec<ValidationError>> {
+        let (questions, responses) = (&self.0.0, &self.1.0);
+        let mut errors = Vec::new();
+
+        // Check that all responses have a corresponding question
+        let question_uuids = questions.iter().map(|q| q.uuid).collect::<Vec<_>>();
+        for (q_uuid, _) in responses {
+            if !question_uuids.contains(q_uuid) {
+                errors.push(ValidationError::Inner {
+                    field: "response".to_string(),
+                    uuid: *q_uuid,
+                    inner: Box::new(ValidationError::Required {
+                        field: "response".to_string(),
+                    })
+                });
+            }
+        }
+
+        for question in questions {
+            let response = match responses.get(&question.uuid) {
+                Some(r) => r,
+                None => {
+                    // Throw errors for required questions that are missing responses
+                    if question.required {
+                        errors.push(ValidationError::Inner {
+                            field: "response".to_string(),
+                            uuid: question.uuid,
+                            inner: Box::new(ValidationError::Required {
+                                field: "response".to_string(),
+                            })
+                        });
+                    }
+                    continue;
+                },
+            };
+
+            // Check that all responses are valid
+            let result = (question, response).validate();
+            if let Err(mut inner_errors) = result {
+                for inner_error in inner_errors.drain(..) {
+                    errors.push(ValidationError::Inner {
+                        field: "response".to_string(),
+                        uuid: question.uuid,
+                        inner: Box::new(inner_error),
+                    });
+                }
+            }
+        }
+
+
         if errors.is_empty() {
             Ok(())
         } else {
