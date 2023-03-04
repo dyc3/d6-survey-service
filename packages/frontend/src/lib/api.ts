@@ -4,7 +4,14 @@
  * Basically just a thin wrapper around fetch() that adds type checking.
  */
 
-import type { Survey, ApiErrorResponse, SurveyPatch, UserLoginParams, UserToken } from './common';
+import type {
+	Survey,
+	ApiErrorResponse,
+	SurveyPatch,
+	UserLoginParams,
+	UserToken,
+	ValidationError
+} from './common';
 import { jwt } from '../stores';
 
 const API_URL = 'http://localhost:5347'; // TODO: see #42
@@ -14,6 +21,17 @@ export type ApiResponse<T> = Result<T, ApiErrorResponse<any>>;
 export type ExtraOptions = { fetch?: typeof fetch };
 
 type ApiRequestOptions = RequestInit & ExtraOptions;
+
+function isValidationError(
+	apiErr: ApiErrorResponse<any>
+): apiErr is ApiErrorResponse<ValidationError> {
+	if (!apiErr.message) return false;
+	if (typeof apiErr.message !== 'string') return false;
+	return (
+		typeof apiErr.message !== 'object' &&
+		Object.prototype.hasOwnProperty.call(apiErr.message, 'ValidationError')
+	);
+}
 
 async function apiReq<T>(path: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
 	const realfetch = options?.fetch ?? fetch;
