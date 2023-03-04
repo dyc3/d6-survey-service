@@ -17,6 +17,7 @@
 		"format": "yarn workspaces run format",
 		"generate": "typeshare ./crates/api_server/ --lang=typescript --output-file=packages/frontend/src/lib/common.ts",
 		"optic:capture": "optic oas capture docs/api.yml http://localhost:5347",
-		"optic:verify": "optic oas verify docs/api.yml"
+		"optic:verify": "optic oas verify docs/api.yml",
+		"optic:clear": "optic oas clear docs/api.yml"
 	}
 }
