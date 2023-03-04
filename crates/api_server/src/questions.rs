@@ -115,3 +115,35 @@ impl From<RMultipleChoice> for Response {
         Self::MultipleChoice(r)
     }
 }
+
+pub(crate) trait IsEmpty {
+    fn is_empty(&self) -> bool;
+}
+
+impl IsEmpty for Response {
+    fn is_empty(&self) -> bool {
+        match self {
+            Self::Text(r) => r.is_empty(),
+            Self::Rating(r) => r.is_empty(),
+            Self::MultipleChoice(r) => r.is_empty(),
+        }
+    }
+}
+
+impl IsEmpty for RText {
+    fn is_empty(&self) -> bool {
+        self.text.is_empty()
+    }
+}
+
+impl IsEmpty for RRating {
+    fn is_empty(&self) -> bool {
+        self.rating == 0
+    }
+}
+
+impl IsEmpty for RMultipleChoice {
+    fn is_empty(&self) -> bool {
+        self.selected.is_empty()
+    }
+}
