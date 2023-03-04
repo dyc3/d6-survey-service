@@ -153,7 +153,7 @@ pub async fn edit_survey(
     Ok(())
 }
 
-async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Survey> {
+pub(crate) async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Survey> {
     db.run(move |conn| {
         let survey = schema::surveys::dsl::surveys
             .find(survey_id)

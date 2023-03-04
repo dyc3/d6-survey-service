@@ -7,9 +7,9 @@ use uuid::Uuid;
 use crate::{
     api::ApiErrorResponse,
     db::{
-        models::{NewSurveyResponse, PatchSurveyResponse, SurveyResponse, SurveyResponses},
+        models::{NewSurveyResponse, PatchSurveyResponse, SurveyResponse, SurveyResponses, Survey},
         Storage,
-    },
+    }, validate::{Validate, ValidationError},
 };
 
 #[typeshare]
@@ -27,8 +27,8 @@ pub enum SurveyResponseError {
     SurveyNotPublished,
     #[error("Survey responder not found")]
     ResponderNotFound,
-    #[error("Validation failed")]
-    ValidationFailed,
+    #[error("Validation Error")]
+    ValidationError(Vec<ValidationError>),
     #[error("Unknown error")]
     Unknown,
 }
@@ -39,7 +39,7 @@ impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
             SurveyResponseError::SurveyNotFound => Status::NotFound,
             SurveyResponseError::SurveyNotPublished => Status::Forbidden,
             SurveyResponseError::ResponderNotFound => Status::NotFound,
-            SurveyResponseError::ValidationFailed => Status::BadRequest,
+            SurveyResponseError::ValidationError(_) => Status::BadRequest,
             SurveyResponseError::Unknown => Status::InternalServerError,
         };
         ApiErrorResponse {
@@ -49,20 +49,41 @@ impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
     }
 }
 
+async fn get_survey_from_db(
+    db: &Storage,
+    survey_id: i32,
+) -> Result<Survey, SurveyResponseError> {
+    let survey = crate::survey::get_survey_from_db(&db, survey_id).await.map_err(|_| {
+        SurveyResponseError::SurveyNotFound
+    })?;
+
+    if !survey.published {
+        return Err(SurveyResponseError::SurveyNotPublished);
+    }
+
+    Ok(survey)
+}
+
 #[post("/survey/<survey_id>/respond", data = "<survey_response>")]
 pub async fn create_survey_response(
     db: Storage,
     survey_id: i32,
     survey_response: Json<SurveyResponses>,
 ) -> Result<Json<ResponseAccepted>, ApiErrorResponse<SurveyResponseError>> {
+    let survey = get_survey_from_db(&db, survey_id).await?;
+
+    let survey_responses = survey_response.into_inner();
+    (&survey.questions, &survey_responses)
+        .validate()
+        .map_err(|e| SurveyResponseError::ValidationError(e))?;
+
     let uuid = db
         .run(move |conn| {
-            let survey_response = survey_response.into_inner();
             let uuid = Uuid::new_v4();
             let new_survey_response = NewSurveyResponse {
                 survey_id,
                 responder_uuid: uuid,
-                content: survey_response,
+                content: survey_responses,
             };
             diesel::insert_into(crate::db::schema::responses::table)
                 .values(&new_survey_response)
@@ -87,10 +108,16 @@ pub async fn edit_survey_response(
     survey_response: Json<SurveyResponses>,
     responder: Uuid,
 ) -> Result<(), ApiErrorResponse<SurveyResponseError>> {
-    let survey_response = survey_response.into_inner();
+    let survey = get_survey_from_db(&db, survey_id).await?;
+
+    let survey_responses = survey_response.into_inner();
+    (&survey.questions, &survey_responses)
+        .validate()
+        .map_err(|e| SurveyResponseError::ValidationError(e))?;
+
     db.run(move |conn| {
         let patch_survey_response = PatchSurveyResponse {
-            content: survey_response,
+            content: survey_responses,
         };
         diesel::update(crate::db::schema::responses::table)
             .filter(crate::db::schema::responses::survey_id.eq(survey_id))
