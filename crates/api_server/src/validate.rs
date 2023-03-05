@@ -364,7 +364,7 @@ impl Validate for (&QMultipleChoice, &RMultipleChoice) {
         for choice in &response.selected {
             if !question.choices.iter().any(|c| c.uuid == *choice) {
                 errors.push(ValidationError::NotFound {
-                    field: "choices".to_string(),
+                    field: "selected".to_string(),
                     uuid: choice.clone(),
                 });
             }
@@ -638,6 +638,116 @@ mod tests {
                 match error {
                     ValidationError::Required { field } => {
                         assert_eq!(field, "response");
+                    }
+                    _ => panic!("Unexpected error at {i}: {error:?}"),
+                }
+            }
+            assert_eq!(errors.len(), 1);
+        }
+
+        #[test]
+        fn rating_response_should_be_in_range() {
+            let q = QRating {
+                prompt: "Prompt".to_owned(),
+                description: "".to_owned(),
+                max_rating: 5,
+            };
+
+            let r1 = RRating {
+                rating: 0,
+            };
+            let r2 = RRating {
+                rating: q.max_rating + 1,
+            };
+            let r3 = RRating {
+                rating: q.max_rating,
+            };
+
+            let mut errors = (&q, &r1).validate().unwrap_err();
+            errors.extend((&q, &r2).validate().unwrap_err());
+            assert!((&q, &r3).validate().is_ok());
+            for (i, error) in errors.iter().enumerate() {
+                match error {
+                    ValidationError::NotInRange { field, min, max, .. } => {
+                        assert_eq!(field, "rating");
+                        assert_eq!(min, &1);
+                        assert_eq!(max, &5);
+                    }
+                    _ => panic!("Unexpected error at {i}: {error:?}"),
+                }
+            }
+            assert_eq!(errors.len(), 2);
+        }
+
+        #[test]
+        fn multiple_choice_response_should_be_in_choices() {
+            let q = QMultipleChoice {
+                prompt: "Prompt".to_owned(),
+                description: "".to_owned(),
+                choices: vec![
+                    Choice {
+                        uuid: Uuid::new_v4(),
+                        text: "Choice 1".to_owned(),
+                    },
+                    Choice {
+                        uuid: Uuid::new_v4(),
+                        text: "Choice 2".to_owned(),
+                    },
+                ],
+                multiple: true,
+            };
+
+            let r1 = RMultipleChoice {
+                selected: vec![Uuid::new_v4(), Uuid::new_v4()],
+            };
+            let r2 = RMultipleChoice {
+                selected: vec![q.choices[0].uuid],
+            };
+
+            let errors = (&q, &r1).validate().unwrap_err();
+            assert!((&q, &r2).validate().is_ok());
+            for (i, error) in errors.iter().enumerate() {
+                match error {
+                    ValidationError::NotFound { field, .. } => {
+                        assert_eq!(field, "selected");
+                    }
+                    _ => panic!("Unexpected error at {i}: {error:?}"),
+                }
+            }
+            assert_eq!(errors.len(), 2);
+        }
+
+        #[test]
+        fn multiple_choice_only_select_one() {
+            let q = QMultipleChoice {
+                prompt: "Prompt".to_owned(),
+                description: "".to_owned(),
+                choices: vec![
+                    Choice {
+                        uuid: Uuid::new_v4(),
+                        text: "Choice 1".to_owned(),
+                    },
+                    Choice {
+                        uuid: Uuid::new_v4(),
+                        text: "Choice 2".to_owned(),
+                    },
+                ],
+                multiple: false,
+            };
+
+            let r1 = RMultipleChoice {
+                selected: vec![q.choices[0].uuid, q.choices[1].uuid],
+            };
+            let r2 = RMultipleChoice {
+                selected: vec![q.choices[0].uuid],
+            };
+
+            let errors = (&q, &r1).validate().unwrap_err();
+            assert!((&q, &r2).validate().is_ok());
+            for (i, error) in errors.iter().enumerate() {
+                match error {
+                    ValidationError::BadValue { field, .. } => {
+                        assert_eq!(field, "selected");
                     }
                     _ => panic!("Unexpected error at {i}: {error:?}"),
                 }
