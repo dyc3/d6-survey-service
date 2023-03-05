@@ -40,13 +40,19 @@ impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
             SurveyResponseError::SurveyNotFound => Status::NotFound,
             SurveyResponseError::SurveyNotPublished => Status::Forbidden,
             SurveyResponseError::ResponderNotFound => Status::NotFound,
-            SurveyResponseError::ValidationError(_) => Status::BadRequest,
+            SurveyResponseError::ValidationError(_) => Status::UnprocessableEntity,
             SurveyResponseError::Unknown => Status::InternalServerError,
         };
         ApiErrorResponse {
             status,
             message: value,
         }
+    }
+}
+
+impl From<Vec<ValidationError>> for ApiErrorResponse<SurveyResponseError> {
+    fn from(value: Vec<ValidationError>) -> Self {
+        SurveyResponseError::ValidationError(value).into()
     }
 }
 
@@ -71,9 +77,7 @@ pub async fn create_survey_response(
     let survey = get_survey_from_db(&db, survey_id).await?;
 
     let survey_responses = survey_response.into_inner();
-    (&survey.questions, &survey_responses)
-        .validate()
-        .map_err(SurveyResponseError::ValidationError)?;
+    (&survey.questions, &survey_responses).validate()?;
 
     let uuid = db
         .run(move |conn| {
@@ -109,9 +113,7 @@ pub async fn edit_survey_response(
     let survey = get_survey_from_db(&db, survey_id).await?;
 
     let survey_responses = survey_response.into_inner();
-    (&survey.questions, &survey_responses)
-        .validate()
-        .map_err(|e| SurveyResponseError::ValidationError(e))?;
+    (&survey.questions, &survey_responses).validate()?;
 
     db.run(move |conn| {
         let patch_survey_response = PatchSurveyResponse {

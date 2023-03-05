@@ -46,6 +46,12 @@ impl From<SurveyError> for ApiErrorResponse<SurveyError> {
     }
 }
 
+impl From<Vec<ValidationError>> for ApiErrorResponse<SurveyError> {
+    fn from(value: Vec<ValidationError>) -> Self {
+        SurveyError::ValidationError(value).into()
+    }
+}
+
 #[post("/survey/create")]
 pub async fn create_survey(
     claims: Claims,
@@ -133,9 +139,7 @@ pub async fn edit_survey(
         return Err(SurveyError::CantEditPublished.into());
     }
 
-    new_survey
-        .validate()
-        .map_err(SurveyError::ValidationError)?;
+    new_survey.validate()?;
 
     db.run(move |conn| -> anyhow::Result<()> {
         diesel::update(schema::surveys::table)
