@@ -131,6 +131,26 @@ export type ValidationError =
 			};
 	  }
 	| {
+			type: 'NotFound';
+			data: {
+				field: string;
+				uuid: string;
+			};
+	  }
+	| {
+			type: 'MismatchedTypes';
+			data: {
+				uuid: string;
+			};
+	  }
+	| {
+			type: 'BadValue';
+			data: {
+				field: string;
+				message: string;
+			};
+	  }
+	| {
 			type: 'Inner';
 			data: {
 				/** The name of the field that failed validation. */

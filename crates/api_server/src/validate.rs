@@ -3,7 +3,10 @@ use uuid::Uuid;
 
 use crate::{
     db::models::{SurveyPatch, SurveyQuestions, SurveyResponses},
-    questions::{Choice, QMultipleChoice, QRating, QText, Question, SurveyQuestion, RText, RMultipleChoice, RRating, Response, IsEmpty},
+    questions::{
+        Choice, IsEmpty, QMultipleChoice, QRating, QText, Question, RMultipleChoice, RRating,
+        RText, Response, SurveyQuestion,
+    },
 };
 
 pub trait Validate {
@@ -37,10 +40,7 @@ pub enum ValidationError {
         uuid: Uuid,
     },
     #[error("Field `{field}` has an invalid value: {message}")]
-    BadValue {
-        field: String,
-        message: String,
-    },
+    BadValue { field: String, message: String },
     #[error("Error validating field `{field}`: {inner}")]
     Inner {
         /// The name of the field that failed validation.
@@ -226,7 +226,7 @@ impl Validate for Choice {
 
 impl Validate for (&SurveyQuestions, &SurveyResponses) {
     fn validate(&self) -> Result<(), Vec<ValidationError>> {
-        let (questions, responses) = (&self.0.0, &self.1.0);
+        let (questions, responses) = (&self.0 .0, &self.1 .0);
         let mut errors = Vec::new();
 
         // Check that all responses have a corresponding question
@@ -235,7 +235,7 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
             if !question_uuids.contains(q_uuid) {
                 errors.push(ValidationError::NotFound {
                     field: "response".to_string(),
-                    uuid: *q_uuid
+                    uuid: *q_uuid,
                 });
             }
         }
@@ -251,11 +251,11 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
                             uuid: question.uuid,
                             inner: Box::new(ValidationError::Required {
                                 field: "response".to_string(),
-                            })
+                            }),
                         });
                     }
                     continue;
-                },
+                }
             };
 
             // Check that all responses are valid
@@ -270,7 +270,6 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
                 }
             }
         }
-
 
         if errors.is_empty() {
             Ok(())
@@ -294,11 +293,16 @@ impl Validate for (&SurveyQuestion, &Response) {
             }]),
         };
         if let Err(e) = inner {
-            errors.append(&mut e.into_iter().map(|v| ValidationError::Inner {
-                field: "response".to_string(),
-                uuid: question.uuid,
-                inner: Box::new(v),
-            }).collect());
+            errors.append(
+                &mut e
+                    .into_iter()
+                    .map(|v| ValidationError::Inner {
+                        field: "response".to_string(),
+                        uuid: question.uuid,
+                        inner: Box::new(v),
+                    })
+                    .collect(),
+            );
         }
 
         if question.required && response.is_empty() {
@@ -651,7 +655,7 @@ mod tests {
             };
 
             let r = RText {
-                text: "Line 1\nLine 2".to_owned()
+                text: "Line 1\nLine 2".to_owned(),
             };
 
             let errors = (&q, &r).validate().unwrap_err();
@@ -659,7 +663,7 @@ mod tests {
                 match error {
                     ValidationError::BadValue { field, .. } => {
                         assert_eq!(field, "text");
-                    },
+                    }
                     _ => panic!("Unexpected error at {i}: {error:?}"),
                 }
             }
@@ -674,9 +678,7 @@ mod tests {
                 max_rating: 5,
             };
 
-            let r1 = RRating {
-                rating: 0,
-            };
+            let r1 = RRating { rating: 0 };
             let r2 = RRating {
                 rating: q.max_rating + 1,
             };
@@ -689,7 +691,9 @@ mod tests {
             assert!((&q, &r3).validate().is_ok());
             for (i, error) in errors.iter().enumerate() {
                 match error {
-                    ValidationError::NotInRange { field, min, max, .. } => {
+                    ValidationError::NotInRange {
+                        field, min, max, ..
+                    } => {
                         assert_eq!(field, "rating");
                         assert_eq!(min, &1);
                         assert_eq!(max, &5);
@@ -781,28 +785,24 @@ mod tests {
             let q = SurveyQuestion {
                 uuid: Uuid::new_v4(),
                 required: true,
-                question: Question::MultipleChoice(
-                    QMultipleChoice {
-                        prompt: "Prompt".to_owned(),
-                        description: "".to_owned(),
-                        choices: vec![
-                            Choice {
-                                uuid: Uuid::new_v4(),
-                                text: "Choice 1".to_owned(),
-                            },
-                            Choice {
-                                uuid: Uuid::new_v4(),
-                                text: "Choice 2".to_owned(),
-                            },
-                        ],
-                        multiple: true,
-                    }
-                ),
+                question: Question::MultipleChoice(QMultipleChoice {
+                    prompt: "Prompt".to_owned(),
+                    description: "".to_owned(),
+                    choices: vec![
+                        Choice {
+                            uuid: Uuid::new_v4(),
+                            text: "Choice 1".to_owned(),
+                        },
+                        Choice {
+                            uuid: Uuid::new_v4(),
+                            text: "Choice 2".to_owned(),
+                        },
+                    ],
+                    multiple: true,
+                }),
             };
 
-            let r1 = Response::MultipleChoice(RMultipleChoice {
-                selected: vec![],
-            });
+            let r1 = Response::MultipleChoice(RMultipleChoice { selected: vec![] });
 
             let errors = (&q, &r1).validate().unwrap_err();
             for (i, error) in errors.iter().enumerate() {
@@ -817,31 +817,35 @@ mod tests {
 
         #[test]
         fn all_responses_must_have_question() {
-            let qs = SurveyQuestions(vec![
-                SurveyQuestion {
-                    uuid: Uuid::new_v4(),
-                    required: false,
-                    question: Question::Text(
-                        QText {
-                            prompt: "Prompt".to_owned(),
-                            description: "".to_owned(),
-                            multiline: false,
-                        }
-                    ),
-                },
-            ]);
+            let qs = SurveyQuestions(vec![SurveyQuestion {
+                uuid: Uuid::new_v4(),
+                required: false,
+                question: Question::Text(QText {
+                    prompt: "Prompt".to_owned(),
+                    description: "".to_owned(),
+                    multiline: false,
+                }),
+            }]);
 
-            let rs1 = SurveyResponses([
-                (qs.0[0].uuid, Response::Text(RText {
-                    text: "Text".to_owned(),
-                })),
-            ].into());
+            let rs1 = SurveyResponses(
+                [(
+                    qs.0[0].uuid,
+                    Response::Text(RText {
+                        text: "Text".to_owned(),
+                    }),
+                )]
+                .into(),
+            );
 
-            let rs2 = SurveyResponses([
-                (Uuid::new_v4(), Response::Text(RText {
-                    text: "Text".to_owned(),
-                })),
-            ].into());
+            let rs2 = SurveyResponses(
+                [(
+                    Uuid::new_v4(),
+                    Response::Text(RText {
+                        text: "Text".to_owned(),
+                    }),
+                )]
+                .into(),
+            );
 
             assert!((&qs, &rs1).validate().is_ok());
             let errors = (&qs, &rs2).validate().unwrap_err();
@@ -858,28 +862,27 @@ mod tests {
 
         #[test]
         fn all_required_questions_must_have_responses() {
-            let qs = SurveyQuestions(vec![
-                SurveyQuestion {
-                    uuid: Uuid::new_v4(),
-                    required: true,
-                    question: Question::Text(
-                        QText {
-                            prompt: "Prompt".to_owned(),
-                            description: "".to_owned(),
-                            multiline: false,
-                        }
-                    ),
-                },
-            ]);
+            let qs = SurveyQuestions(vec![SurveyQuestion {
+                uuid: Uuid::new_v4(),
+                required: true,
+                question: Question::Text(QText {
+                    prompt: "Prompt".to_owned(),
+                    description: "".to_owned(),
+                    multiline: false,
+                }),
+            }]);
 
-            let rs1 = SurveyResponses([
-                (qs.0[0].uuid, Response::Text(RText {
-                    text: "Text".to_owned(),
-                })),
-            ].into());
+            let rs1 = SurveyResponses(
+                [(
+                    qs.0[0].uuid,
+                    Response::Text(RText {
+                        text: "Text".to_owned(),
+                    }),
+                )]
+                .into(),
+            );
 
-            let rs2 = SurveyResponses([
-            ].into());
+            let rs2 = SurveyResponses([].into());
 
             assert!((&qs, &rs1).validate().is_ok());
             let errors = (&qs, &rs2).validate().unwrap_err();

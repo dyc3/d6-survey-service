@@ -7,9 +7,10 @@ use uuid::Uuid;
 use crate::{
     api::ApiErrorResponse,
     db::{
-        models::{NewSurveyResponse, PatchSurveyResponse, SurveyResponse, SurveyResponses, Survey},
+        models::{NewSurveyResponse, PatchSurveyResponse, Survey, SurveyResponse, SurveyResponses},
         Storage,
-    }, validate::{Validate, ValidationError},
+    },
+    validate::{Validate, ValidationError},
 };
 
 #[typeshare]
@@ -49,13 +50,10 @@ impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
     }
 }
 
-async fn get_survey_from_db(
-    db: &Storage,
-    survey_id: i32,
-) -> Result<Survey, SurveyResponseError> {
-    let survey = crate::survey::get_survey_from_db(&db, survey_id).await.map_err(|_| {
-        SurveyResponseError::SurveyNotFound
-    })?;
+async fn get_survey_from_db(db: &Storage, survey_id: i32) -> Result<Survey, SurveyResponseError> {
+    let survey = crate::survey::get_survey_from_db(&db, survey_id)
+        .await
+        .map_err(|_| SurveyResponseError::SurveyNotFound)?;
 
     if !survey.published {
         return Err(SurveyResponseError::SurveyNotPublished);
