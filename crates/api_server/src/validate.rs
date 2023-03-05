@@ -646,6 +646,30 @@ mod tests {
         }
 
         #[test]
+        fn text_should_not_be_multiline() {
+            let q = QText {
+                prompt: "Prompt".to_owned(),
+                description: "".to_owned(),
+                multiline: false,
+            };
+
+            let r = RText {
+                text: "Line 1\nLine 2".to_owned()
+            };
+
+            let errors = (&q, &r).validate().unwrap_err();
+            for (i, error) in errors.iter().enumerate() {
+                match error {
+                    ValidationError::BadValue { field, .. } => {
+                        assert_eq!(field, "text");
+                    },
+                    _ => panic!("Unexpected error at {i}: {error:?}"),
+                }
+            }
+            assert_eq!(errors.len(), 1);
+        }
+
+        #[test]
         fn rating_response_should_be_in_range() {
             let q = QRating {
                 prompt: "Prompt".to_owned(),
@@ -753,6 +777,45 @@ mod tests {
                 }
             }
             assert_eq!(errors.len(), 1);
+        }
+
+        #[test]
+        fn multiple_choice_response_required() {
+            let q = SurveyQuestion {
+                uuid: Uuid::new_v4(),
+                required: true,
+                question: Question::MultipleChoice(
+                    QMultipleChoice {
+                        prompt: "Prompt".to_owned(),
+                        description: "".to_owned(),
+                        choices: vec![
+                            Choice {
+                                uuid: Uuid::new_v4(),
+                                text: "Choice 1".to_owned(),
+                            },
+                            Choice {
+                                uuid: Uuid::new_v4(),
+                                text: "Choice 2".to_owned(),
+                            },
+                        ],
+                        multiple: true,
+                    }
+                ),
+            };
+
+            let r1 = Response::MultipleChoice(RMultipleChoice {
+                selected: vec![],
+            });
+
+            let errors = (&q, &r1).validate().unwrap_err();
+            for (i, error) in errors.iter().enumerate() {
+                match error {
+                    ValidationError::Required { field } => {
+                        assert_eq!(field, "response");
+                    }
+                    _ => panic!("Unexpected error at {i}: {error:?}"),
+                }
+            }
         }
     }
 }
