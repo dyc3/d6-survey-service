@@ -57,7 +57,7 @@ impl From<Vec<ValidationError>> for ApiErrorResponse<SurveyResponseError> {
 }
 
 async fn get_survey_from_db(db: &Storage, survey_id: i32) -> Result<Survey, SurveyResponseError> {
-    let survey = crate::survey::get_survey_from_db(&db, survey_id)
+    let survey = crate::survey::get_survey_from_db(db, survey_id)
         .await
         .map_err(|_| SurveyResponseError::SurveyNotFound)?;
 
