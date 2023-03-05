@@ -233,12 +233,9 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
         let question_uuids = questions.iter().map(|q| q.uuid).collect::<Vec<_>>();
         for (q_uuid, _) in responses {
             if !question_uuids.contains(q_uuid) {
-                errors.push(ValidationError::Inner {
+                errors.push(ValidationError::NotFound {
                     field: "response".to_string(),
-                    uuid: *q_uuid,
-                    inner: Box::new(ValidationError::Required {
-                        field: "response".to_string(),
-                    })
+                    uuid: *q_uuid
                 });
             }
         }
@@ -816,6 +813,92 @@ mod tests {
                     _ => panic!("Unexpected error at {i}: {error:?}"),
                 }
             }
+        }
+
+        #[test]
+        fn all_responses_must_have_question() {
+            let qs = SurveyQuestions(vec![
+                SurveyQuestion {
+                    uuid: Uuid::new_v4(),
+                    required: false,
+                    question: Question::Text(
+                        QText {
+                            prompt: "Prompt".to_owned(),
+                            description: "".to_owned(),
+                            multiline: false,
+                        }
+                    ),
+                },
+            ]);
+
+            let rs1 = SurveyResponses([
+                (qs.0[0].uuid, Response::Text(RText {
+                    text: "Text".to_owned(),
+                })),
+            ].into());
+
+            let rs2 = SurveyResponses([
+                (Uuid::new_v4(), Response::Text(RText {
+                    text: "Text".to_owned(),
+                })),
+            ].into());
+
+            assert!((&qs, &rs1).validate().is_ok());
+            let errors = (&qs, &rs2).validate().unwrap_err();
+            for (i, error) in errors.iter().enumerate() {
+                match error {
+                    ValidationError::NotFound { field, .. } => {
+                        assert_eq!(field, "response");
+                    }
+                    _ => panic!("Unexpected error at {i}: {error:?}"),
+                }
+            }
+            assert_eq!(errors.len(), 1);
+        }
+
+        #[test]
+        fn all_required_questions_must_have_responses() {
+            let qs = SurveyQuestions(vec![
+                SurveyQuestion {
+                    uuid: Uuid::new_v4(),
+                    required: true,
+                    question: Question::Text(
+                        QText {
+                            prompt: "Prompt".to_owned(),
+                            description: "".to_owned(),
+                            multiline: false,
+                        }
+                    ),
+                },
+            ]);
+
+            let rs1 = SurveyResponses([
+                (qs.0[0].uuid, Response::Text(RText {
+                    text: "Text".to_owned(),
+                })),
+            ].into());
+
+            let rs2 = SurveyResponses([
+            ].into());
+
+            assert!((&qs, &rs1).validate().is_ok());
+            let errors = (&qs, &rs2).validate().unwrap_err();
+            for (i, error) in errors.iter().enumerate() {
+                match error {
+                    ValidationError::Inner { field, uuid, inner } => {
+                        assert_eq!(field, "response");
+                        assert_eq!(uuid, &qs.0[0].uuid);
+                        match inner.as_ref() {
+                            ValidationError::Required { field } => {
+                                assert_eq!(field, "response");
+                            }
+                            _ => panic!("Unexpected inner error at {i}: {error:?}"),
+                        }
+                    }
+                    _ => panic!("Unexpected error at {i}: {error:?}"),
+                }
+            }
+            assert_eq!(errors.len(), 1);
         }
     }
 }
