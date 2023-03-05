@@ -231,7 +231,7 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
 
         // Check that all responses have a corresponding question
         let question_uuids = questions.iter().map(|q| q.uuid).collect::<Vec<_>>();
-        for (q_uuid, _) in responses {
+        for q_uuid in responses.keys() {
             if !question_uuids.contains(q_uuid) {
                 errors.push(ValidationError::NotFound {
                     field: "response".to_string(),
@@ -366,7 +366,7 @@ impl Validate for (&QMultipleChoice, &RMultipleChoice) {
             if !question.choices.iter().any(|c| c.uuid == *choice) {
                 errors.push(ValidationError::NotFound {
                     field: "selected".to_string(),
-                    uuid: choice.clone(),
+                    uuid: *choice,
                 });
             }
         }

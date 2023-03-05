@@ -73,7 +73,7 @@ pub async fn create_survey_response(
     let survey_responses = survey_response.into_inner();
     (&survey.questions, &survey_responses)
         .validate()
-        .map_err(|e| SurveyResponseError::ValidationError(e))?;
+        .map_err(SurveyResponseError::ValidationError)?;
 
     let uuid = db
         .run(move |conn| {
