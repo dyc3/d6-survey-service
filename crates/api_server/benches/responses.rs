@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use api_server::db::models::{SurveyPatch, SurveyQuestions};
-use api_server::questions::{QRating, QText, QMultipleChoice, Choice, SurveyQuestion};
+use api_server::questions::{Choice, QMultipleChoice, QRating, QText, SurveyQuestion};
 use api_server::test_helpers::*;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use pprof::criterion::{Output, PProfProfiler};
@@ -203,10 +203,12 @@ fn survey_response_stress(c: &mut Criterion) {
                 prompt: "Rate your food.".to_string(),
                 description: "please".to_string(),
                 multiple: true,
-                choices: (0u64..10).map(|n| Choice {
-                    uuid: Uuid::from_u128(n.into()),
-                    text: format!("Choice {n}"),
-                }).collect(),
+                choices: (0u64..10)
+                    .map(|n| Choice {
+                        uuid: Uuid::from_u128(n.into()),
+                        text: format!("Choice {n}"),
+                    })
+                    .collect(),
             }
             .into(),
         },
@@ -217,10 +219,12 @@ fn survey_response_stress(c: &mut Criterion) {
                 prompt: "Rate your fun.".to_string(),
                 description: "please".to_string(),
                 multiple: false,
-                choices: (0u64..10).map(|n| Choice {
-                    uuid: Uuid::from_u128(n.into()),
-                    text: format!("Choice {n}"),
-                }).collect(),
+                choices: (0u64..10)
+                    .map(|n| Choice {
+                        uuid: Uuid::from_u128(n.into()),
+                        text: format!("Choice {n}"),
+                    })
+                    .collect(),
             }
             .into(),
         },
