@@ -10,6 +10,7 @@ use crate::{
         schema, Storage,
     },
     jwt::Claims,
+    validate::{Validate, ValidationError},
 };
 
 #[derive(Debug, Error, Serialize, Deserialize)]
@@ -22,6 +23,8 @@ pub enum SurveyError {
     NotOwner,
     #[error("Not found")]
     NotFound,
+    #[error("Validation error")]
+    ValidationError(Vec<ValidationError>),
     #[error("Internal error")]
     Unknown,
 }
@@ -33,6 +36,7 @@ impl From<SurveyError> for ApiErrorResponse<SurveyError> {
             SurveyError::NotPublished => Status::Forbidden,
             SurveyError::NotOwner => Status::Forbidden,
             SurveyError::NotFound => Status::NotFound,
+            SurveyError::ValidationError(_) => Status::UnprocessableEntity,
             SurveyError::Unknown => Status::InternalServerError,
         };
         ApiErrorResponse {
@@ -85,10 +89,8 @@ pub async fn get_survey_auth(
         if survey.owner_id != claims.user_id() && !survey.published {
             return Err(SurveyError::NotOwner.into());
         }
-    } else {
-        if !survey.published {
-            return Err(SurveyError::NotPublished.into());
-        }
+    } else if !survey.published {
+        return Err(SurveyError::NotPublished.into());
     }
 
     Ok(Json(survey))
@@ -127,13 +129,13 @@ pub async fn edit_survey(
         return Err(SurveyError::NotOwner.into());
     }
 
-    if survey.published {
-        if new_survey.questions.is_some() {
-            return Err(SurveyError::CantEditPublished.into());
-        }
+    if survey.published && new_survey.questions.is_some() {
+        return Err(SurveyError::CantEditPublished.into());
     }
 
-    // TODO: validate questions
+    new_survey
+        .validate()
+        .map_err(SurveyError::ValidationError)?;
 
     db.run(move |conn| -> anyhow::Result<()> {
         diesel::update(schema::surveys::table)
@@ -196,7 +198,7 @@ mod tests {
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
@@ -233,7 +235,7 @@ mod tests {
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Forbidden);
@@ -271,7 +273,7 @@ mod tests {
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
@@ -306,14 +308,14 @@ mod tests {
             let response = client
                 .get(uri!("/api", get_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
             let survey = response.into_json::<Survey>().unwrap();
             assert_eq!(survey.title, "test");
             assert_eq!(survey.description, ":)");
-            assert_eq!(survey.published, true);
+            assert!(survey.published);
             assert_eq!(survey.questions.0.len(), 0);
         });
     }
@@ -330,7 +332,7 @@ mod tests {
             let response = client
                 .patch(uri!("/api", edit_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .body(
                     serde_json::to_vec(&SurveyPatch {
                         questions: Some(SurveyQuestions(vec![])),
@@ -356,7 +358,7 @@ mod tests {
             let response = client
                 .patch(uri!("/api", edit_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .body(
                     serde_json::to_vec(&SurveyPatch {
                         published: Some(false),
@@ -384,7 +386,7 @@ mod tests {
             let response = client
                 .patch(uri!("/api", edit_survey(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .body(
                     serde_json::to_vec(&SurveyPatch {
                         questions: Some(SurveyQuestions(vec![])),

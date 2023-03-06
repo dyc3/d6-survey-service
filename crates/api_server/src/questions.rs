@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -71,16 +69,6 @@ impl From<QMultipleChoice> for Question {
     fn from(q: QMultipleChoice) -> Self {
         Self::MultipleChoice(q)
     }
-}
-
-#[typeshare]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SurveyResponse {
-    pub survey_id: i32,
-    #[typeshare(serialized_as = "String")]
-    pub responder: Uuid,
-    #[typeshare(serialized_as = "HashMap<String, Response>")]
-    pub content: HashMap<Uuid, Response>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

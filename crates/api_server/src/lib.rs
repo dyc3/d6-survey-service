@@ -11,9 +11,11 @@ pub mod db;
 pub mod jwt;
 pub mod questions;
 pub mod survey;
+pub mod survey_response;
 // #[cfg(any(test, bench))]
 pub mod test_helpers;
 pub mod user;
+pub mod validate;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -24,7 +26,7 @@ fn index() -> &'static str {
 pub fn rocket() -> _ {
     rocket::build()
         .attach(db::stage())
-        .attach(cors::CORS)
+        .attach(cors::Cors)
         .mount(
             "/api",
             routes![
@@ -35,7 +37,10 @@ pub fn rocket() -> _ {
                 survey::create_survey,
                 survey::get_survey,
                 survey::get_survey_auth,
-                survey::edit_survey
+                survey::edit_survey,
+                survey_response::create_survey_response,
+                survey_response::edit_survey_response,
+                survey_response::get_survey_response,
             ],
         )
 }

@@ -80,6 +80,12 @@ Textboxes
 <div>
 	<TextBox placeholder="placeholder" multiline={true} />
 </div>
+<div>
+	<TextBox placeholder="readonly multiline with disabled" multiline={true} disabled={true} />
+</div>
+<div>
+	<TextBox placeholder="readonly with disabled" multiline={false} disabled={true} />
+</div>
 
 <h3>Questions</h3>
 

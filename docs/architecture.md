@@ -32,28 +32,84 @@ We may be able to easily share type definitions between the frontend and backend
 
 # User Stories
 
+```mermaid
+---
+title: Use Case Diagram
+---
+flowchart LR
+    UseA([Create/Edit Survey])
+    UseB([View Survey Responses])
+    UseC([Take Survey])
+    UseD([Edit Survey Response])
+    UseE([Share Survey])
+    Creator[fa:fa-person Creator]
+    Responder[fa:fa-person Responder]
+
+    Creator --> UseA
+    Creator --> UseB
+    Creator --> UseE
+    Responder --> UseC
+    Responder --> UseD
+    UseC -->|requires| UseE
+    UseD -->|requires| UseC
+```
+
 ### Survey Creator
 
 Wants to create a survey and share it with others to gather responses.
 
-1. Create an account
-2. Create a survey
-3. Add questions to the survey
-4. Survey is saved automatically as it is edited.
-5. Publish survey
-   1. Survey is no longer editable.
-6. Share survey link with others.
+```mermaid
+---
+title: Activity Diagram - Creator
+---
+flowchart TD
+    final((fa:fa-circle))
+    start((start))
+    style start fill:#000,stroke:transparent,color:#000;
+    style final fill:#fff,stroke:#000,color:#000;
+
+    start --> hasAccount{Is user\nregistered?}
+    hasAccount -->|Yes| login[Log in]
+    hasAccount -->|No| register[Register]
+    createSurvey[Create Survey]
+    login --> createSurvey
+    register --> createSurvey
+    addQ[Add/Edit/Remove Question]
+    enoughQ{Satisfied w/\nQuestions?}
+    saveSurvey[Survey auto-saved]
+    createSurvey --> addQ
+    addQ --> saveSurvey --> enoughQ
+    enoughQ -->|No| addQ
+    enoughQ -->|Yes| copyShare[Copy Share Link] -->
+    share[Share survey with responders] -->
+    wait[Wait for responses] -->
+    view[View Results] -->
+    final
+```
 
 ### Survey Responder
 
 Wants to take a survey with as little friction as possible.
 
-1. Recieves a survey link
-2. Clicks link, opens survey
-3. Answers all questions on the survey
-   1. As each question is answered, the response is saved.
-   2. Modifications to previous answers are saved.
-4. Submits survey
+```mermaid
+---
+title: Activity Diagram - Responder
+---
+flowchart TD
+    final((fa:fa-circle))
+    start((start))
+    style start fill:#000,stroke:transparent,color:#000;
+    style final fill:#fff,stroke:#000,color:#000;
+
+    start -->
+    recieve[Receive link to survey] --> click[Click link] -->
+    addQ[Answer Question]
+    enoughQ{Satisfied w/\nAnswers?}
+    addQ --> enoughQ
+    enoughQ -->|No| addQ
+    enoughQ -->|Yes| submit[Submit survey] -->
+    final
+```
 
 # Architecture
 

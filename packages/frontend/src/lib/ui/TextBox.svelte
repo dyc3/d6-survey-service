@@ -1,4 +1,5 @@
 <script lang="ts">
+	export let name = '';
 	export let multiline = false;
 	export let placeholder = '';
 	export let value = '';
@@ -6,22 +7,21 @@
 </script>
 
 {#if multiline}
-	<textarea rows="4" cols="50" {placeholder} {disabled} bind:value />
+	<textarea {name} {placeholder} {disabled} bind:value />
 {:else}
-	<input type="text" {placeholder} {disabled} bind:value />
+	<input {name} type="text" {placeholder} {disabled} bind:value />
 {/if}
 
 <style lang="scss">
-	@import 'main.scss';
+	@import 'variables.scss';
 	input,
 	textarea {
-		border: 3px solid $main-blue;
-		border-radius: 10px;
+		border: 3px solid $color-default;
+		border-radius: 3px;
 		background-color: #fff;
 		min-width: 70%;
-		font-family: $main-font;
 		font-weight: 700;
-		color: $main-blue;
+		color: $color-default;
 		padding: 0.5em;
 	}
 </style>

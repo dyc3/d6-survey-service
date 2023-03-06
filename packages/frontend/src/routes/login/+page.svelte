@@ -89,7 +89,7 @@
 	</div>
 
 <style lang="scss">
-	@import '../../lib/ui/main.scss';
+	@import '../../lib/ui/variables.scss';
 	.signinContainer{
 		display: flex;
 		flex-direction: column;
