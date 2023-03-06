@@ -36,31 +36,6 @@
 	let group_selected: number | undefined = undefined;
 </script>
 
-	<!-- <Main>
-		<TabGroup>
-			Welcome to the Survey App!
-			<TabList class='TabContainer'>
-				<Tab>Log In</Tab>
-				<Tab>Register</Tab>
-			</TabList>
-			<TabPanels>
-				<TabPanel style="width: max-content; margin: auto">
-					Log in <br />
-					<TextBox placeholder="Username" bind:value={username} /> <br />
-					<TextBox placeholder="Password" bind:value={password} /> <br />
-					<Button kind="primary" on:click={doLogin}>Submit</Button>
-					<span>{response}</span>
-				</TabPanel>
-				<TabPanel style="width: max-content; margin: auto">
-					Create a New User <br />
-					<TextBox placeholder="New Username" bind:value={username} /> <br />
-					<TextBox placeholder="New Password" bind:value={password} /> <br />
-					<Button kind="primary" on:click={doRegister}>Submit</Button>
-					<span>{response}</span>
-				</TabPanel>
-			</TabPanels>
-		</TabGroup> 
-	</Main> -->
 
 	<div class='signinContainer'>
 		<p>Selected: {group_selected}</p>
@@ -69,7 +44,8 @@
 		buttons={['Login', 'Register']}
 		bind:selected={group_selected}
 		/>
-		{#if group_selected === 0}
+		<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->
+		{#if group_selected === 0 || group_selected === undefined}
 			<div class = 'infoContainer'>
 				Login <br />
 				<TextBox placeholder="Username" bind:value={username} /> <br />
@@ -97,7 +73,8 @@
 		align-items: center;
 		height: 50vh;
 		width: 50vw;
-		border: 1px solid black;
+		border: 3px solid $color-blue;
+		border-radius: 10px;
 	}
 
 	.infoContainer{
