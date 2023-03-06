@@ -6,11 +6,12 @@
 	 */
 	export let orientation: 'horizontal' | 'vertical';
 	export let buttons: string[];
-	export let selected: number | undefined = undefined;
+	export let selected: number = 0;
 
 	function select(i: number) {
+		//todo: make it so that you can't unselect a button without selecting another one
 		if(selected == i)
-			selected = undefined;
+			selected = 0;
 		else
 			selected = i;
 	}
@@ -23,6 +24,7 @@
 </div>
 
 <style lang="scss">
+	@import 'variables.scss';
 
 	.buttonGroup {
 		display: flex;
