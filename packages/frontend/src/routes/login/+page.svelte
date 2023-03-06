@@ -41,6 +41,7 @@
 		<ButtonGroup
 		orientation="horizontal"
 		buttons={['Login', 'Register']}
+		forceSelection={true}
 		bind:selected={group_selected}
 		/>
 		<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->

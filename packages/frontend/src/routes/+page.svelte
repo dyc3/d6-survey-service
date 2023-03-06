@@ -69,6 +69,7 @@ Buttons
 	<ButtonGroup
 		orientation="horizontal"
 		buttons={['Button 1', 'Button 2', 'Button 3', 'Button 4', 'Button 5']}
+		forceSelection ={false}
 		bind:selected={group_selected}
 	/>
 </div>

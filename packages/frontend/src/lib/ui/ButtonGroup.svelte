@@ -6,12 +6,17 @@
 	 */
 	export let orientation: 'horizontal' | 'vertical';
 	export let buttons: string[];
-	export let selected: number = 0;
+	export let forceSelection: boolean;
+	export let selected: number | undefined = undefined;
 
 	function select(i: number) {
 		//todo: make it so that you can't unselect a button without selecting another one
 		if(selected == i)
+			if(forceSelection){
 			selected = 0;
+			}
+			else
+				selected = undefined;
 		else
 			selected = i;
 	}
