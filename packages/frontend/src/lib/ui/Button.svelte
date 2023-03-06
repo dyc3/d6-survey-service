@@ -43,7 +43,7 @@
 {/if}
 
 <style lang="scss">
-	@import 'main.scss';
+	@import 'variables.scss';
 	$btn-border-size: 3px;
 
 	button {
@@ -55,9 +55,8 @@
 	}
 
 	.surface {
-		background: #fff;
+		background: $color-surface;
 		border-radius: 3px;
-		font-family: $main-font;
 		font-weight: 500;
 	}
 
@@ -70,7 +69,7 @@
 	[aria-pressed='true'] {
 		.surface {
 			background: transparent;
-			color: #fff;
+			color: $color-surface;
 		}
 	}
 
@@ -95,27 +94,27 @@
 		}
 	}
 
+	.kind-default {
+		background: $gradient-default;
+		color: $color-default;
+	}
+
 	.kind-primary {
-		background: $main-blue;
-		color: $main-blue;
-		.surface{
-			background: $main-blue;
-			color: #fff;
+		background: $color-primary;
+		color: $color-primary;
+		.surface {
+			background: $color-primary;
+			color: $color-surface;
 		}
 	}
-	.kind-primary:active{
-		.surface{
+	.kind-primary:active {
+		.surface {
 			color: #c4c4c4;
 		}
 	}
 
-	.kind-default {
-		background: $main-gradient;
-		color: $main-blue;
-	}
-
 	.kind-danger {
-		background: $main-red;
-		color: $main-red;
+		background: $gradient-danger;
+		color: $color-danger;
 	}
 </style>
