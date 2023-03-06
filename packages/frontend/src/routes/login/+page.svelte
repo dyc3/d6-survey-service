@@ -37,8 +37,7 @@
 </script>
 
 
-	<div class='signinContainer'>
-		<p>Selected: {group_selected}</p>
+	<div class='signinContainer'> 
 		<ButtonGroup
 		orientation="horizontal"
 		buttons={['Login', 'Register']}
@@ -47,7 +46,6 @@
 		<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->
 		{#if group_selected === 0 || group_selected === undefined}
 			<div class = 'infoContainer'>
-				Login <br />
 				<TextBox placeholder="Username" bind:value={username} /> <br />
 				<TextBox placeholder="Password" bind:value={password} /> <br />
 				<Button kind="primary" on:click={doLogin}>Submit</Button>
@@ -55,7 +53,6 @@
 			</div>
 		{:else if group_selected === 1}
 			<div class = 'infoContainer'>
-				Create a New User <br />
 				<TextBox placeholder="New Username" bind:value={username} /> <br />
 				<TextBox placeholder="New Password" bind:value={password} /> <br />
 				<Button kind="primary" on:click={doRegister}>Submit</Button>
@@ -71,11 +68,13 @@
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
-		height: 50vh;
+		height: 40vh;
 		min-height: fit-content;
 		width: 50vw;
 		border: 3px solid $color-blue;
 		border-radius: 10px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.infoContainer{
