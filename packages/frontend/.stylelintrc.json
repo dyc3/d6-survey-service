@@ -2,9 +2,7 @@
 	"extends": "stylelint-config-standard-scss",
 	"overrides": [
 		{
-			"files": [
-				"**/*.svelte"
-			],
+			"files": ["**/*.svelte"],
 			"customSyntax": "postcss-html"
 		}
 	],
