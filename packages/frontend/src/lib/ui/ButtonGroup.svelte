@@ -20,7 +20,6 @@
 </div>
 
 <style lang="scss">
-	@import 'main.scss';
 
 	.buttonGroup {
 		display: flex;
