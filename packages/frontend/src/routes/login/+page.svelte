@@ -8,6 +8,7 @@
 	import { goto } from '$app/navigation';
 	import type { UserToken } from '$lib/common';
 	import type { ApiResponse } from '$lib/api';
+	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 
 	let username = '';
 	let password = '';
@@ -31,9 +32,11 @@
 	async function doRegister() {
 		handleLogin(await registerUser({ username, password }));
 	}
+
+	let group_selected: number | undefined = undefined;
 </script>
 
-	<Main>
+	<!-- <Main>
 		<TabGroup>
 			Welcome to the Survey App!
 			<TabList class='TabContainer'>
@@ -56,9 +59,52 @@
 					<span>{response}</span>
 				</TabPanel>
 			</TabPanels>
-		</TabGroup>
-	</Main>
+		</TabGroup> 
+	</Main> -->
+
+	<div class='signinContainer'>
+		<p>Selected: {group_selected}</p>
+		<ButtonGroup
+		orientation="horizontal"
+		buttons={['Login', 'Register']}
+		bind:selected={group_selected}
+		/>
+		{#if group_selected === 0}
+			<div class = 'infoContainer'>
+				Login <br />
+				<TextBox placeholder="Username" bind:value={username} /> <br />
+				<TextBox placeholder="Password" bind:value={password} /> <br />
+				<Button kind="primary" on:click={doLogin}>Submit</Button>
+				<span>{response}</span>
+			</div>
+		{:else if group_selected === 1}
+			<div class = 'infoContainer'>
+				Create a New User <br />
+				<TextBox placeholder="New Username" bind:value={username} /> <br />
+				<TextBox placeholder="New Password" bind:value={password} /> <br />
+				<Button kind="primary" on:click={doRegister}>Submit</Button>
+				<span>{response}</span>
+			</div>
+		{/if}
+	</div>
 
 <style lang="scss">
 	@import '../../lib/ui/main.scss';
+	.signinContainer{
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+		height: 50vh;
+		width: 50vw;
+		border: 1px solid black;
+	}
+
+	.infoContainer{
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+		width: 100%;
+	}
 </style>
