@@ -9,7 +9,10 @@
 	export let selected: number | undefined = undefined;
 
 	function select(i: number) {
-		selected = i;
+		if(selected == i)
+			selected = undefined;
+		else
+			selected = i;
 	}
 </script>
 

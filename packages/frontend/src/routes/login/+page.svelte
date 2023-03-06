@@ -72,6 +72,7 @@
 		justify-content: space-around;
 		align-items: center;
 		height: 50vh;
+		min-height: fit-content;
 		width: 50vw;
 		border: 3px solid $color-blue;
 		border-radius: 10px;
