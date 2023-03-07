@@ -122,9 +122,9 @@ pub struct SurveyResponse {
     pub responder_uuid: Uuid,
     pub content: SurveyResponses,
     #[typeshare(serialized_as = "String")]
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     #[typeshare(serialized_as = "String")]
-    pub updated_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Insertable)]
