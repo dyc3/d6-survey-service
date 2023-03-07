@@ -1,42 +1,50 @@
 use chrono::{DateTime, Utc};
-use rocket::http::Header;
 
 use crate::db::models::{Survey, SurveyResponse};
 
-pub trait ModifiedTime {
-	fn modified_time(&self) -> DateTime<Utc>;
+pub trait Cacheable {
+	fn modified_time(&self) -> Option<DateTime<Utc>> { None }
+	fn etag(&self) -> Option<&String> { None }
 
 	fn is_modified_since(&self, since: impl Into<DateTime<Utc>>) -> bool {
-		self.modified_time() > since.into()
+		match self.modified_time() {
+			Some(modified_time) => modified_time > since.into(),
+			None => false,
+		}
 	}
-
-	fn last_modified_header(&self) -> Header<'_> {
-		Header::new("Last-Modified", self.modified_time().format("%a, %d %b %Y %H:%M:%S GMT").to_string())
-	}
-}
-
-impl ModifiedTime for Survey {
-	fn modified_time(&self) -> DateTime<Utc> {
-		// by pure luck, the updated_at field is actually in UTC
-		DateTime::from_utc(self.updated_at, Utc)
-	}
-}
-
-impl ModifiedTime for SurveyResponse {
-	fn modified_time(&self) -> DateTime<Utc> {
-		self.updated_at
-	}
-}
-
-pub trait ETagged {
-	fn etag(&self) -> &String;
 
 	fn is_etag_match<'a>(&'a self, etag: impl Into<&'a str>) -> bool {
-		self.etag() == etag.into()
+		match self.etag() {
+			Some(obj_etag) => obj_etag == etag.into(),
+			None => false,
+		}
 	}
 
-	fn etag_header(&self) -> Header<'_> {
-		Header::new("ETag", self.etag())
+	fn last_modified_header(&self) -> Option<String> {
+		match self.modified_time() {
+			Some(modified_time) => Some(modified_time.format("%a, %d %b %Y %H:%M:%S GMT").to_string()),
+			None => None,
+		}
+	}
+
+	fn etag_header(&self) -> Option<String> {
+		match self.etag() {
+			Some(etag) => Some(etag.to_owned()),
+			None => None,
+		}
+	}
+}
+
+impl Cacheable for Survey {
+	fn modified_time(&self) -> Option<DateTime<Utc>> {
+		// by pure luck, the updated_at field is actually in UTC
+		Some(DateTime::from_utc(self.updated_at, Utc))
+	}
+}
+
+impl Cacheable for SurveyResponse {
+	fn modified_time(&self) -> Option<DateTime<Utc>> {
+		Some(self.updated_at)
 	}
 }
 
@@ -45,70 +53,50 @@ mod tests {
 	use super::*;
 	use chrono::prelude::*;
 
-	struct TestModifiedTime {
+	struct TestObj {
+		etag: String,
 		modified_time: DateTime<Utc>,
 	}
 
-	impl ModifiedTime for TestModifiedTime {
-		fn modified_time(&self) -> DateTime<Utc> {
-			self.modified_time
+	impl Cacheable for TestObj {
+		fn etag(&self) -> Option<&String> {
+			Some(&self.etag)
+		}
+
+		fn modified_time(&self) -> Option<DateTime<Utc>> {
+			Some(self.modified_time)
 		}
 	}
 
 	#[test]
 	fn test_modified_time() {
-		let obj = TestModifiedTime {
+		let obj = TestObj {
+			etag: "test".to_string(),
 			modified_time: Utc::now(),
 		};
 		assert!(obj.is_modified_since(Utc::now() - chrono::Duration::seconds(1)));
 		assert!(!obj.is_modified_since(Utc::now() + chrono::Duration::seconds(1)));
 	}
 
-	struct TestETagged {
-		etag: String,
-	}
-
-	impl ETagged for TestETagged {
-		fn etag(&self) -> &String {
-			&self.etag
-		}
-	}
-
 	#[test]
 	fn test_etag_match() {
-		let obj = TestETagged {
+		let obj = TestObj {
 			etag: "test".to_string(),
+			modified_time: Utc::now(),
 		};
 		assert!(obj.is_etag_match("test"));
 		assert!(!obj.is_etag_match("test2"));
 	}
 
-	struct TestBoth {
-		etag: String,
-		modified_time: DateTime<Utc>,
-	}
-
-	impl ModifiedTime for TestBoth {
-		fn modified_time(&self) -> DateTime<Utc> {
-			self.modified_time
-		}
-	}
-
-	impl ETagged for TestBoth {
-		fn etag(&self) -> &String {
-			&self.etag
-		}
-	}
-
 	#[test]
 	fn test_build_headers() {
-		let obj = TestBoth {
+		let obj = TestObj {
 			etag: "test".to_string(),
 			modified_time: Utc.with_ymd_and_hms(2015, 10, 21, 7, 28, 0).unwrap(),
 		};
-		assert_eq!(obj.etag_header().value(), "test");
+		assert_eq!(obj.etag_header().unwrap(), "test");
 		assert_eq!(
-			obj.last_modified_header().value(),
+			obj.last_modified_header().unwrap(),
 			"Wed, 21 Oct 2015 07:28:00 GMT"
 		);
 	}
