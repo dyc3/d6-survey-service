@@ -24,10 +24,21 @@ pub trait Cacheable {
 	fn is_cache_fresh(&self, cache_check: CacheCheck) -> bool {
 		match cache_check {
 			CacheCheck::IfModifiedSince(since) => {
-				!self.is_modified_since(since)
+				self.is_modified_since(since)
 			}
 			CacheCheck::IfNoneMatch(etag) => {
-				!self.is_etag_match(etag.as_str())
+				self.is_etag_match(etag.as_str())
+			}
+		}
+	}
+
+	fn has_no_mid_air_collision(&self, race_check: RaceCheck) -> bool {
+		match race_check {
+			RaceCheck::IfUnmodifiedSince(since) => {
+				self.is_modified_since(since)
+			}
+			RaceCheck::IfMatch(etag) => {
+				self.is_etag_match(etag.as_str())
 			}
 		}
 	}
