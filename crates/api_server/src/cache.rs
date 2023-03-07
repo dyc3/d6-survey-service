@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use rocket::{request::{Outcome, FromRequest}, Request};
 
 use crate::db::models::{Survey, SurveyResponse};
 
@@ -45,6 +46,54 @@ impl Cacheable for Survey {
 impl Cacheable for SurveyResponse {
 	fn modified_time(&self) -> Option<DateTime<Utc>> {
 		Some(self.updated_at)
+	}
+}
+
+pub enum CacheCheck {
+	IfModifiedSince(DateTime<Utc>),
+	IfNoneMatch(String),
+}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for CacheCheck {
+	type Error = ();
+
+	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+		if let Some(if_none_match) = request.headers().get_one("If-None-Match") {
+			Outcome::Success(CacheCheck::IfNoneMatch(if_none_match.to_owned()))
+		} else if let Some(if_modified_since) = request.headers().get_one("If-Modified-Since") {
+			if let Ok(date) = DateTime::parse_from_rfc2822(if_modified_since) {
+				Outcome::Success(CacheCheck::IfModifiedSince(date.with_timezone(&Utc)))
+			} else {
+				Outcome::Forward(())
+			}
+		} else {
+			Outcome::Forward(())
+		}
+	}
+}
+
+pub enum RaceCheck {
+	IfUnmodifiedSince(DateTime<Utc>),
+	IfMatch(String),
+}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for RaceCheck {
+	type Error = ();
+
+	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+		if let Some(if_match) = request.headers().get_one("If-Match") {
+			Outcome::Success(RaceCheck::IfMatch(if_match.to_owned()))
+		} else if let Some(if_unmodified_since) = request.headers().get_one("If-Unmodified-Since") {
+			if let Ok(date) = DateTime::parse_from_rfc2822(if_unmodified_since) {
+				Outcome::Success(RaceCheck::IfUnmodifiedSince(date.with_timezone(&Utc)))
+			} else {
+				Outcome::Forward(())
+			}
+		} else {
+			Outcome::Forward(())
+		}
 	}
 }
 
