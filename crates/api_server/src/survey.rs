@@ -147,6 +147,12 @@ pub async fn edit_survey(
         return Err(SurveyError::NotOwner.into());
     }
 
+    if let Some(race_check) = race_check {
+        if !survey.has_no_mid_air_collision(race_check) {
+            return Err(SurveyError::RaceError.into());
+        }
+    }
+
     if survey.published && new_survey.questions.is_some() {
         return Err(SurveyError::CantEditPublished.into());
     }

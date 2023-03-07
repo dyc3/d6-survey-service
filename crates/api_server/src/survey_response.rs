@@ -91,6 +91,25 @@ pub async fn edit_survey_response(
     responder: Uuid,
     race_check: Option<RaceCheck>,
 ) -> Result<(), ApiErrorResponse<SurveyResponseError>> {
+    let old_response = db
+        .run(move |conn| {
+            crate::db::schema::responses::table
+                .filter(crate::db::schema::responses::survey_id.eq(survey_id))
+                .filter(crate::db::schema::responses::responder_uuid.eq(responder))
+                .first::<SurveyResponse>(conn)
+        })
+        .await
+        .map_err(|e| {
+            error!("{e:?}");
+            SurveyResponseError::Unknown
+        })?;
+
+    if let Some(race_check) = race_check {
+        if !old_response.has_no_mid_air_collision(race_check) {
+            return Err(SurveyResponseError::RaceError.into());
+        }
+    }
+
     let survey_response = survey_response.into_inner();
     db.run(move |conn| {
         let patch_survey_response = PatchSurveyResponse {
