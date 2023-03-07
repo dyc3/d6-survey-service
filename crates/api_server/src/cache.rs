@@ -21,6 +21,17 @@ pub trait Cacheable {
 		}
 	}
 
+	fn is_cache_fresh(&self, cache_check: CacheCheck) -> bool {
+		match cache_check {
+			CacheCheck::IfModifiedSince(since) => {
+				!self.is_modified_since(since)
+			}
+			CacheCheck::IfNoneMatch(etag) => {
+				!self.is_etag_match(etag.as_str())
+			}
+		}
+	}
+
 	fn last_modified_header(&self) -> Option<String> {
 		match self.modified_time() {
 			Some(modified_time) => Some(modified_time.format("%a, %d %b %Y %H:%M:%S GMT").to_string()),
