@@ -5,7 +5,7 @@ use thiserror::Error;
 use uuid::Uuid;
 
 use crate::{
-    api::ApiErrorResponse,
+    api::{ApiErrorResponse, ApiOkCacheableResource},
     db::{
         models::{NewSurveyResponse, PatchSurveyResponse, SurveyResponse, SurveyResponses},
         Storage,
@@ -112,7 +112,7 @@ pub async fn get_survey_response(
     db: Storage,
     survey_id: i32,
     responder: Uuid,
-) -> Result<Json<SurveyResponse>, ApiErrorResponse<SurveyResponseError>> {
+) -> Result<ApiOkCacheableResource<SurveyResponse>, ApiErrorResponse<SurveyResponseError>> {
     let survey_response = db
         .run(move |conn| {
             crate::db::schema::responses::table
@@ -126,5 +126,5 @@ pub async fn get_survey_response(
             SurveyResponseError::Unknown
         })?;
 
-    Ok(Json(survey_response))
+    Ok(ApiOkCacheableResource(survey_response))
 }

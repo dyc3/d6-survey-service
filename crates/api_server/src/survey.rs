@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::{
-    api::ApiErrorResponse,
+    api::{ApiErrorResponse, ApiOkCacheableResource},
     db::{
         models::{NewSurvey, Survey, SurveyPatch},
         schema, Storage,
@@ -79,7 +79,7 @@ pub async fn get_survey_auth(
     survey_id: i32,
     db: Storage,
     claims: Option<Claims>,
-) -> Result<Json<Survey>, ApiErrorResponse<SurveyError>> {
+) -> Result<ApiOkCacheableResource<Survey>, ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
@@ -93,14 +93,14 @@ pub async fn get_survey_auth(
         return Err(SurveyError::NotPublished.into());
     }
 
-    Ok(Json(survey))
+    Ok(ApiOkCacheableResource(survey))
 }
 
 #[get("/survey/<survey_id>", rank = 2)]
 pub async fn get_survey(
     survey_id: i32,
     db: Storage,
-) -> Result<Json<Survey>, ApiErrorResponse<SurveyError>> {
+) -> Result<ApiOkCacheableResource<Survey>, ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
@@ -110,7 +110,7 @@ pub async fn get_survey(
         return Err(SurveyError::NotPublished.into());
     }
 
-    Ok(Json(survey))
+    Ok(ApiOkCacheableResource(survey))
 }
 
 #[patch("/survey/<survey_id>", data = "<new_survey>")]
