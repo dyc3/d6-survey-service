@@ -10,7 +10,7 @@ use crate::{
         schema, Storage,
     },
     jwt::Claims,
-    validate::{Validate, ValidationError},
+    validate::{Validate, ValidationError}, cache::{RaceCheck, CacheCheck, Cacheable},
 };
 
 #[derive(Debug, Error, Serialize, Deserialize)]
@@ -25,6 +25,8 @@ pub enum SurveyError {
     NotFound,
     #[error("Validation error")]
     ValidationError(Vec<ValidationError>),
+    #[error("Data race")]
+    RaceError,
     #[error("Internal error")]
     Unknown,
 }
@@ -37,6 +39,7 @@ impl From<SurveyError> for ApiErrorResponse<SurveyError> {
             SurveyError::NotOwner => Status::Forbidden,
             SurveyError::NotFound => Status::NotFound,
             SurveyError::ValidationError(_) => Status::UnprocessableEntity,
+            SurveyError::RaceError => Status::PreconditionFailed,
             SurveyError::Unknown => Status::InternalServerError,
         };
         ApiErrorResponse {
@@ -79,11 +82,18 @@ pub async fn get_survey_auth(
     survey_id: i32,
     db: Storage,
     claims: Option<Claims>,
+    cache_check: Option<CacheCheck>,
 ) -> Result<ApiOkCacheableResource<Survey>, ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
     })?;
+
+    if let Some(cache_check) = cache_check {
+        if survey.is_cache_fresh(cache_check) {
+            return Ok(ApiOkCacheableResource::NotModified);
+        }
+    }
 
     if let Some(claims) = claims {
         if survey.owner_id != claims.user_id() && !survey.published {
@@ -93,24 +103,31 @@ pub async fn get_survey_auth(
         return Err(SurveyError::NotPublished.into());
     }
 
-    Ok(ApiOkCacheableResource(survey))
+    Ok(ApiOkCacheableResource::Ok(survey))
 }
 
 #[get("/survey/<survey_id>", rank = 2)]
 pub async fn get_survey(
     survey_id: i32,
     db: Storage,
+    cache_check: Option<CacheCheck>,
 ) -> Result<ApiOkCacheableResource<Survey>, ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
     })?;
 
+    if let Some(cache_check) = cache_check {
+        if survey.is_cache_fresh(cache_check) {
+            return Ok(ApiOkCacheableResource::NotModified);
+        }
+    }
+
     if !survey.published {
         return Err(SurveyError::NotPublished.into());
     }
 
-    Ok(ApiOkCacheableResource(survey))
+    Ok(ApiOkCacheableResource::Ok(survey))
 }
 
 #[patch("/survey/<survey_id>", data = "<new_survey>")]
@@ -119,6 +136,7 @@ pub async fn edit_survey(
     claims: Claims,
     db: Storage,
     new_survey: Json<SurveyPatch>,
+    race_check: Option<RaceCheck>,
 ) -> Result<(), ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");

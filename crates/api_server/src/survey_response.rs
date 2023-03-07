@@ -9,7 +9,7 @@ use crate::{
     db::{
         models::{NewSurveyResponse, PatchSurveyResponse, SurveyResponse, SurveyResponses},
         Storage,
-    },
+    }, cache::{RaceCheck, CacheCheck, Cacheable},
 };
 
 #[typeshare]
@@ -21,6 +21,8 @@ pub struct ResponseAccepted {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Error)]
 pub enum SurveyResponseError {
+    #[error("Data race")]
+    RaceError,
     #[error("Survey not found")]
     SurveyNotFound,
     #[error("Survey not published")]
@@ -36,6 +38,7 @@ pub enum SurveyResponseError {
 impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
     fn from(value: SurveyResponseError) -> Self {
         let status = match &value {
+            SurveyResponseError::RaceError => Status::PreconditionFailed,
             SurveyResponseError::SurveyNotFound => Status::NotFound,
             SurveyResponseError::SurveyNotPublished => Status::Forbidden,
             SurveyResponseError::ResponderNotFound => Status::NotFound,
@@ -86,6 +89,7 @@ pub async fn edit_survey_response(
     survey_id: i32,
     survey_response: Json<SurveyResponses>,
     responder: Uuid,
+    race_check: Option<RaceCheck>,
 ) -> Result<(), ApiErrorResponse<SurveyResponseError>> {
     let survey_response = survey_response.into_inner();
     db.run(move |conn| {
@@ -112,6 +116,7 @@ pub async fn get_survey_response(
     db: Storage,
     survey_id: i32,
     responder: Uuid,
+    cache_check: Option<CacheCheck>,
 ) -> Result<ApiOkCacheableResource<SurveyResponse>, ApiErrorResponse<SurveyResponseError>> {
     let survey_response = db
         .run(move |conn| {
@@ -126,5 +131,11 @@ pub async fn get_survey_response(
             SurveyResponseError::Unknown
         })?;
 
-    Ok(ApiOkCacheableResource(survey_response))
+    if let Some(cache_check) = cache_check {
+        if survey_response.is_cache_fresh(cache_check) {
+            return Ok(ApiOkCacheableResource::NotModified);
+        }
+    }
+
+    Ok(ApiOkCacheableResource::Ok(survey_response))
 }
