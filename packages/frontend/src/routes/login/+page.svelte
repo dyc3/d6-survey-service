@@ -33,7 +33,7 @@
 		handleLogin(await registerUser({ username, password }));
 	}
 
-	let group_selected: undefined | number = 0;
+	let group_selected = 0;
 </script>
 
 
@@ -45,17 +45,17 @@
 		bind:selected={group_selected}
 		/>
 		<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->
-		{#if group_selected === 0 || group_selected === undefined}
+		{#if group_selected === 0}
 			<div class = 'info-container'>
-				<TextBox placeholder="Username" bind:value={username} /> <br />
-				<TextBox placeholder="Password" bind:value={password} /> <br />
+				<TextBox name="username" placeholder="Username" bind:value={username} /> <br />
+				<TextBox name="password" placeholder="Password" bind:value={password} /> <br />
 				<Button kind="primary" on:click={doLogin}>Submit</Button>
 				<span>{response}</span>
 			</div>
 		{:else if group_selected === 1}
 			<div class = 'info-container'>
-				<TextBox placeholder="New Username" bind:value={username} /> <br />
-				<TextBox placeholder="New Password" bind:value={password} /> <br />
+				<TextBox name="username" placeholder="New Username" bind:value={username} /> <br />
+				<TextBox name="password" placeholder="New Password" bind:value={password} /> <br />
 				<Button kind="primary" on:click={doRegister}>Submit</Button>
 				<span>{response}</span>
 			</div>

@@ -12,7 +12,7 @@
 	function select(i: number) {
 		if(selected == i)
 			if(forceSelection){
-			selected = 0;
+				return;
 			}
 			else
 				selected = undefined;
