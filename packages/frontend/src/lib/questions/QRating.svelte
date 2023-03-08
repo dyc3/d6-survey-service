@@ -53,6 +53,7 @@
 
 <style lang='scss'>
 	@import '../ui/variables';
+
 	.prompt-text{
 		font-weight: bold;
 		font-size: $bold-font-size;
@@ -65,10 +66,12 @@
 		align-items: center;
 		width: 100%;
 	}
+	
 	.description-text{
 		font-size: $main-font-size;
 		color: $color-blue;
 	}
+
 	.align-rating-text {
 		display: flex;
 		justify-content: space-between;
