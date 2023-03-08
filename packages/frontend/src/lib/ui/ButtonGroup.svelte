@@ -24,7 +24,7 @@
 
 <div class="buttonGroup {orientation}">
 	{#each buttons as button, i}
-		<Button toggleable={true} pressed={selected == i} on:click={() => select(i)}>{button}</Button>
+		<Button toggleable={true} inButtonGroup={true} pressed={selected == i} on:click={() => select(i)}>{button}</Button>
 	{/each}
 </div>
 

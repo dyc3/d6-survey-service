@@ -13,6 +13,7 @@
 	export let pressed = false;
 	export let size: 'small' | 'normal' | 'large' = 'normal';
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
+	export let inButtonGroup = false;
 
 	$: classes = `kind-${kind} sz-${size}`;
 
@@ -26,7 +27,9 @@
 	}
 
 	function handleClick(e: Event) {
+		if (!inButtonGroup){
 		toggle();
+		}
 		dispatch('click', e);
 	}
 </script>
