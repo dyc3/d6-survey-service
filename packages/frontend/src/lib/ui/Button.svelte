@@ -49,7 +49,8 @@
 {/if}
 
 <style lang="scss">
-	@import 'variables.scss';
+	@import 'variables';
+
 	$btn-border-size: 3px;
 
 	button {
@@ -81,6 +82,7 @@
 
 	.sz-small {
 		font-size: 1em;
+
 		.surface {
 			padding: 0.2em 0.5em;
 		}
@@ -88,6 +90,7 @@
 
 	.sz-normal {
 		font-size: 1.4em;
+
 		.surface {
 			padding: 0.5em 2em;
 		}
@@ -95,6 +98,7 @@
 
 	.sz-large {
 		font-size: 1.6em;
+
 		.surface {
 			padding: 0.6em 4em;
 		}
@@ -108,11 +112,13 @@
 	.kind-primary {
 		background: $color-primary;
 		color: $color-primary;
+
 		.surface {
 			background: $color-primary;
 			color: $color-surface;
 		}
 	}
+
 	.kind-primary:active {
 		.surface {
 			color: #c4c4c4;
