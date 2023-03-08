@@ -33,7 +33,7 @@
 		handleLogin(await registerUser({ username, password }));
 	}
 
-	let group_selected: number | undefined = undefined;
+	let group_selected: undefined | number = 0;
 </script>
 
 
@@ -64,7 +64,7 @@
 
 <style lang="scss">
 	@import '../../lib/ui/variables.scss';
-	
+
 	.signin-container{
 		display: flex;
 		flex-direction: column;
