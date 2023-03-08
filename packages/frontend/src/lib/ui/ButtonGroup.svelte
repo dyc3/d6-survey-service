@@ -10,7 +10,6 @@
 	export let selected: number | undefined = undefined;
 
 	function select(i: number) {
-		//todo: make it so that you can't unselect a button without selecting another one
 		if(selected == i)
 			if(forceSelection){
 			selected = 0;
