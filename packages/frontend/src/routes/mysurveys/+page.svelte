@@ -4,6 +4,7 @@
 	import type { ListedSurvey } from '../../lib/common';
 
 	let surveys: ListedSurvey[] = [];
+	import ButtonGroup from '../../lib/ui/ButtonGroup.svelte';
 </script>
 
 <div class="toolbar">
