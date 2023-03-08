@@ -39,7 +39,7 @@
 	<Container> 
 		<ButtonGroup
 		orientation="horizontal"
-		buttons={['Login', 'Register']}
+		buttons={['Log In', 'Register']}
 		forceSelection={true}
 		bind:selected={group_selected}
 		role='tab'
