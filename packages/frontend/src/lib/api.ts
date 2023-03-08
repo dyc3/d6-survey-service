@@ -14,7 +14,7 @@ import type {
 } from './common';
 import { jwt } from '../stores';
 
-const API_URL = 'http://localhost:5347'; // TODO: see #42
+const API_URL = 'http://localhost:5173'; // TODO: see #42
 
 export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 export type ApiResponse<T> = Result<T, ApiErrorResponse<any>>;
