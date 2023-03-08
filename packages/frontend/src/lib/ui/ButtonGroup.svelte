@@ -28,7 +28,7 @@
 </div>
 
 <style lang="scss">
-	@import 'variables.scss';
+	@import 'variables';
 
 	.button-group {
 		display: flex;

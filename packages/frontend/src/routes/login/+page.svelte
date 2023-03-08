@@ -63,7 +63,7 @@
 	</div>
 
 <style lang="scss">
-	@import '../../lib/ui/variables.scss';
+	@import '../../lib/ui/variables';
 
 	.signin-container{
 		display: flex;
