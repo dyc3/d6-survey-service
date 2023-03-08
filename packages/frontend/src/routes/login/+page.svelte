@@ -71,5 +71,6 @@
 		justify-content: space-around;
 		align-items: center;
 		width: 100%;
+		padding-top: $main-padding;
 	}
 </style>
