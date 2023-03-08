@@ -9,17 +9,13 @@ $color-danger: $color-red;
 $color-surface: #fff;
 $color-bg: #fff;
 $gradient-default: linear-gradient(90deg, $color-blue 0%, $color-green 100%);
-$gradient-primary: linear-gradient(
-	90deg,
-	$color-blue 0%,
-	$color-green 100%
-); // TODO: make different
-$gradient-danger: linear-gradient(
-	90deg,
-	$color-danger 0%,
-	color.adjust($color-danger, $hue: 30deg) 100%
-);
+$gradient-primary: linear-gradient(90deg,
+		$color-blue 0%,
+		$color-green 100%); // TODO: make different
+$gradient-danger: linear-gradient(90deg,
+		$color-danger 0%,
+		color.adjust($color-danger, $hue: 30deg) 100%);
 $main-font: 'DM Sans', sans-serif;
-$bold-text-size: 1.5em;
+$bold-font-size: 1.5em;
 $main-font-size: 1em;
 $main-padding: 20px;

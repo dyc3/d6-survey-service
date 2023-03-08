@@ -67,13 +67,13 @@
 	}
 	
 	.prompt-text{
-		font-size: 1.5em;
+		font-size: $bold-font-size;
 		font-weight: bold;
 		color: $color-blue;
 	}
 
 	.description-text{
-		font-size: 1em;
+		font-size: $main-font-size;
 		color: $color-blue;
 	}
 </style>
