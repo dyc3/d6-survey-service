@@ -51,6 +51,9 @@ paths:
       description: >
         Get a survey. If the survey is not published, only the owner can
         get it. If the survey is published, anyone can get it.
+      parameters:
+        - $ref: "#/components/parameters/ifmodifiedsince"
+        - $ref: "#/components/parameters/ifnonematch"
       responses:
         "200":
           description: 200 response
@@ -124,6 +127,9 @@ paths:
 
 
         The request body can contain any of the top level fields, but they are not required. If a field is not present, it will not be updated.
+      parameters:
+        - $ref: "#/components/parameters/ifunmodifiedsince"
+        - $ref: "#/components/parameters/ifmatch"
       responses:
         "200":
           description: The survey was updated
@@ -203,6 +209,9 @@ paths:
         the question IDs as keys and the response as the value.
 
         The `responder` query parameter is required.
+      parameters:
+        - $ref: "#/components/parameters/ifunmodifiedsince"
+        - $ref: "#/components/parameters/ifmatch"
       responses:
         "200":
           description: Updated survey response has been saved
@@ -210,6 +219,9 @@ paths:
         $ref: "#/components/requestBodies/SurveyResponse"
     get:
       summary: Get a survey response
+      parameters:
+        - $ref: "#/components/parameters/ifmodifiedsince"
+        - $ref: "#/components/parameters/ifnonematch"
       responses:
         "200":
           description: Response exists, here it is
@@ -243,6 +255,38 @@ components:
       in: path
       required: true
       description: The survey ID
+      schema:
+        type: string
+    ifmodifiedsince:
+      name: If-Modified-Since
+      in: header
+      required: false
+      description: The date the client thinks the resource was last modified
+      schema:
+        type: string
+        format: date-time
+        example: Wed, 08 Mar 2023 07:28:00 GMT
+    ifnonematch:
+      name: If-None-Match
+      in: header
+      required: false
+      description: The ETag of the resource
+      schema:
+        type: string
+    ifunmodifiedsince:
+      name: If-Unmodified-Since
+      in: header
+      required: false
+      description: The date the client thinks the resource was last modified
+      schema:
+        type: string
+        format: date-time
+        example: Wed, 08 Mar 2023 07:28:00 GMT
+    ifmatch:
+      name: If-Match
+      in: header
+      required: false
+      description: The ETag of the resource
       schema:
         type: string
   requestBodies:
