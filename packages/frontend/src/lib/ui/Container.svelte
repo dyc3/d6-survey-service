@@ -3,14 +3,19 @@
 </div>
 
 <style lang="scss">
+	@import 'variables';
+
 	.main-layout {
+		display: flex;
+		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		padding: 20px 30px;
 		margin: auto;
+		min-height: fit-content;
 		width: max-content;
-		border: #000 3px solid;
-		border-radius: 4px;
+		border: $color-blue 3px solid;
+		border-radius: 10px;
 		line-height: 2;
 		color: black;
 	}

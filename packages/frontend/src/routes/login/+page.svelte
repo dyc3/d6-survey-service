@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Main from '$lib/ui/Main.svelte';
+	import Container from '$lib/ui/Container.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import { loginUser, registerUser } from '$lib/api';
@@ -36,12 +36,13 @@
 </script>
 
 
-	<div class='signin-container'> 
+	<Container> 
 		<ButtonGroup
 		orientation="horizontal"
 		buttons={['Login', 'Register']}
 		forceSelection={true}
 		bind:selected={group_selected}
+		role='tab'
 		/>
 		<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->
 		{#if group_selected === 0}
@@ -59,24 +60,10 @@
 				<span>{response}</span>
 			</div>
 		{/if}
-	</div>
+	</Container>
 
 <style lang="scss">
 	@import '../../lib/ui/variables';
-
-	.signin-container{
-		display: flex;
-		flex-direction: column;
-		justify-content: space-around;
-		align-items: center;
-		height: 40vh;
-		min-height: fit-content;
-		width: 50vw;
-		border: 3px solid $color-blue;
-		border-radius: 10px;
-		margin-left: auto;
-		margin-right: auto;
-	}
 
 	.info-container{
 		display: flex;

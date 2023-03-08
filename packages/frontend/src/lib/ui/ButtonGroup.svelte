@@ -8,6 +8,7 @@
 	export let buttons: string[];
 	export let forceSelection: boolean;
 	export let selected: number | undefined = undefined;
+	export let role: string | undefined = undefined;
 
 	function select(i: number) {
 		if(selected == i)
@@ -23,7 +24,7 @@
 
 <div class="button-group {orientation}">
 	{#each buttons as button, i}
-		<Button toggleable={true} inButtonGroup={true} pressed={selected == i} on:click={() => select(i)}>{button}</Button>
+		<Button toggleable={true} inButtonGroup={true} pressed={selected == i} on:click={() => select(i)} role={role}>{button}</Button>
 	{/each}
 </div>
 
@@ -34,6 +35,7 @@
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
+		padding-bottom: $main-padding;
 	}
 
 	.horizontal {

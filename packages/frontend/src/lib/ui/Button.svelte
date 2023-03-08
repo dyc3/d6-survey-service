@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let type: 'button' | 'submit' | 'reset' | undefined = undefined;
+	export let role: string | undefined = undefined;
 	/**
 	 * Makes the button toggle when clicked.
 	 */
@@ -35,13 +36,13 @@
 </script>
 
 {#if toggleable}
-	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed}>
+	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed} role={role}>
 		<div class="surface">
 			<slot />
 		</div>
 	</button>
 {:else}
-	<button {type} class={classes} on:click>
+	<button {type} class={classes} on:click role={role}>
 		<div class="surface">
 			<slot />
 		</div>
