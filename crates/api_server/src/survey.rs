@@ -10,6 +10,7 @@ use crate::{
         schema, Storage,
     },
     jwt::Claims,
+    validate::{Validate, ValidationError},
 };
 
 #[derive(Debug, Error, Serialize, Deserialize)]
@@ -22,6 +23,8 @@ pub enum SurveyError {
     NotOwner,
     #[error("Not found")]
     NotFound,
+    #[error("Validation error")]
+    ValidationError(Vec<ValidationError>),
     #[error("Internal error")]
     Unknown,
 }
@@ -33,6 +36,7 @@ impl From<SurveyError> for ApiErrorResponse<SurveyError> {
             SurveyError::NotPublished => Status::Forbidden,
             SurveyError::NotOwner => Status::Forbidden,
             SurveyError::NotFound => Status::NotFound,
+            SurveyError::ValidationError(_) => Status::UnprocessableEntity,
             SurveyError::Unknown => Status::InternalServerError,
         };
         ApiErrorResponse {
@@ -129,7 +133,9 @@ pub async fn edit_survey(
         return Err(SurveyError::CantEditPublished.into());
     }
 
-    // TODO: validate questions
+    new_survey
+        .validate()
+        .map_err(SurveyError::ValidationError)?;
 
     db.run(move |conn| -> anyhow::Result<()> {
         diesel::update(schema::surveys::table)

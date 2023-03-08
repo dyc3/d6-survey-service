@@ -1,6 +1,9 @@
 <script lang="ts">
 	import Button from '../../lib/ui/Button.svelte';
 	import TextBox from '../../lib/ui/TextBox.svelte';
+	import type { ListedSurvey } from '../../lib/common';
+
+	let surveys: ListedSurvey[] = [];
 </script>
 
 <div class="toolbar">
@@ -16,59 +19,59 @@
 			<th class="actions">Actions</th>
 		</thead>
 		<tbody>
-			<tr class="survey">
-				<td class="name">Survey 1</td>
-				<!-- TODO: replace with check box-->
-				<td class="published">Yes</td>
-				<!-- TODO: make this read only-->
-				<td class="share-link"><TextBox value="https://www.survey.com/123" /></td>
-				<td class="actions">
-					<Button>Edit</Button>
-					<Button kind='danger'>Delete</Button>
-				</td>
-			</tr>
-			<tr class="survey">
-				<td class="name">Survey 2</td>
-				<td class="published">Yes</td>
-				<td class="share-link"><TextBox value="https://www.survey.com/123" /></td>
-				<td class="actions">
-					<Button>Edit</Button>
-					<Button kind='danger'>Delete</Button>
-				</td>
-			</tr>
+			{#each surveys as survey}
+				<tr class="survey">
+					<td class="name">{survey.title}</td>
+					<!-- TODO: replace with check box-->
+					<td class="published">{survey.published ? 'Yes' : 'No'}</td>
+
+					<!-- TODO: make this read only-->
+					<td class="share-link">
+						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" />
+					</td>
+					<td class="actions">
+						<Button>Edit</Button>
+						<Button kind="danger">Delete</Button>
+					</td>
+				</tr>
+			{/each}
 		</tbody>
 	</table>
 </div>
 
 <style lang="scss">
-	@import '../../lib/ui/main.scss';
+	@import '../../lib/ui/variables';
+
 	.main-container {
 		height: 70vh;
-		border: 2px solid $main-blue;
+		border: 2px solid $color-default;
 	}
+
 	.container {
 		width: 100%;
 		border-collapse: collapse;
 	}
+
 	.header {
 		align-items: center;
 		text-align: left;
-		font-family: $main-font;
 		font-weight: 500;
-		color: $main-blue;
-		border-bottom: 2px solid $main-blue;
+		border-bottom: 2px solid $color-default;
 	}
-	.actions{
+
+	.actions {
 		display: flex;
 		max-width: 250px;
 		justify-content: space-between;
 	}
+
 	.survey {
 		align-items: center;
 		border: 1px solid #426881;
 		max-height: 50px;
 		margin-bottom: 20px;
 	}
+
 	.published {
 		text-align: center;
 	}
@@ -80,14 +83,11 @@
 	}
 
 	h1 {
-		font-family: $main-font;
 		font-weight: 700;
-		color: $main-blue;
 	}
 
 	td {
-		font-family: $main-font;
 		font-weight: 400;
-		color: $main-blue;
+		color: $color-default;
 	}
 </style>

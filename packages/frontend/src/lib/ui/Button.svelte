@@ -6,6 +6,7 @@
 	 * Makes the button toggle when clicked.
 	 */
 	export let toggleable = false;
+
 	/**
 	 * Whether the button is currently pressed.
 	 */
@@ -42,7 +43,8 @@
 {/if}
 
 <style lang="scss">
-	@import 'main.scss';
+	@import 'variables';
+
 	$btn-border-size: 3px;
 
 	button {
@@ -54,9 +56,8 @@
 	}
 
 	.surface {
-		background: #fff;
+		background: $color-surface;
 		border-radius: 3px;
-		font-family: $main-font;
 		font-weight: 500;
 	}
 
@@ -69,12 +70,13 @@
 	[aria-pressed='true'] {
 		.surface {
 			background: transparent;
-			color: #fff;
+			color: $color-surface;
 		}
 	}
 
 	.sz-small {
 		font-size: 1em;
+
 		.surface {
 			padding: 0.2em 0.5em;
 		}
@@ -82,6 +84,7 @@
 
 	.sz-normal {
 		font-size: 1.4em;
+
 		.surface {
 			padding: 0.5em 2em;
 		}
@@ -89,32 +92,35 @@
 
 	.sz-large {
 		font-size: 1.6em;
+
 		.surface {
 			padding: 0.6em 4em;
 		}
 	}
 
+	.kind-default {
+		background: $gradient-default;
+		color: $color-default;
+	}
+
 	.kind-primary {
-		background: $main-blue;
-		color: $main-blue;
-		.surface{
-			background: $main-blue;
-			color: #fff;
+		background: $color-primary;
+		color: $color-primary;
+
+		.surface {
+			background: $color-primary;
+			color: $color-surface;
 		}
 	}
-	.kind-primary:active{
-		.surface{
+
+	.kind-primary:active {
+		.surface {
 			color: #c4c4c4;
 		}
 	}
 
-	.kind-default {
-		background: $main-gradient;
-		color: $main-blue;
-	}
-
 	.kind-danger {
-		background: $main-red;
-		color: $main-red;
+		background: $gradient-danger;
+		color: $color-danger;
 	}
 </style>
