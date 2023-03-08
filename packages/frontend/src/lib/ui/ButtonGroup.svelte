@@ -21,7 +21,7 @@
 	}
 </script>
 
-<div class="buttonGroup {orientation}">
+<div class="button-group {orientation}">
 	{#each buttons as button, i}
 		<Button toggleable={true} inButtonGroup={true} pressed={selected == i} on:click={() => select(i)}>{button}</Button>
 	{/each}
@@ -30,7 +30,7 @@
 <style lang="scss">
 	@import 'variables.scss';
 
-	.buttonGroup {
+	.button-group {
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
