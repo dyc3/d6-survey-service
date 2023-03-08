@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Main from '$lib/ui/Main.svelte';
-	import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@rgossiaux/svelte-headlessui';
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import { loginUser, registerUser } from '$lib/api';
@@ -49,14 +48,14 @@
 			<div class = 'info-container'>
 				<TextBox name="username" placeholder="Username" bind:value={username} /> <br />
 				<TextBox name="password" placeholder="Password" bind:value={password} /> <br />
-				<Button kind="primary" on:click={doLogin}>Submit</Button>
+				<Button type="submit" kind="primary" on:click={doLogin}>Submit</Button>
 				<span>{response}</span>
 			</div>
 		{:else if group_selected === 1}
 			<div class = 'info-container'>
 				<TextBox name="username" placeholder="New Username" bind:value={username} /> <br />
 				<TextBox name="password" placeholder="New Password" bind:value={password} /> <br />
-				<Button kind="primary" on:click={doRegister}>Submit</Button>
+				<Button type="submit" kind="primary" on:click={doRegister}>Submit</Button>
 				<span>{response}</span>
 			</div>
 		{/if}
