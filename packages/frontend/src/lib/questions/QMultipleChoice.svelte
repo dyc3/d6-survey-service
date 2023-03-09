@@ -20,7 +20,7 @@
 <div>
 	<div>
 		{#if editmode}
-			<TextBox bind:value={prompt} />
+			<TextBox bind:value={prompt} placeholder="Prompt" />
 		{:else}
 			<span>{prompt}</span>
 		{/if}
@@ -28,7 +28,7 @@
 
 	<div>
 		{#if editmode}
-			<TextBox bind:value={description} />
+			<TextBox bind:value={description} placeholder="Description" />
 		{:else}
 			<span>{description}</span>
 		{/if}
