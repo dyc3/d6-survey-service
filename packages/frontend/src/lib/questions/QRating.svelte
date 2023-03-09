@@ -15,10 +15,10 @@
 <div>
 	<div>
 		{#if editmode}
-			<span>On a scale of 1- <input bind:value={max_rating} type="number" /> ...</span>
+			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>
 			<span
-				>Where 1 is <input bind:value={minText} /> and {max_rating} is
-				<input bind:value={maxText} /></span
+				>Where 1 is <input bind:value={minText} on:change /> and {max_rating} is
+				<input bind:value={maxText} on:change /></span
 			>
 		{:else}
 			<span>On a scale of 1-{max_rating}...</span>
@@ -27,7 +27,7 @@
 
 	<div>
 		{#if editmode}
-			<TextBox bind:value={prompt} placeholder="Prompt" />
+			<TextBox bind:value={prompt} placeholder="Prompt" on:change />
 		{:else}
 			<span>{prompt}</span>
 		{/if}
@@ -35,7 +35,7 @@
 
 	<div>
 		{#if editmode}
-			<TextBox bind:value={description} placeholder="Description" />
+			<TextBox bind:value={description} placeholder="Description" on:change />
 		{:else}
 			<span>{description}</span>
 		{/if}

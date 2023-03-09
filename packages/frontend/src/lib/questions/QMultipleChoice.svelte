@@ -11,16 +11,18 @@
 
 	function addChoice() {
 		choices = [...choices, { uuid: crypto.randomUUID(), text: '' }];
+		dispatchEvent(new Event('change'));
 	}
 	function removeChoice(index: number) {
 		choices = choices.filter((_, i) => i !== index);
+		dispatchEvent(new Event('change'));
 	}
 </script>
 
 <div>
 	<div>
 		{#if editmode}
-			<TextBox bind:value={prompt} placeholder="Prompt" />
+			<TextBox bind:value={prompt} placeholder="Prompt" on:change />
 		{:else}
 			<span>{prompt}</span>
 		{/if}
@@ -28,7 +30,7 @@
 
 	<div>
 		{#if editmode}
-			<TextBox bind:value={description} placeholder="Description" />
+			<TextBox bind:value={description} placeholder="Description" on:change />
 		{:else}
 			<span>{description}</span>
 		{/if}
@@ -39,7 +41,7 @@
 		{#each choices as choice, i}
 			{#if editmode}
 				<div class="editable-choice">
-					<TextBox bind:value={choice.text} placeholder="Enter text..." />
+					<TextBox bind:value={choice.text} placeholder="Enter text..." on:change />
 					<Button kind="danger" size="small" on:click={() => removeChoice(i)}>x</Button>
 				</div>
 			{:else}

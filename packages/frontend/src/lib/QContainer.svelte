@@ -9,9 +9,9 @@
 </script>
 
 {#if question.type === 'Text'}
-	<QTextInput {...question.content} {editmode} />
+	<QTextInput {...question.content} {editmode} on:change />
 {:else if question.type === 'Rating'}
-	<QRating {...question.content} {editmode} />
+	<QRating {...question.content} {editmode} on:change />
 {:else if question.type == 'MultipleChoice'}
-	<QMultipleChoice {...question.content} {editmode} />
+	<QMultipleChoice {...question.content} {editmode} on:change />
 {/if}

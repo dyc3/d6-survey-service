@@ -7,6 +7,8 @@
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import type { PageData } from './$types';
 
+	import _ from 'lodash';
+
 	let title = 'Untitled Survey';
 	let description = '';
 	let questions: SurveyQuestions = [];
@@ -62,10 +64,12 @@
 				question: buildQuestion(type)
 			}
 		];
+		onChange();
 	}
 
 	function removeQuestion(uuid: string) {
 		questions = questions.filter((q) => q.uuid !== uuid);
+		onChange();
 	}
 
 	async function submitChanges() {
@@ -77,6 +81,8 @@
 
 		await editSurvey(data.surveyId, patch);
 	}
+
+	let onChange = _.debounce(submitChanges, 1000);
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 </script>
@@ -90,12 +96,12 @@
 </div>
 
 <div class="container">
-	<TextBox placeholder="Survey Title" />
-	<TextBox placeholder="Survey Description" />
+	<TextBox placeholder="Survey Title" bind:value={title} />
+	<TextBox placeholder="Survey Description" bind:value={description} />
 
 	{#each questions as q}
 		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>x</Button>
-		<QContainer question={q.question} editmode={true} />
+		<QContainer question={q.question} editmode={true} on:change={onChange} />
 	{/each}
 	<select bind:value={questionToAdd}>
 		<option value="Text">Text</option>
