@@ -9,9 +9,27 @@
 </script>
 
 {#if question.type === 'Text'}
-	<QTextInput {...question.content} {editmode} on:change />
+	<QTextInput
+		bind:prompt={question.content.prompt}
+		bind:description={question.content.description}
+		bind:multiline={question.content.multiline}
+		{editmode}
+		on:change
+	/>
 {:else if question.type === 'Rating'}
-	<QRating {...question.content} {editmode} on:change />
+	<QRating
+		bind:prompt={question.content.prompt}
+		bind:description={question.content.description}
+		bind:max_rating={question.content.max_rating}
+		{editmode}
+		on:change
+	/>
 {:else if question.type == 'MultipleChoice'}
-	<QMultipleChoice {...question.content} {editmode} on:change />
+	<QMultipleChoice
+		bind:prompt={question.content.prompt}
+		bind:description={question.content.description}
+		bind:multiple={question.content.multiple}
+		{editmode}
+		on:change
+	/>
 {/if}
