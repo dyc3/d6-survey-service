@@ -129,6 +129,7 @@ impl<'r> FromRequest<'r> for RaceCheck {
 mod tests {
 	use super::*;
 	use chrono::prelude::*;
+	use rocket::{local::blocking::Client, http::Header};
 
 	struct TestObj {
 		etag: String,
@@ -176,5 +177,20 @@ mod tests {
 			obj.last_modified_header().unwrap(),
 			"Wed, 21 Oct 2015 07:28:00 GMT"
 		);
+	}
+
+	#[get("/")]
+	fn test_route(_cache_check: CacheCheck, _race_check: RaceCheck) -> &'static str {
+		"test"
+	}
+
+	#[test]
+	fn test_parsing_time_headers() {
+		let client = Client::tracked(rocket::build().mount("/", routes![test_route])).expect("valid rocket instance");
+		let mut req = client.get("/");
+		req.add_header(Header::new("If-Modified-Since", "Wed, 21 Oct 2015 07:28:00 GMT"));
+		req.add_header(Header::new("If-Unmodified-Since", "Wed, 21 Oct 2015 07:28:00 GMT"));
+		let resp = req.dispatch();
+		assert_eq!(resp.status(), rocket::http::Status::Ok);
 	}
 }
