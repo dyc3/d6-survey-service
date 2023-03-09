@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Question, SurveyQuestions } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
-	
+
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 
@@ -62,32 +62,30 @@
 		questions = questions.filter((q) => q.uuid !== uuid);
 	}
 
-	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = "Text";
+	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 </script>
 
-
-<div class='toolbar'>
+<div class="toolbar">
 	<div>
 		<h1>Sample Survey Title</h1>
 		<h2>Editing</h2>
 	</div>
-	<Button >View Results</Button>
+	<Button>View Results</Button>
 </div>
 
-
-<div class='container'>
-	<TextBox placeholder='Survey Title'></TextBox>
-	<TextBox placeholder='Survey Description'></TextBox>
+<div class="container">
+	<TextBox placeholder="Survey Title" />
+	<TextBox placeholder="Survey Description" />
 
 	{#each questions as q}
-	<QContainer question={q.question} />
+		<QContainer question={q.question} editmode={true} />
 	{/each}
 	<select bind:value={questionToAdd}>
 		<option value="Text">Text</option>
 		<option value="MultipleChoice">Multiple Choice</option>
 		<option value="Rating">Rating</option>
 	</select>
-		
+
 	<Button on:click={() => addQuestion(questionToAdd)}>+</Button>
 
 	<Button>Publish Survey</Button>
