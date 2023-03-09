@@ -1,11 +1,17 @@
 <script lang="ts">
-	import type { Question, SurveyQuestions } from '$lib/common';
+	import { editSurvey } from '$lib/api';
+	import type { Question, SurveyPatch, SurveyQuestions } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
+	import type { PageData } from './$types';
 
+	let title = 'Untitled Survey';
+	let description = '';
 	let questions: SurveyQuestions = [];
+
+	export let data: PageData;
 
 	function buildQuestion(type: 'Text' | 'Rating' | 'MultipleChoice'): Question {
 		let question: Question;
@@ -60,6 +66,16 @@
 
 	function removeQuestion(uuid: string) {
 		questions = questions.filter((q) => q.uuid !== uuid);
+	}
+
+	async function submitChanges() {
+		let patch: SurveyPatch = {
+			title,
+			description,
+			questions
+		};
+
+		await editSurvey(data.surveyId, patch);
 	}
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
