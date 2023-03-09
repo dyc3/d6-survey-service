@@ -127,6 +127,14 @@ pub struct SurveyResponse {
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
+/// Used to minimize the amount of data we query from the database
+/// when checking for mid-air collisions.
+#[derive(Queryable, Serialize, Deserialize)]
+#[diesel(table_name=responses)]
+pub struct SurveyResponseUpdatedAt {
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
 #[derive(Insertable)]
 #[diesel(table_name=responses)]
 pub struct NewSurveyResponse {
