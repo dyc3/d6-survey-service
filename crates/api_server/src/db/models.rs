@@ -45,6 +45,16 @@ pub struct Survey {
     pub updated_at: chrono::NaiveDateTime,
 }
 
+/// Used to minimize the amount of data we query from the database
+/// when checking for mid-air collisions and other preconditions.
+#[derive(Queryable)]
+#[diesel(table_name=surveys)]
+pub struct SurveyUpdateCheck {
+    pub published: bool,
+    pub owner_id: i32,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
 /// Represents a partial update to a survey
 #[typeshare]
 #[derive(AsChangeset, Serialize, Deserialize, Default)]
@@ -129,9 +139,9 @@ pub struct SurveyResponse {
 
 /// Used to minimize the amount of data we query from the database
 /// when checking for mid-air collisions.
-#[derive(Queryable, Serialize, Deserialize)]
+#[derive(Queryable)]
 #[diesel(table_name=responses)]
-pub struct SurveyResponseUpdatedAt {
+pub struct SurveyResponseUpdateCheck {
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 

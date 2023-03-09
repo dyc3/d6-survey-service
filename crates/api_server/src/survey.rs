@@ -6,7 +6,7 @@ use thiserror::Error;
 use crate::{
     api::{ApiErrorResponse, ApiOkCacheableResource},
     db::{
-        models::{NewSurvey, Survey, SurveyPatch},
+        models::{NewSurvey, Survey, SurveyPatch, SurveyUpdateCheck},
         schema, Storage,
     },
     jwt::Claims,
@@ -144,7 +144,12 @@ pub async fn edit_survey(
     new_survey: Json<SurveyPatch>,
     race_check: Option<RaceCheck>,
 ) -> Result<(), ApiErrorResponse<SurveyError>> {
-    let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
+    let survey = db.run(move |conn| {
+        schema::surveys::dsl::surveys
+            .find(survey_id)
+            .select((crate::db::schema::surveys::published, crate::db::schema::surveys::owner_id, crate::db::schema::surveys::updated_at))
+            .first::<SurveyUpdateCheck>(conn)
+    }).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
     })?;

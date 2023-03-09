@@ -7,7 +7,7 @@ use uuid::Uuid;
 use crate::{
     api::{ApiErrorResponse, ApiOkCacheableResource},
     db::{
-        models::{NewSurveyResponse, PatchSurveyResponse, Survey, SurveyResponse, SurveyResponses, SurveyResponseUpdatedAt},
+        models::{NewSurveyResponse, PatchSurveyResponse, Survey, SurveyResponse, SurveyResponses, SurveyResponseUpdateCheck},
         Storage,
     }, cache::{RaceCheck, CacheCheck, Cacheable},
     validate::{Validate, ValidationError},
@@ -120,7 +120,7 @@ pub async fn edit_survey_response(
                 crate::db::schema::responses::table
                     .select((crate::db::schema::responses::updated_at,))
                     .find(responder)
-                    .first::<SurveyResponseUpdatedAt>(conn)
+                    .first::<SurveyResponseUpdateCheck>(conn)
             })
             .await
             .map_err(|e| {

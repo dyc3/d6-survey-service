@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use rocket::{request::{Outcome, FromRequest}, Request};
 
-use crate::db::models::{Survey, SurveyResponse, SurveyResponseUpdatedAt};
+use crate::db::models::{Survey, SurveyResponse, SurveyResponseUpdateCheck, SurveyUpdateCheck};
 
 pub trait Cacheable {
 	fn modified_time(&self) -> Option<DateTime<Utc>> { None }
@@ -71,7 +71,13 @@ impl Cacheable for SurveyResponse {
 	}
 }
 
-impl Cacheable for SurveyResponseUpdatedAt {
+impl Cacheable for SurveyUpdateCheck {
+	fn modified_time(&self) -> Option<DateTime<Utc>> {
+		Some(DateTime::from_utc(self.updated_at, Utc))
+	}
+}
+
+impl Cacheable for SurveyResponseUpdateCheck {
 	fn modified_time(&self) -> Option<DateTime<Utc>> {
 		Some(self.updated_at)
 	}
