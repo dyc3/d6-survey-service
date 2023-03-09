@@ -18,11 +18,6 @@ pub mod test_helpers;
 pub mod user;
 pub mod validate;
 
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
-}
-
 #[launch]
 pub fn rocket() -> _ {
     rocket::build()
@@ -31,7 +26,7 @@ pub fn rocket() -> _ {
         .mount(
             "/api",
             routes![
-                index,
+                api::health,
                 user::register_user,
                 user::login_user,
                 user::list_surveys,

@@ -13,15 +13,16 @@
 {/if}
 
 <style lang="scss">
-	@import 'variables.scss';
+	@import 'variables';
+
 	input,
 	textarea {
 		border: 3px solid $color-default;
 		border-radius: 3px;
 		background-color: #fff;
 		min-width: 70%;
-		font-weight: 700;
 		color: $color-default;
 		padding: 0.5em;
+		font-size: $main-font-size;
 	}
 </style>

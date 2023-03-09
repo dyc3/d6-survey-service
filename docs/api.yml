@@ -3,6 +3,16 @@ info:
   title: Survey Service
   version: "1.0"
 paths:
+  /api/status:
+    summary: Get the status of the service
+    get:
+      responses:
+        "200":
+          description: Service is up and running
+          content:
+            text/plain:
+              schema:
+                type: string
   /api/user/register:
     summary: Register a new user
     post:

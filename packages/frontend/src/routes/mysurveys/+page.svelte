@@ -4,6 +4,7 @@
 	import type { ListedSurvey } from '../../lib/common';
 
 	let surveys: ListedSurvey[] = [];
+	import ButtonGroup from '../../lib/ui/ButtonGroup.svelte';
 </script>
 
 <div class="toolbar">
@@ -40,32 +41,38 @@
 </div>
 
 <style lang="scss">
-	@import '../../lib/ui/variables.scss';
+	@import '../../lib/ui/variables';
+
 	.main-container {
 		height: 70vh;
 		border: 2px solid $color-default;
 	}
+
 	.container {
 		width: 100%;
 		border-collapse: collapse;
 	}
+
 	.header {
 		align-items: center;
 		text-align: left;
 		font-weight: 500;
 		border-bottom: 2px solid $color-default;
 	}
+
 	.actions {
 		display: flex;
 		max-width: 250px;
 		justify-content: space-between;
 	}
+
 	.survey {
 		align-items: center;
 		border: 1px solid #426881;
 		max-height: 50px;
 		margin-bottom: 20px;
 	}
+
 	.published {
 		text-align: center;
 	}

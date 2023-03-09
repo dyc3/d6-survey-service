@@ -67,3 +67,8 @@ where
             .ok()
     }
 }
+
+#[get("/status")]
+pub fn health() -> &'static str {
+    "OK"
+}
