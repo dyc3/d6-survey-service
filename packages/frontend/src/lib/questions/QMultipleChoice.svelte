@@ -6,6 +6,7 @@
 	export let editmode = false;
 	export let prompt: string;
 	export let description: string;
+	export let multiple = false;
 	export let choices: Choice[] = [];
 
 	function addChoice() {
