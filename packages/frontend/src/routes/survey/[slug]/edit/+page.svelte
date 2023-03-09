@@ -61,19 +61,49 @@
 	function removeQuestion(uuid: string) {
 		questions = questions.filter((q) => q.uuid !== uuid);
 	}
+
+	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = "Text";
 </script>
 
-<h1>Sample Survey Title</h1>
-<h2>Editing</h2>
-<Button>View Results</Button>
 
-<div>
-	<!--Replace these-->
-<TextBox placeholder='Survey Title'></TextBox>
-<TextBox placeholder='Survey Description'></TextBox>
-
-
-
-<Button></Button>
-
+<div class='toolbar'>
+	<div>
+		<h1>Sample Survey Title</h1>
+		<h2>Editing</h2>
+	</div>
+	<Button >View Results</Button>
 </div>
+
+
+<div class='container'>
+	<TextBox placeholder='Survey Title'></TextBox>
+	<TextBox placeholder='Survey Description'></TextBox>
+
+	{#each questions as q}
+	<QContainer question={q.question} />
+	{/each}
+	<select bind:value={questionToAdd}>
+		<option value="Text">Text</option>
+		<option value="MultipleChoice">Multiple Choice</option>
+		<option value="Rating">Rating</option>
+	</select>
+		
+	<Button on:click={() => addQuestion(questionToAdd)}>+</Button>
+
+	<Button>Publish Survey</Button>
+</div>
+
+<style lang="scss">
+	@import '../../../../lib/ui/variables.scss';
+
+	.container {
+		border: 2px solid $color-default;
+		align-items: center;
+	}
+
+	.toolbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+</style>
