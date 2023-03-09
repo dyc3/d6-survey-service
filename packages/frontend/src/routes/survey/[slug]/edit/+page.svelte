@@ -78,6 +78,7 @@
 	<TextBox placeholder="Survey Description" />
 
 	{#each questions as q}
+		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>x</Button>
 		<QContainer question={q.question} editmode={true} />
 	{/each}
 	<select bind:value={questionToAdd}>
