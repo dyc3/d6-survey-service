@@ -22,6 +22,7 @@ pub fn rocket() -> _ {
     rocket::build()
         .attach(db::stage())
         .attach(cors::Cors)
+        .mount("/", routes![cors::handle_preflight])
         .mount(
             "/api",
             routes![
