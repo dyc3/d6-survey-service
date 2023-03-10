@@ -4,6 +4,7 @@
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import Container from '$lib/ui/Container.svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let editmode = false;
 	export let prompt: string;
@@ -11,13 +12,15 @@
 	export let multiple = false;
 	export let choices: Choice[] = [];
 
+	let dispatch = createEventDispatcher();
+
 	function addChoice() {
 		choices = [...choices, { uuid: crypto.randomUUID(), text: '' }];
-		dispatchEvent(new Event('change'));
+		dispatch('change');
 	}
 	function removeChoice(index: number) {
 		choices = choices.filter((_, i) => i !== index);
-		dispatchEvent(new Event('change'));
+		dispatch('change');
 	}
 
 	let group_selected: number | undefined = undefined;
@@ -26,7 +29,7 @@
 <Container>
 	<div>
 		{#if editmode}
-			<TextBox placeholder="Enter prompt..." bind:value={prompt} />
+			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />
 		{:else}
 			<span class="prompt-text">{prompt}</span>
 		{/if}
@@ -34,7 +37,7 @@
 
 	<div>
 		{#if editmode}
-			<TextBox placeholder="Enter description..." bind:value={description} />
+			<TextBox placeholder="Enter description..." bind:value={description} on:change />
 		{:else}
 			<span class="description-text">{description}</span>
 		{/if}

@@ -30,6 +30,7 @@
 			bind:prompt={question.content.prompt}
 			bind:description={question.content.description}
 			bind:multiple={question.content.multiple}
+			bind:choices={question.content.choices}
 			{editmode}
 			on:change
 		/>
