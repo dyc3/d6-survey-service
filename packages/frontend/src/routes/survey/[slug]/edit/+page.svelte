@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { editSurvey } from '$lib/api';
+	import { editSurvey, getSurveyAuth } from '$lib/api';
 	import type { Question, SurveyPatch, SurveyQuestions } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 
@@ -8,6 +8,8 @@
 	import type { PageData } from './$types';
 
 	import _ from 'lodash';
+	import { onMount } from 'svelte';
+	import { error } from '@sveltejs/kit';
 
 	let title = 'Untitled Survey';
 	let description = '';
@@ -83,6 +85,24 @@
 	}
 
 	let onChange = _.debounce(submitChanges, 1000);
+
+	onMount(async () => {
+		let response = await getSurveyAuth(data.surveyId);
+		if (!response.ok) {
+			if (response.error.message === 'NotFound') {
+				throw error(404, 'Survey not found');
+			} else if (response.error.message === 'NotPublished') {
+				throw error(403, 'Survey not published');
+			} else {
+				throw error(500, 'Internal server error');
+			}
+		}
+
+		let survey = response.value;
+		title = survey.title;
+		description = survey.description;
+		questions = survey.questions;
+	});
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 </script>

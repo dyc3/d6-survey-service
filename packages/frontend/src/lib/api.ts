@@ -13,8 +13,9 @@ import type {
 	ValidationError
 } from './common';
 import { jwt } from '../stores';
+import { browser } from '$app/environment';
 
-const API_URL = 'http://localhost:5173'; // TODO: see #42
+const API_URL = browser ? 'http://localhost:5173' : 'http://localhost:5347'; // TODO: see #42
 
 export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 export type ApiResponse<T> = Result<T, ApiErrorResponse<any>>;
@@ -87,6 +88,13 @@ export async function getSurvey(
 	opts?: ExtraOptions
 ): Promise<ApiResponse<Survey>> {
 	return apiReq(`/api/survey/${survey_id}`, { ...opts });
+}
+
+export async function getSurveyAuth(
+	survey_id: number,
+	opts?: ExtraOptions
+): Promise<ApiResponse<Survey>> {
+	return apiReqAuth(`/api/survey/${survey_id}`, { ...opts });
 }
 
 export async function createSurvey(opts?: ExtraOptions): Promise<ApiResponse<Survey>> {
