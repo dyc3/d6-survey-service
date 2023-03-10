@@ -4,10 +4,8 @@ import { jwt } from '../../stores';
 
 export const ssr = false;
 
-export const load = (async ({ fetch, data }) => {
-	const token = jwt.get();
-	console.log("token", token)
+export const load = (async ({ fetch, }) => {
 	return {
-		survey: await getSurveyAuth(2, { fetch, token })
+		survey: await getSurveyAuth(2, { fetch })
 	};
 }) satisfies PageLoad;

@@ -15,7 +15,7 @@ import type {
 import { jwt } from '../stores';
 import { browser } from '$app/environment';
 
-const API_URL = 'http://localhost:5347'; // TODO: see #42
+const API_URL = 'http://localhost:5347';
 
 export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 export type ApiResponse<T> = Result<T, ApiErrorResponse<any>>;
@@ -50,6 +50,9 @@ async function apiReq<T>(path: string, options?: ApiRequestOptions): Promise<Api
 async function apiReqAuth<T>(path: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
 	const token = options?.token ?? (browser ? jwt.get() : undefined);
 	if (!token) {
+		if (!browser) {
+			throw new Error("Can't make authenticated request from server unless token is provided, see #42")
+		}
 		throw new Error(`Not logged in, cannot make authenticated request to ${path}`);
 	}
 	return apiReq(path, {
