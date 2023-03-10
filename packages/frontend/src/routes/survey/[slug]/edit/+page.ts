@@ -6,7 +6,7 @@ export const ssr = false;
 
 export const load = (async ({ params }) => {
 	const surveyId = parseInt(params.slug);
-	let response = await getSurveyAuth(surveyId);
+	const response = await getSurveyAuth(surveyId);
 
 	if (!response.ok) {
 		if (response.error.message === 'NotFound') {
@@ -23,5 +23,4 @@ export const load = (async ({ params }) => {
 		surveyId,
 		survey: response.value
 	};
-
 }) satisfies PageLoad;

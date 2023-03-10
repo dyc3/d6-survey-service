@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { editSurvey, getSurveyAuth } from '$lib/api';
+	import { editSurvey } from '$lib/api';
 	import type { Question, SurveyPatch, SurveyQuestions } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 
@@ -9,7 +9,6 @@
 
 	import _ from 'lodash';
 	import { goto } from '$app/navigation';
-	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 
 	let title = 'Untitled Survey';
 	let description = '';
