@@ -1,6 +1,5 @@
 import { getSurveyAuth } from '$lib/api';
 import type { PageLoad } from './$types';
-import { jwt } from '../../stores';
 
 export const ssr = false;
 
