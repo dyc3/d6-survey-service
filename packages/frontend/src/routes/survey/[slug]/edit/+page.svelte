@@ -99,22 +99,28 @@
 </div>
 
 <div class="container">
-	<TextBox placeholder="Survey Title" bind:value={title} on:change={onChange} />
-	<TextBox placeholder="Survey Description" bind:value={description} on:change={onChange} />
+	<div class="panel">
+		<TextBox placeholder="Survey Title" bind:value={title} on:change={onChange} />
+		<TextBox placeholder="Survey Description" bind:value={description} on:change={onChange} />
+	</div>
 
 	{#each questions as q}
 		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>x</Button>
 		<QContainer question={q.question} editmode={true} on:change={onChange} />
 	{/each}
-	<select bind:value={questionToAdd}>
-		<option value="Text">Text</option>
-		<option value="MultipleChoice">Multiple Choice</option>
-		<option value="Rating">Rating</option>
-	</select>
 
-	<Button on:click={() => addQuestion(questionToAdd)}>+</Button>
+	<div class="panel">
+		<select bind:value={questionToAdd}>
+			<option value="Text">Text</option>
+			<option value="MultipleChoice">Multiple Choice</option>
+			<option value="Rating">Rating</option>
+		</select>
+		<Button size="small" on:click={() => addQuestion(questionToAdd)}>+ Add Question</Button>
+	</div>
 
-	<Button>Publish Survey</Button>
+	<div class="panel">
+		<Button>Publish Survey</Button>
+	</div>
 </div>
 
 <style lang="scss">
@@ -129,5 +135,13 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+	}
+
+	.panel {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		margin: 40px;
 	}
 </style>
