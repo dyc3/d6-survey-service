@@ -9,6 +9,7 @@
 
 	import _ from 'lodash';
 	import { goto } from '$app/navigation';
+	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 
 	let title = 'Untitled Survey';
 	let description = '';
@@ -68,13 +69,15 @@
 				question: buildQuestion(type)
 			}
 		];
-		onChange();
+		onChange('questions');
 	}
 
 	function removeQuestion(uuid: string) {
 		questions = questions.filter((q) => q.uuid !== uuid);
-		onChange();
+		onChange('questions');
 	}
+
+	let dirtyFields: Set<keyof SurveyPatch> = new Set();
 
 	async function submitChanges() {
 		let patch: SurveyPatch = {
@@ -83,11 +86,30 @@
 			questions
 		};
 
-		await editSurvey(data.surveyId, patch);
+		let resp = await editSurvey(data.surveyId, _.pick(patch, Array.from(dirtyFields)));
+		if (resp.ok) {
+			dirtyFields.clear();
+		} else {
+			alert('Error saving changes');
+		}
 	}
 
+	let submitChangesDebounced = _.debounce(submitChanges, 1000);
+
 	async function publishSurvey() {
-		let resp = await editSurvey(data.surveyId, { published: true });
+		// make sure we don't submit changes twice, or publish a survey with unsaved changes
+		submitChangesDebounced.cancel();
+		let resp = await editSurvey(data.surveyId, {
+			..._.pick(
+				{
+					title,
+					description,
+					questions
+				},
+				Array.from(dirtyFields)
+			),
+			published: true
+		});
 		if (resp.ok) {
 			await goto(`/mysurveys`);
 		} else {
@@ -95,7 +117,10 @@
 		}
 	}
 
-	let onChange = _.debounce(submitChanges, 1000);
+	function onChange(field: keyof SurveyPatch) {
+		dirtyFields.add(field);
+		submitChangesDebounced();
+	}
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 </script>
@@ -110,13 +135,17 @@
 
 <div class="container">
 	<div class="panel">
-		<TextBox placeholder="Survey Title" bind:value={title} on:change={onChange} />
-		<TextBox placeholder="Survey Description" bind:value={description} on:change={onChange} />
+		<TextBox placeholder="Survey Title" bind:value={title} on:change={() => onChange('title')} />
+		<TextBox
+			placeholder="Survey Description"
+			bind:value={description}
+			on:change={() => onChange('description')}
+		/>
 	</div>
 
 	{#each questions as q}
 		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>x</Button>
-		<QContainer question={q.question} editmode={true} on:change={onChange} />
+		<QContainer question={q.question} editmode={true} on:change={() => onChange('questions')} />
 	{/each}
 
 	<div class="panel">
