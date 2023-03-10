@@ -92,15 +92,15 @@
 
 <div class="toolbar">
 	<div>
-		<h1>Sample Survey Title</h1>
+		<h1>{title}</h1>
 		<h2>Editing</h2>
 	</div>
 	<Button>View Results</Button>
 </div>
 
 <div class="container">
-	<TextBox placeholder="Survey Title" bind:value={title} />
-	<TextBox placeholder="Survey Description" bind:value={description} />
+	<TextBox placeholder="Survey Title" bind:value={title} on:change={onChange} />
+	<TextBox placeholder="Survey Description" bind:value={description} on:change={onChange} />
 
 	{#each questions as q}
 		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>x</Button>
