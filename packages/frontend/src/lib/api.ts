@@ -40,7 +40,11 @@ async function apiReq<T>(path: string, options?: ApiRequestOptions): Promise<Api
 
 	let apiResponse: ApiResponse<T>;
 	if (response.ok) {
-		apiResponse = { ok: true, value: await response.json() };
+		if (response.headers.get('Content-Type')?.startsWith('application/json')) {
+			apiResponse = { ok: true, value: await response.json() };
+		} else {
+			apiResponse = { ok: true, value: {} as T };
+		}
 	} else {
 		apiResponse = { ok: false, error: await response.json() };
 	}
