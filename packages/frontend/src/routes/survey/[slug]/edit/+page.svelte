@@ -8,6 +8,7 @@
 	import type { PageData } from './$types';
 
 	import _ from 'lodash';
+	import { goto } from '$app/navigation';
 
 	let title = 'Untitled Survey';
 	let description = '';
@@ -85,6 +86,15 @@
 		await editSurvey(data.surveyId, patch);
 	}
 
+	async function publishSurvey() {
+		let resp = await editSurvey(data.surveyId, { published: true });
+		if (resp.ok) {
+			await goto(`/mysurveys`);
+		} else {
+			alert('Error publishing survey');
+		}
+	}
+
 	let onChange = _.debounce(submitChanges, 1000);
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
@@ -119,7 +129,7 @@
 	</div>
 
 	<div class="panel">
-		<Button>Publish Survey</Button>
+		<Button on:click={publishSurvey}>Publish Survey</Button>
 	</div>
 </div>
 
