@@ -1,5 +1,6 @@
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
+use rocket::response::status::NoContent;
 use rocket::{Request, Response};
 
 pub struct Cors;
@@ -20,4 +21,9 @@ impl Fairing for Cors {
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
         response.set_header(Header::new("Access-Control-Max-Age", "7200"));
     }
+}
+
+#[options("/<_..>")]
+pub fn handle_preflight() -> NoContent {
+    NoContent
 }
