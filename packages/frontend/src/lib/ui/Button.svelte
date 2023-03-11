@@ -22,32 +22,27 @@
 
 	function toggle() {
 		pressed = !pressed;
-		dispatch('message', {
-			text: 'toggled'
-		})
 	}
 
 	function handleClick(e: Event) {
-		if (!inButtonGroup){
-		toggle();
+		if (toggleable && !inButtonGroup) {
+			toggle();
 		}
 		dispatch('click', e);
 	}
 </script>
 
-{#if toggleable}
-	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed} role={role}>
-		<div class="surface">
-			<slot />
-		</div>
-	</button>
-{:else}
-	<button {type} class={classes} on:click role={role}>
-		<div class="surface">
-			<slot />
-		</div>
-	</button>
-{/if}
+<button
+	{type}
+	class={classes}
+	on:click={handleClick}
+	aria-pressed={toggleable ? pressed : undefined}
+	{role}
+>
+	<div class="surface">
+		<slot />
+	</div>
+</button>
 
 <style lang="scss">
 	@import 'variables';
