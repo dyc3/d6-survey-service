@@ -40,7 +40,9 @@
 	{role}
 >
 	<div class="surface">
-		<slot />
+		<span class="subsurface">
+			<slot />
+		</span>
 	</div>
 </button>
 
@@ -63,17 +65,8 @@
 		font-weight: 500;
 	}
 
-	button:active {
-		position: relative;
-		top: 1px;
-	}
-
-	button:active,
-	[aria-pressed='true'] {
-		.surface {
-			background: transparent;
-			color: $color-surface;
-		}
+	.subsurface {
+		background-clip: text;
 	}
 
 	.sz-small {
@@ -102,7 +95,16 @@
 
 	.kind-default {
 		background: $gradient-default;
-		color: $color-default;
+		@supports not (background-clip: text) {
+			color: $color-default;
+		}
+
+		@supports (background-clip: text) {
+			.subsurface {
+				background: text $gradient-default;
+				color: transparent;
+			}
+		}
 	}
 
 	.kind-primary {
@@ -123,6 +125,32 @@
 
 	.kind-danger {
 		background: $gradient-danger;
-		color: $color-danger;
+		@supports not (background-clip: text) {
+			color: $color-danger;
+		}
+
+		@supports (background-clip: text) {
+			.subsurface {
+				background: text $gradient-danger;
+				color: transparent;
+			}
+		}
+	}
+
+	button:active {
+		position: relative;
+		top: 1px;
+	}
+
+	button:active,
+	[aria-pressed='true'] {
+		.surface {
+			background: transparent;
+			color: $color-surface;
+		}
+
+		.subsurface {
+			color: inherit;
+		}
 	}
 </style>
