@@ -9,10 +9,17 @@ $color-danger: $color-red;
 $color-surface: #fff;
 $color-bg: #fff;
 $gradient-default: linear-gradient(90deg, $color-blue 0%, $color-green 100%);
-$gradient-primary: linear-gradient(40deg, rgba(58, 68, 180, 1) 0%, rgba(25, 205, 196, 1) 50%, rgba(181, 69, 252, 1) 100%);
-$gradient-danger: linear-gradient(90deg,
-		$color-danger 0%,
-		color.adjust($color-danger, $hue: 30deg) 100%);
+$gradient-primary: linear-gradient(
+	40deg,
+	rgba(58, 68, 180, 1) 0%,
+	rgba(25, 205, 196, 1) 50%,
+	rgba(181, 69, 252, 1) 100%
+);
+$gradient-danger: linear-gradient(
+	90deg,
+	$color-danger 0%,
+	color.adjust($color-danger, $hue: 30deg) 100%
+);
 $main-font: 'DM Sans', sans-serif;
 $bold-font-size: 1.5em;
 $main-font-size: 1em;
