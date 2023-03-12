@@ -93,46 +93,33 @@
 		}
 	}
 
-	.kind-default {
-		background: $gradient-default;
-		@supports not (background-clip: text) {
-			color: $color-default;
-		}
+	$kinds: (
+		default: (
+			bg: $gradient-default,
+			color: $color-default
+		),
+		primary: (
+			bg: $color-primary,
+			color: $color-surface
+		),
+		danger: (
+			bg: $gradient-danger,
+			color: $color-danger
+		)
+	);
 
-		@supports (background-clip: text) {
-			.subsurface {
-				background: text $gradient-default;
-				color: transparent;
+	@each $kind, $props in $kinds {
+		.kind-#{$kind} {
+			background: map-get($props, bg);
+			@supports not (background-clip: text) {
+				color: map-get($props, color);
 			}
-		}
-	}
 
-	.kind-primary {
-		background: $color-primary;
-		color: $color-primary;
-
-		.surface {
-			background: $color-primary;
-			color: $color-surface;
-		}
-	}
-
-	.kind-primary:active {
-		.surface {
-			color: #c4c4c4;
-		}
-	}
-
-	.kind-danger {
-		background: $gradient-danger;
-		@supports not (background-clip: text) {
-			color: $color-danger;
-		}
-
-		@supports (background-clip: text) {
-			.subsurface {
-				background: text $gradient-danger;
-				color: transparent;
+			@supports (background-clip: text) {
+				.subsurface {
+					background: text map-get($props, bg);
+					color: transparent;
+				}
 			}
 		}
 	}
