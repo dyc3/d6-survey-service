@@ -47,6 +47,7 @@
 </button>
 
 <style lang="scss">
+	@use 'sass:map';
 	@import 'variables';
 
 	$btn-border-size: 3px;
@@ -58,7 +59,6 @@
 		padding: $btn-border-size;
 		border-radius: 5px;
 		border: none;
-
 		transition: all $transition-duration ease-in-out;
 
 		* {
@@ -93,10 +93,10 @@
 
 	@each $size, $props in $sizes {
 		.sz-#{$size} {
-			font-size: map-get($props, font-size);
+			font-size: map.get($props, font-size);
 
 			.surface {
-				padding: map-get($props, padding);
+				padding: map.get($props, padding);
 			}
 		}
 	}
@@ -118,14 +118,15 @@
 
 	@each $kind, $props in $kinds {
 		.kind-#{$kind} {
-			background: map-get($props, bg);
+			background: map.get($props, bg);
+
 			@supports not (background-clip: text) {
-				color: map-get($props, color);
+				color: map.get($props, color);
 			}
 
 			@supports (background-clip: text) {
 				.subsurface {
-					background: text map-get($props, bg);
+					background: text map.get($props, bg);
 					color: transparent;
 				}
 			}
