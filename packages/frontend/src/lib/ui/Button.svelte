@@ -76,27 +76,28 @@
 		background-clip: text;
 	}
 
-	.sz-small {
-		font-size: 1em;
+	$sizes: (
+		small: (
+			font-size: 1em,
+			padding: 0.2em 0.5em
+		),
+		normal: (
+			font-size: 1.4em,
+			padding: 0.5em 2em
+		),
+		large: (
+			font-size: 1.6em,
+			padding: 0.6em 4em
+		)
+	);
 
-		.surface {
-			padding: 0.2em 0.5em;
-		}
-	}
+	@each $size, $props in $sizes {
+		.sz-#{$size} {
+			font-size: map-get($props, font-size);
 
-	.sz-normal {
-		font-size: 1.4em;
-
-		.surface {
-			padding: 0.5em 2em;
-		}
-	}
-
-	.sz-large {
-		font-size: 1.6em;
-
-		.surface {
-			padding: 0.6em 4em;
+			.surface {
+				padding: map-get($props, padding);
+			}
 		}
 	}
 
