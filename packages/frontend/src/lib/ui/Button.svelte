@@ -132,25 +132,11 @@
 	}
 
 	button:hover {
-		.surface {
-			background: linear-gradient(
-				90deg,
-				rgb(255 255 255 / 0%) 0%,
-				$color-surface 20%,
-				$color-surface 80%,
-				rgb(255 255 255 / 0%) 100%
-			);
-		}
+		transform: scale(1.02);
 	}
 
 	button:active {
-		position: relative;
-		top: 1px;
-		transition-duration: 0;
-
-		* {
-			transition-duration: 0;
-		}
+		transform: scale(0.99);
 	}
 
 	button:active,
@@ -162,18 +148,6 @@
 
 		.subsurface {
 			color: inherit;
-		}
-
-		&:hover {
-			.surface {
-				background: linear-gradient(
-					90deg,
-					$color-surface 0%,
-					rgb(255 255 255 / 0%) 20%,
-					rgb(255 255 255 / 0%) 80%,
-					$color-surface 100%
-				);
-			}
 		}
 	}
 </style>
