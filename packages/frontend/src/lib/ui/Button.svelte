@@ -99,8 +99,8 @@
 			color: $color-default
 		),
 		primary: (
-			bg: $color-primary,
-			color: $color-surface
+			bg: $gradient-primary,
+			color: $color-primary
 		),
 		danger: (
 			bg: $gradient-danger,
