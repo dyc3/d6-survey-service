@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let type: 'button' | 'submit' | 'reset' | undefined = undefined;
+	export let role: string | undefined = undefined;
 	/**
 	 * Makes the button toggle when clicked.
 	 */
@@ -13,6 +14,7 @@
 	export let pressed = false;
 	export let size: 'small' | 'normal' | 'large' = 'normal';
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
+	export let inButtonGroup = false;
 
 	$: classes = `kind-${kind} sz-${size}`;
 
@@ -20,22 +22,27 @@
 
 	function toggle() {
 		pressed = !pressed;
+		dispatch('message', {
+			text: 'toggled'
+		})
 	}
 
 	function handleClick(e: Event) {
+		if (!inButtonGroup){
 		toggle();
+		}
 		dispatch('click', e);
 	}
 </script>
 
 {#if toggleable}
-	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed}>
+	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed} role={role}>
 		<div class="surface">
 			<slot />
 		</div>
 	</button>
 {:else}
-	<button {type} class={classes} on:click>
+	<button {type} class={classes} on:click role={role}>
 		<div class="surface">
 			<slot />
 		</div>

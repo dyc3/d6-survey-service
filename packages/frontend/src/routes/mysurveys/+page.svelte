@@ -17,6 +17,7 @@
 	
 
 	let surveys: ListedSurvey[] = [];
+	import ButtonGroup from '../../lib/ui/ButtonGroup.svelte';
 </script>
 
 <div class="toolbar">

@@ -2,6 +2,7 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import QRating from '$lib/questions/QRating.svelte';
 	import Button from '$lib/ui/Button.svelte';
+	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import QTextInput from '../lib/questions/QTextInput.svelte';
 	import type { Question } from '../lib/common';
@@ -38,6 +39,8 @@
 		}
 	];
 	let selected_question = 0;
+
+	let group_selected: number | undefined = undefined;
 </script>
 
 <h1>Welcome to SvelteKit</h1>
@@ -60,6 +63,15 @@ Buttons
 </div>
 <div>
 	<Button toggleable={true}>Toggle Button</Button>
+</div>
+<div>
+	<p>Selected: {group_selected}</p>
+	<ButtonGroup
+		orientation="horizontal"
+		buttons={['Button 1', 'Button 2', 'Button 3', 'Button 4', 'Button 5']}
+		forceSelection ={false}
+		bind:selected={group_selected}
+	/>
 </div>
 
 Textboxes
@@ -96,4 +108,6 @@ Textboxes
 	{/each}
 </select>
 
+<QContainer question={questions[selected_question]} {editmode} />
+<QContainer question={questions[selected_question]} {editmode} />
 <QContainer question={questions[selected_question]} {editmode} />

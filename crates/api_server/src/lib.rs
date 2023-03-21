@@ -17,20 +17,16 @@ pub mod test_helpers;
 pub mod user;
 pub mod validate;
 
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
-}
-
 #[launch]
 pub fn rocket() -> _ {
     rocket::build()
         .attach(db::stage())
         .attach(cors::Cors)
+        .mount("/", routes![cors::handle_preflight])
         .mount(
             "/api",
             routes![
-                index,
+                api::health,
                 user::register_user,
                 user::login_user,
                 user::list_surveys,

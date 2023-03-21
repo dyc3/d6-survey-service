@@ -7,9 +7,9 @@
 </script>
 
 {#if multiline}
-	<textarea {name} {placeholder} {disabled} bind:value />
+	<textarea {name} {placeholder} {disabled} bind:value on:change />
 {:else}
-	<input {name} type="text" {placeholder} {disabled} bind:value />
+	<input {name} type="text" {placeholder} {disabled} bind:value on:change />
 {/if}
 
 <style lang="scss">
@@ -21,8 +21,8 @@
 		border-radius: 3px;
 		background-color: #fff;
 		min-width: 70%;
-		font-weight: 700;
 		color: $color-default;
 		padding: 0.5em;
+		font-size: $main-font-size;
 	}
 </style>
