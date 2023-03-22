@@ -44,7 +44,5 @@
 		{/if}
 	</div>
 
-	<TextBox bind:value={response} disabled={editmode} {multiline} />
-</Container>
 	<TextBox bind:value={responseContent} disabled={editmode} {multiline} />
-</div>
+</Container>
