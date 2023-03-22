@@ -18,11 +18,11 @@
 	$: {
 		if (response !== undefined && group_selected === undefined) {
 			if (response.type === 'Rating') {
-				group_selected = response.content.rating;
+				group_selected = response.content.rating - 1;
 			}
 		}
 		if (group_selected !== undefined) {
-			response = { type: 'Rating', content: { rating: group_selected } };
+			response = { type: 'Rating', content: { rating: group_selected + 1 } };
 		} else {
 			response = undefined;
 		}
