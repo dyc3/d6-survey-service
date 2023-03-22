@@ -39,4 +39,5 @@ pub fn rocket() -> _ {
                 survey_response::get_survey_response,
             ],
         )
+        .register("/", catchers![api::default_catcher])
 }

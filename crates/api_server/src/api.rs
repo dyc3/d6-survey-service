@@ -36,3 +36,18 @@ where
 pub fn health() -> &'static str {
     "OK"
 }
+
+#[catch(default)]
+pub fn default_catcher(status: Status, _req: &Request) -> ApiErrorResponse<&'static str> {
+    ApiErrorResponse {
+        status,
+        message: match status.code {
+            400 => "Bad Request",
+            401 => "Unauthorized",
+            404 => "Not Found",
+            405 => "Method Not Allowed",
+            500 => "Internal Server Error",
+            _ => "Unknown Error",
+        }
+    }
+}
