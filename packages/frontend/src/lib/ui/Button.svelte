@@ -74,6 +74,7 @@
 
 	.subsurface {
 		background-clip: text;
+		-webkit-background-clip: text;
 	}
 
 	$sizes: (
@@ -120,13 +121,15 @@
 		.kind-#{$kind} {
 			background: map.get($props, bg);
 
-			@supports not (background-clip: text) {
+			@supports (not (background-clip: text)) or (not (-webkit-background-clip: text)) {
 				color: map.get($props, color);
 			}
 
-			@supports (background-clip: text) {
+			@supports (background-clip: text) or (-webkit-background-clip: text) {
 				.subsurface {
-					background: text map.get($props, bg);
+					background: map.get($props, bg);
+					background-clip: text;
+					-webkit-background-clip: text;
 					color: transparent;
 				}
 			}
