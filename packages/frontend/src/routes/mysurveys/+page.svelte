@@ -2,8 +2,10 @@
 	import Button from '../../lib/ui/Button.svelte';
 	import TextBox from '../../lib/ui/TextBox.svelte';
 	import type { ListedSurvey } from '../../lib/common';
-	import { createSurvey } from '$lib/api';
+	import { createSurvey, getSurveyList } from '$lib/api';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { jwt } from '../../stores';
 
 	async function createNewSurvey() {
 		let surveyInfo = await createSurvey();
@@ -11,8 +13,19 @@
 			goto('/survey/' + surveyInfo.value.id + '/edit');
 		}
 	}
-	
+
 	let surveys: ListedSurvey[] = [];
+
+	onMount(async () => {
+		let resp = await getSurveyList();
+		if (resp.ok) {
+			surveys = resp.value;
+		}
+		else {
+			console.error(resp.error);
+		}
+	});
+	
 </script>
 
 <div class="toolbar">

@@ -10,7 +10,8 @@ import type {
 	SurveyPatch,
 	UserLoginParams,
 	UserToken,
-	ValidationError
+	ValidationError,
+	ListedSurvey
 } from './common';
 import { jwt } from '../stores';
 import { browser } from '$app/environment';
@@ -97,6 +98,10 @@ export async function getSurvey(
 	opts?: ExtraOptions
 ): Promise<ApiResponse<Survey>> {
 	return apiReq(`/api/survey/${survey_id}`, { ...opts });
+}
+
+export async function getSurveyList(opts?: ExtraOptions): Promise<ApiResponse<ListedSurvey[]>> {
+	return apiReqAuth(`/api/user/surveys`, { ...opts });
 }
 
 export async function getSurveyAuth(
