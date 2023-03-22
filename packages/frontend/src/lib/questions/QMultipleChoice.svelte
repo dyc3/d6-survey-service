@@ -11,6 +11,7 @@
 	export let description: string;
 	export let multiple = false;
 	export let choices: Choice[] = [];
+	export let required = false;
 
 	let dispatch = createEventDispatcher();
 
@@ -27,6 +28,11 @@
 </script>
 
 <Container>
+
+	{#if required}
+			<span class = "required">*</span>
+	{/if}
+	
 	<div>
 		{#if editmode}
 			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />
@@ -85,5 +91,13 @@
 	.description-text {
 		font-size: $main-font-size;
 		color: $color-blue;
+	}
+
+	.required{
+		color: red;
+		position: absolute;
+		right: 2.5%;
+		top: 0;
+
 	}
 </style>

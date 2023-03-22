@@ -9,6 +9,7 @@
 	export let prompt: string;
 	export let description: string;
 	export let max_rating = 10;
+	export let required = false;
 
 	export let minText = 'low';
 	export let maxText = 'high';
@@ -17,6 +18,11 @@
 </script>
 
 <Container>
+
+	{#if required}
+			<span class = "required">*</span>
+	{/if}
+
 	<div>
 		{#if editmode}
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>
@@ -86,5 +92,12 @@
 	.align-rating-text {
 		display: flex;
 		justify-content: space-between;
+	}
+
+	.required{
+		color: red;
+		position: absolute;
+		right: 2.5%;
+		top: 0;
 	}
 </style>

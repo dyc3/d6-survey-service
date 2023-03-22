@@ -6,6 +6,7 @@
 
 	export let editmode = false;
 	export let question: Question;
+	export let required = false;
 </script>
 
 <div class="question-container">
@@ -15,6 +16,7 @@
 			bind:description={question.content.description}
 			bind:multiline={question.content.multiline}
 			{editmode}
+			{required}
 			on:change
 		/>
 	{:else if question.type === 'Rating'}
@@ -23,6 +25,7 @@
 			bind:description={question.content.description}
 			bind:max_rating={question.content.max_rating}
 			{editmode}
+			{required}
 			on:change
 		/>
 	{:else if question.type == 'MultipleChoice'}
@@ -32,8 +35,16 @@
 			bind:multiple={question.content.multiple}
 			bind:choices={question.content.choices}
 			{editmode}
+			{required}
 			on:change
 		/>
+	{/if}
+
+	{#if editmode}
+	<div>
+		<label for="requiredquestion">Required?</label>
+		<input type="checkbox" id="requiredquestion" bind:checked={required} />
+	</div>
 	{/if}
 </div>
 
@@ -44,6 +55,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		flex-direction: column;
 		margin: auto;
 		padding-top: $large-padding;
 	}

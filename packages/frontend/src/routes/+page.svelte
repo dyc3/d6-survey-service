@@ -110,4 +110,4 @@ Textboxes
 
 <QContainer question={questions[selected_question]} {editmode} />
 <QContainer question={questions[selected_question]} {editmode} />
-<QContainer question={questions[selected_question]} {editmode} />
+<QContainer question={questions[selected_question]} {editmode} required = {true} />
