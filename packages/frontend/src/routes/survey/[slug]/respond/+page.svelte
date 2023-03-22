@@ -64,9 +64,7 @@
 {/each}
 
 {#if submitInProgress}
-	Submmitting...
+	<div>Submmitting...</div>
 {/if}
 
 <Button size="large" kind="primary" on:click={submitResponse}>Submit</Button>
-
-{JSON.stringify(response)}
