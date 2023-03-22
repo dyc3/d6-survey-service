@@ -124,7 +124,7 @@ export async function editSurvey(
 export async function createSurveyResponse(
 	survey_id: number,
 	responses: SurveyResponses,
-	opts?: ExtraOptions,
+	opts?: ExtraOptions
 ): Promise<ApiResponse<ResponseAccepted>> {
 	return apiReq(`/api/survey/${survey_id}/respond`, {
 		method: 'POST',
@@ -138,7 +138,7 @@ export async function editSurveyResponse(
 	responder: string,
 	responses: SurveyResponses,
 	opts?: ExtraOptions
-): Promise<ApiResponse<{}>> {
+): Promise<ApiResponse<null>> {
 	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
 		method: 'PATCH',
 		body: JSON.stringify(responses),

@@ -39,6 +39,6 @@ export const load = (async ({ params, fetch, url }) => {
 		slug: params.slug,
 		surveyId,
 		survey: response.value,
-		surveyResponse,
+		surveyResponse
 	};
 }) satisfies PageLoad;
