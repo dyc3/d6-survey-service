@@ -3,11 +3,13 @@
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import Container from '$lib/ui/Container.svelte';
+	import './questions.scss';
 
 	export let editmode = false;
 	export let prompt: string;
 	export let description: string;
 	export let max_rating = 10;
+	export let required = false;
 
 	export let minText = 'low';
 	export let maxText = 'high';
@@ -30,6 +32,11 @@
 </script>
 
 <Container>
+
+	{#if required}
+			<span class = "required">*</span>
+	{/if}
+
 	<div>
 		{#if editmode}
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>

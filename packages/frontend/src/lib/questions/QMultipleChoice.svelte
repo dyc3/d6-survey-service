@@ -5,12 +5,14 @@
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import Container from '$lib/ui/Container.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import './questions.scss';
 
 	export let editmode = false;
 	export let prompt: string;
 	export let description: string;
 	export let multiple = false;
 	export let choices: Choice[] = [];
+	export let required = false;
 
 	let dispatch = createEventDispatcher();
 
@@ -47,6 +49,11 @@
 </script>
 
 <Container>
+
+	{#if required}
+			<span class = "required">*</span>
+	{/if}
+	
 	<div>
 		{#if editmode}
 			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />

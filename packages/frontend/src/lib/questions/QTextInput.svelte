@@ -1,11 +1,14 @@
 <script lang="ts">
 	import type { Response } from '$lib/common';
 	import TextBox from '$lib/ui/TextBox.svelte';
+	import Container from '$lib/ui/Container.svelte';
+	import './questions.scss';
 
 	export let editmode = false;
 	export let multiline = false;
 	export let prompt: string;
 	export let description: string;
+	export let required = false;
 
 	let responseContent = '';
 	export let response: Response | undefined = undefined;
@@ -20,7 +23,11 @@
 	}
 </script>
 
-<div>
+<Container>
+	{#if required}
+		<span class="required">*</span>
+	{/if}
+
 	<div>
 		{#if editmode}
 			<TextBox bind:value={prompt} placeholder="Prompt" on:change />
@@ -38,4 +45,4 @@
 	</div>
 
 	<TextBox bind:value={responseContent} disabled={editmode} {multiline} />
-</div>
+</Container>
