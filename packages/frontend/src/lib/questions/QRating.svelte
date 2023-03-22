@@ -1,12 +1,11 @@
 <script lang="ts">
+	import type { Response } from '$lib/common';
 	import TextBox from '$lib/ui/TextBox.svelte';
-	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import Container from '$lib/ui/Container.svelte';
 	import './questions.scss';
 
 	export let editmode = false;
-	let response = 0;
 	export let prompt: string;
 	export let description: string;
 	export let max_rating = 10;
@@ -16,6 +15,20 @@
 	export let maxText = 'high';
 
 	let group_selected: number | undefined = undefined;
+
+	export let response: Response | undefined = undefined;
+	$: {
+		if (response !== undefined && group_selected === undefined) {
+			if (response.type === 'Rating') {
+				group_selected = response.content.rating - 1;
+			}
+		}
+		if (group_selected !== undefined) {
+			response = { type: 'Rating', content: { rating: group_selected + 1 } };
+		} else {
+			response = undefined;
+		}
+	}
 </script>
 
 <Container>
