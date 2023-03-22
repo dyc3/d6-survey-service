@@ -62,4 +62,8 @@
 	<QContainer question={surveyquestion.question} bind:response={response[surveyquestion.uuid]} />
 {/each}
 
+{#if submitInProgress}
+	Submmitting...
+{/if}
+
 <Button size="large" kind="primary" on:click={submitResponse}>Submit</Button>
