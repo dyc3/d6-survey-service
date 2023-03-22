@@ -2,14 +2,22 @@
 	import Button from '../../lib/ui/Button.svelte';
 	import TextBox from '../../lib/ui/TextBox.svelte';
 	import type { ListedSurvey } from '../../lib/common';
+	import { createSurvey } from '$lib/api';
+	import { goto } from '$app/navigation';
 
+	async function createNewSurvey() {
+		let surveyInfo = await createSurvey();
+		if (surveyInfo.ok) {
+			goto('/survey/' + surveyInfo.value.id + '/edit');
+		}
+	}
+	
 	let surveys: ListedSurvey[] = [];
-	import ButtonGroup from '../../lib/ui/ButtonGroup.svelte';
 </script>
 
 <div class="toolbar">
 	<h1>My Surveys</h1>
-	<Button kind="primary" size="large">Create Survey</Button>
+	<Button kind="primary" size="large" on:click={ createNewSurvey }>Create Survey</Button>
 </div>
 <div class="main-container">
 	<table class="container">
