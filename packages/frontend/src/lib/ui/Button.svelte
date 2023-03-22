@@ -22,37 +22,36 @@
 
 	function toggle() {
 		pressed = !pressed;
-		dispatch('message', {
-			text: 'toggled'
-		})
 	}
 
 	function handleClick(e: Event) {
-		if (!inButtonGroup){
-		toggle();
+		if (toggleable && !inButtonGroup) {
+			toggle();
 		}
 		dispatch('click', e);
 	}
 </script>
 
-{#if toggleable}
-	<button {type} class={classes} on:click={handleClick} aria-pressed={pressed} role={role}>
-		<div class="surface">
+<button
+	{type}
+	class={classes}
+	on:click={handleClick}
+	aria-pressed={toggleable ? pressed : undefined}
+	{role}
+>
+	<div class="surface">
+		<span class="subsurface">
 			<slot />
-		</div>
-	</button>
-{:else}
-	<button {type} class={classes} on:click role={role}>
-		<div class="surface">
-			<slot />
-		</div>
-	</button>
-{/if}
+		</span>
+	</div>
+</button>
 
 <style lang="scss">
+	@use 'sass:map';
 	@import 'variables';
 
 	$btn-border-size: 3px;
+	$transition-duration: 0.1s;
 
 	button {
 		cursor: pointer;
@@ -60,6 +59,11 @@
 		padding: $btn-border-size;
 		border-radius: 5px;
 		border: none;
+		transition: all $transition-duration ease-in-out;
+
+		* {
+			transition: all $transition-duration ease-in-out;
+		}
 	}
 
 	.surface {
@@ -68,9 +72,79 @@
 		font-weight: 500;
 	}
 
+	.subsurface {
+		background-clip: text;
+		-webkit-background-clip: text; /* stylelint-disable-line property-no-vendor-prefix */
+		clip-path: inset(2px);
+		padding: 2px;
+		width: auto;
+	}
+
+	$sizes: (
+		small: (
+			font-size: 1em,
+			padding: 0.2em 0.5em
+		),
+		normal: (
+			font-size: 1.4em,
+			padding: 0.5em 2em
+		),
+		large: (
+			font-size: 1.6em,
+			padding: 0.6em 4em
+		)
+	);
+
+	@each $size, $props in $sizes {
+		.sz-#{$size} {
+			font-size: map.get($props, font-size);
+
+			.surface {
+				padding: map.get($props, padding);
+			}
+		}
+	}
+
+	$kinds: (
+		default: (
+			bg: $gradient-default,
+			color: $color-default
+		),
+		primary: (
+			bg: $gradient-primary,
+			color: $color-primary
+		),
+		danger: (
+			bg: $gradient-danger,
+			color: $color-danger
+		)
+	);
+
+	@each $kind, $props in $kinds {
+		.kind-#{$kind} {
+			background: map.get($props, bg);
+
+			@supports (not (background-clip: text)) or (not (-webkit-background-clip: text)) {
+				color: map.get($props, color);
+			}
+
+			@supports (background-clip: text) or (-webkit-background-clip: text) {
+				.subsurface {
+					background: map.get($props, bg);
+					background-clip: text;
+					-webkit-background-clip: text; /* stylelint-disable-line property-no-vendor-prefix */
+					color: transparent;
+				}
+			}
+		}
+	}
+
+	button:hover {
+		transform: scale(1.02);
+	}
+
 	button:active {
-		position: relative;
-		top: 1px;
+		transform: scale(0.99);
 	}
 
 	button:active,
@@ -79,55 +153,9 @@
 			background: transparent;
 			color: $color-surface;
 		}
-	}
 
-	.sz-small {
-		font-size: 1em;
-
-		.surface {
-			padding: 0.2em 0.5em;
+		.subsurface {
+			color: inherit;
 		}
-	}
-
-	.sz-normal {
-		font-size: 1.4em;
-
-		.surface {
-			padding: 0.5em 2em;
-		}
-	}
-
-	.sz-large {
-		font-size: 1.6em;
-
-		.surface {
-			padding: 0.6em 4em;
-		}
-	}
-
-	.kind-default {
-		background: $gradient-default;
-		color: $color-default;
-	}
-
-	.kind-primary {
-		background: $color-primary;
-		color: $color-primary;
-
-		.surface {
-			background: $color-primary;
-			color: $color-surface;
-		}
-	}
-
-	.kind-primary:active {
-		.surface {
-			color: #c4c4c4;
-		}
-	}
-
-	.kind-danger {
-		background: $gradient-danger;
-		color: $color-danger;
 	}
 </style>

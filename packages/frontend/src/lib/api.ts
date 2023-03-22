@@ -11,7 +11,10 @@ import type {
 	UserLoginParams,
 	UserToken,
 	ValidationError,
-	ListedSurvey
+	ListedSurvey,
+	SurveyResponses,
+	ResponseAccepted,
+	SurveyResponse
 } from './common';
 import { jwt } from '../stores';
 import { browser } from '$app/environment';
@@ -41,11 +44,7 @@ async function apiReq<T>(path: string, options?: ApiRequestOptions): Promise<Api
 
 	let apiResponse: ApiResponse<T>;
 	if (response.ok) {
-		if (response.headers.get('Content-Type')?.startsWith('application/json')) {
-			apiResponse = { ok: true, value: await response.json() };
-		} else {
-			apiResponse = { ok: true, value: {} as T };
-		}
+		apiResponse = { ok: true, value: await response.json() };
 	} else {
 		apiResponse = { ok: false, error: await response.json() };
 	}
@@ -123,6 +122,42 @@ export async function editSurvey(
 	return apiReqAuth(`/api/survey/${survey_id}`, {
 		method: 'PATCH',
 		body: JSON.stringify(survey),
+		...opts
+	});
+}
+
+export async function createSurveyResponse(
+	survey_id: number,
+	responses: SurveyResponses,
+	opts?: ExtraOptions
+): Promise<ApiResponse<ResponseAccepted>> {
+	return apiReq(`/api/survey/${survey_id}/respond`, {
+		method: 'POST',
+		body: JSON.stringify(responses),
+		...opts
+	});
+}
+
+export async function editSurveyResponse(
+	survey_id: number,
+	responder: string,
+	responses: SurveyResponses,
+	opts?: ExtraOptions
+): Promise<ApiResponse<null>> {
+	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
+		method: 'PATCH',
+		body: JSON.stringify(responses),
+		...opts
+	});
+}
+
+export async function getSurveyResponse(
+	survey_id: number,
+	responder: string,
+	opts?: ExtraOptions
+): Promise<ApiResponse<SurveyResponse>> {
+	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
+		method: 'GET',
 		...opts
 	});
 }

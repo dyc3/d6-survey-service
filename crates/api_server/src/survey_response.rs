@@ -109,7 +109,7 @@ pub async fn edit_survey_response(
     survey_id: i32,
     survey_response: Json<SurveyResponses>,
     responder: Uuid,
-) -> Result<(), ApiErrorResponse<SurveyResponseError>> {
+) -> Result<Json<()>, ApiErrorResponse<SurveyResponseError>> {
     let survey = get_survey_from_db(&db, survey_id).await?;
 
     let survey_responses = survey_response.into_inner();
@@ -131,7 +131,7 @@ pub async fn edit_survey_response(
         SurveyResponseError::Unknown
     })?;
 
-    Ok(())
+    Ok(Json(()))
 }
 
 #[get("/survey/<survey_id>/respond?<responder>")]

@@ -13,9 +13,8 @@
 			goto('/survey/' + surveyInfo.value.id + '/edit');
 		}
 	}
-
+	
 	let surveys: ListedSurvey[] = [];
-
 	onMount(async () => {
 		let resp = await getSurveyList();
 		if (resp.ok) {
@@ -25,7 +24,6 @@
 			console.error(resp.error);
 		}
 	});
-	
 </script>
 
 <div class="toolbar">

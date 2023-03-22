@@ -1,11 +1,23 @@
 <script lang="ts">
+	import type { Response } from '$lib/common';
 	import TextBox from '$lib/ui/TextBox.svelte';
 
 	export let editmode = false;
 	export let multiline = false;
-	let response = '';
 	export let prompt: string;
 	export let description: string;
+
+	let responseContent = '';
+	export let response: Response | undefined = undefined;
+
+	$: {
+		if (response !== undefined && responseContent === '') {
+			if (response.type === 'Text') {
+				responseContent = response.content.text;
+			}
+		}
+		response = { type: 'Text', content: { text: responseContent } };
+	}
 </script>
 
 <div>
@@ -25,5 +37,5 @@
 		{/if}
 	</div>
 
-	<TextBox bind:value={response} disabled={editmode} {multiline} />
+	<TextBox bind:value={responseContent} disabled={editmode} {multiline} />
 </div>

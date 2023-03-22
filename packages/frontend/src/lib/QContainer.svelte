@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { Question } from './common';
+	import type { Question, Response, RMultipleChoice, RRating, RText } from './common';
 	import QMultipleChoice from './questions/QMultipleChoice.svelte';
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
 
 	export let editmode = false;
 	export let question: Question;
+	export let response: Response | undefined = undefined;
 </script>
 
 <div class="question-container">
@@ -15,6 +16,7 @@
 			bind:description={question.content.description}
 			bind:multiline={question.content.multiline}
 			{editmode}
+			bind:response
 			on:change
 		/>
 	{:else if question.type === 'Rating'}
@@ -23,6 +25,7 @@
 			bind:description={question.content.description}
 			bind:max_rating={question.content.max_rating}
 			{editmode}
+			bind:response
 			on:change
 		/>
 	{:else if question.type == 'MultipleChoice'}
@@ -32,6 +35,7 @@
 			bind:multiple={question.content.multiple}
 			bind:choices={question.content.choices}
 			{editmode}
+			bind:response
 			on:change
 		/>
 	{/if}
