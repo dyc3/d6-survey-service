@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Choice } from '$lib/common';
+	import type { Choice, Response } from '$lib/common';
 	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
@@ -24,6 +24,26 @@
 	}
 
 	let group_selected: number | undefined = undefined;
+
+	export let response: Response | undefined = undefined;
+	$: {
+		if (response !== undefined && group_selected === undefined) {
+			if (response.type === 'MultipleChoice') {
+				// TODO: handle multiple selections
+				group_selected = choices.findIndex((choice) => {
+					if (response !== undefined && response.type === 'MultipleChoice') {
+						return response.content.selected.includes(choice.uuid);
+					}
+				});
+			}
+		}
+		if (group_selected !== undefined) {
+			// TODO: handle multiple selections
+			response = { type: 'MultipleChoice', content: { selected: [choices[group_selected].uuid] } };
+		} else {
+			response = undefined;
+		}
+	}
 </script>
 
 <Container>
