@@ -10,7 +10,7 @@
 
 	let survey: Survey = data.survey;
 
-	let response: SurveyResponses = {};
+	let response: SurveyResponses = data.surveyResponse || {};
 
 	function parseQuery(queryString: string): { [key: string]: string } {
 		let query: { [key: string]: string } = {};
@@ -41,7 +41,7 @@
 			} else {
 				let resp = await editSurveyResponse(survey.id, responderUuid, response);
 				if (resp.ok) {
-					goto(`/survey/${survey.id}/submitted?response=${responderUuid}`);
+					goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
 				} else {
 					alert(JSON.stringify(resp.error));
 					console.error(resp.error);

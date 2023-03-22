@@ -122,30 +122,36 @@ export async function editSurvey(
 
 export async function createSurveyResponse(
 	survey_id: number,
-	responses: SurveyResponses
+	responses: SurveyResponses,
+	opts?: ExtraOptions,
 ): Promise<ApiResponse<ResponseAccepted>> {
 	return apiReq(`/api/survey/${survey_id}/respond`, {
 		method: 'POST',
-		body: JSON.stringify(responses)
+		body: JSON.stringify(responses),
+		...opts
 	});
 }
 
 export async function editSurveyResponse(
 	survey_id: number,
 	responder: string,
-	responses: SurveyResponses
+	responses: SurveyResponses,
+	opts?: ExtraOptions
 ): Promise<ApiResponse<{}>> {
 	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
 		method: 'PATCH',
-		body: JSON.stringify(responses)
+		body: JSON.stringify(responses),
+		...opts
 	});
 }
 
 export async function getSurveyResponse(
 	survey_id: number,
-	responder: string
+	responder: string,
+	opts?: ExtraOptions
 ): Promise<ApiResponse<{}>> {
 	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
-		method: 'GET'
+		method: 'GET',
+		...opts
 	});
 }

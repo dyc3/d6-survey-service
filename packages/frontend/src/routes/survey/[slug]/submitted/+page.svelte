@@ -4,9 +4,9 @@
 
 	export let data: PageData;
 
-	let responseUuid = new URLSearchParams(window.location.search).get('response');
+	let responseUuid = new URLSearchParams(window.location.search).get('responder');
 
-	$: responseUrl = `${window.location.origin}/survey/${data.slug}/respond?response=${responseUuid}`;
+	$: responseUrl = `${window.location.origin}/survey/${data.slug}/respond?responder=${responseUuid}`;
 </script>
 
 <h1>Response Submitted</h1>
