@@ -74,11 +74,10 @@
 
 	.subsurface {
 		background-clip: text;
-		-webkit-background-clip: text;
+		-webkit-background-clip: text; /* stylelint-disable-line property-no-vendor-prefix */
 		clip-path: inset(2px);
 		padding: 2px;
 		width: auto;
-		-webkit-background-clip: text; /* stylelint-disable-line property-no-vendor-prefix */
 	}
 
 	$sizes: (
