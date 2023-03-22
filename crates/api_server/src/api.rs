@@ -48,6 +48,6 @@ pub fn default_catcher(status: Status, _req: &Request) -> ApiErrorResponse<&'sta
             405 => "Method Not Allowed",
             500 => "Internal Server Error",
             _ => "Unknown Error",
-        }
+        },
     }
 }
