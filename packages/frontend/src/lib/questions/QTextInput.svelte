@@ -10,7 +10,14 @@
 	let responseContent = '';
 	export let response: Response | undefined = undefined;
 
-	$: response = { type: 'Text', content: { text: responseContent } };
+	$: {
+		if (response !== undefined && responseContent === '') {
+			if (response.type === 'Text') {
+				responseContent = response.content.text;
+			}
+		}
+		response = { type: 'Text', content: { text: responseContent } };
+	}
 </script>
 
 <div>

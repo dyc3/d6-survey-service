@@ -12,7 +12,8 @@ import type {
 	UserToken,
 	ValidationError,
 	SurveyResponses,
-	ResponseAccepted
+	ResponseAccepted,
+	SurveyResponse
 } from './common';
 import { jwt } from '../stores';
 import { browser } from '$app/environment';
@@ -149,7 +150,7 @@ export async function getSurveyResponse(
 	survey_id: number,
 	responder: string,
 	opts?: ExtraOptions
-): Promise<ApiResponse<{}>> {
+): Promise<ApiResponse<SurveyResponse>> {
 	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
 		method: 'GET',
 		...opts

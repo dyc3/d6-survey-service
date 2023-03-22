@@ -15,10 +15,17 @@
 	let group_selected: number | undefined = undefined;
 
 	export let response: Response | undefined = undefined;
-	$: if (group_selected !== undefined) {
-		response = { type: 'Rating', content: { rating: group_selected } };
-	} else {
-		response = undefined;
+	$: {
+		if (response !== undefined && group_selected === undefined) {
+			if (response.type === 'Rating') {
+				group_selected = response.content.rating;
+			}
+		}
+		if (group_selected !== undefined) {
+			response = { type: 'Rating', content: { rating: group_selected } };
+		} else {
+			response = undefined;
+		}
 	}
 </script>
 

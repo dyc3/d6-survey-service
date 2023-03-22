@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Survey, SurveyResponses, Response } from '$lib/common';
+	import type { Survey, SurveyResponses } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import type { PageData } from './$types';
@@ -10,8 +10,9 @@
 
 	let survey: Survey = data.survey;
 
-	let response: SurveyResponses = data.surveyResponse || {};
+	let response: SurveyResponses = data.surveyResponse;
 
+	// TODO: replace this with just URLSearchParams?
 	function parseQuery(queryString: string): { [key: string]: string } {
 		let query: { [key: string]: string } = {};
 		let pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
@@ -67,3 +68,5 @@
 {/if}
 
 <Button size="large" kind="primary" on:click={submitResponse}>Submit</Button>
+
+{JSON.stringify(response)}
