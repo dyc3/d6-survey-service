@@ -11,6 +11,7 @@ import type {
 	UserLoginParams,
 	UserToken,
 	ValidationError,
+	ListedSurvey,
 	SurveyResponses,
 	ResponseAccepted,
 	SurveyResponse
@@ -96,6 +97,10 @@ export async function getSurvey(
 	opts?: ExtraOptions
 ): Promise<ApiResponse<Survey>> {
 	return apiReq(`/api/survey/${survey_id}`, { ...opts });
+}
+
+export async function getSurveyList(opts?: ExtraOptions): Promise<ApiResponse<ListedSurvey[]>> {
+	return apiReqAuth(`/api/user/surveys`, { ...opts });
 }
 
 export async function getSurveyAuth(
