@@ -3,6 +3,7 @@
 	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import Container from '$lib/ui/Container.svelte';
+	import './questions.scss';
 
 	export let editmode = false;
 	let response = 0;
@@ -92,12 +93,5 @@
 	.align-rating-text {
 		display: flex;
 		justify-content: space-between;
-	}
-
-	.required{
-		color: red;
-		position: absolute;
-		right: 2.5%;
-		top: 0;
 	}
 </style>

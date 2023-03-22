@@ -5,6 +5,7 @@
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import Container from '$lib/ui/Container.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import './questions.scss';
 
 	export let editmode = false;
 	export let prompt: string;
@@ -91,13 +92,5 @@
 	.description-text {
 		font-size: $main-font-size;
 		color: $color-blue;
-	}
-
-	.required{
-		color: red;
-		position: absolute;
-		right: 2.5%;
-		top: 0;
-
 	}
 </style>

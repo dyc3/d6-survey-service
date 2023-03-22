@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import Container from '$lib/ui/Container.svelte';
+	import './questions.scss';
 
 	export let editmode = false;
 	export let multiline = false;
@@ -33,14 +34,3 @@
 
 	<TextBox bind:value={response} disabled={editmode} {multiline} />
 </Container>
-
-<style lang="scss">
-	@import '../ui/variables';
-	
-	.required{
-		color: red;
-		position: absolute;
-		right: 2.5%;
-		top: 2.5%;
-	}
-</style>
