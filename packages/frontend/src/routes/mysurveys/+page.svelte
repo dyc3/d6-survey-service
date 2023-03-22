@@ -2,22 +2,17 @@
 	import Button from '../../lib/ui/Button.svelte';
 	import TextBox from '../../lib/ui/TextBox.svelte';
 	import type { ListedSurvey } from '../../lib/common';
-	import type { ExtraOptions } from '$lib/api';
-	import type { ApiResponse } from '$lib/api';
 	import { createSurvey } from '$lib/api';
 	import { goto } from '$app/navigation';
 
 	async function createNewSurvey() {
 		let surveyInfo = await createSurvey();
 		if (surveyInfo.ok) {
-			console.log(surveyInfo.value.id);
 			goto('/survey/' + surveyInfo.value.id + '/edit');
 		}
 	}
 	
-
 	let surveys: ListedSurvey[] = [];
-	import ButtonGroup from '../../lib/ui/ButtonGroup.svelte';
 </script>
 
 <div class="toolbar">
