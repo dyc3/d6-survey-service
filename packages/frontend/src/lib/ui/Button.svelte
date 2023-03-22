@@ -75,6 +75,9 @@
 	.subsurface {
 		background-clip: text;
 		-webkit-background-clip: text;
+		clip-path: inset(2px);
+		padding: 2px;
+		width: auto;
 	}
 
 	$sizes: (
