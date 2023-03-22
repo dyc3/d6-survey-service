@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Survey, SurveyResponses } from '$lib/common';
+	import type { Survey, SurveyResponses, Response } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import type { PageData } from './$types';
@@ -59,7 +59,7 @@
 <p>{survey.description}</p>
 
 {#each survey.questions as surveyquestion}
-	<QContainer question={surveyquestion.question} />
+	<QContainer question={surveyquestion.question} bind:response={response[surveyquestion.uuid]} />
 {/each}
 
 <Button size="large" kind="primary" on:click={submitResponse}>Submit</Button>
