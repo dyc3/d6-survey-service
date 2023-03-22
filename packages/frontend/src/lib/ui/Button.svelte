@@ -74,7 +74,7 @@
 
 	.subsurface {
 		background-clip: text;
-		-webkit-background-clip: text;
+		-webkit-background-clip: text; /* stylelint-disable-line property-no-vendor-prefix */
 	}
 
 	$sizes: (
@@ -129,7 +129,7 @@
 				.subsurface {
 					background: map.get($props, bg);
 					background-clip: text;
-					-webkit-background-clip: text;
+					-webkit-background-clip: text; /* stylelint-disable-line property-no-vendor-prefix */
 					color: transparent;
 				}
 			}
