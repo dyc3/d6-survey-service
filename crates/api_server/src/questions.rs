@@ -71,6 +71,7 @@ impl From<QMultipleChoice> for Question {
     }
 }
 
+#[typeshare]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "content")]
 pub enum Response {

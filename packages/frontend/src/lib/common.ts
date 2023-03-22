@@ -107,6 +107,11 @@ export type Question =
 	| { type: 'Rating'; content: QRating }
 	| { type: 'MultipleChoice'; content: QMultipleChoice };
 
+export type Response =
+	| { type: 'Text'; content: RText }
+	| { type: 'Rating'; content: RRating }
+	| { type: 'MultipleChoice'; content: RMultipleChoice };
+
 export type ValidationError =
 	| {
 			type: 'Required';

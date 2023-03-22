@@ -120,22 +120,32 @@ export async function editSurvey(
 	});
 }
 
-export async function createSurveyResponse(survey_id: number, responses: SurveyResponses): Promise<ApiResponse<ResponseAccepted>> {
+export async function createSurveyResponse(
+	survey_id: number,
+	responses: SurveyResponses
+): Promise<ApiResponse<ResponseAccepted>> {
 	return apiReq(`/api/survey/${survey_id}/respond`, {
 		method: 'POST',
 		body: JSON.stringify(responses)
 	});
 }
 
-export async function editSurveyResponse(survey_id: number, responder: string, responses: SurveyResponses): Promise<ApiResponse<{}>> {
+export async function editSurveyResponse(
+	survey_id: number,
+	responder: string,
+	responses: SurveyResponses
+): Promise<ApiResponse<{}>> {
 	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
 		method: 'PATCH',
 		body: JSON.stringify(responses)
 	});
 }
 
-export async function getSurveyResponse(survey_id: number, responder: string): Promise<ApiResponse<{}>> {
+export async function getSurveyResponse(
+	survey_id: number,
+	responder: string
+): Promise<ApiResponse<{}>> {
 	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
-		method: 'GET',
+		method: 'GET'
 	});
 }
