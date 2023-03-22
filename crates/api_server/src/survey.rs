@@ -157,6 +157,36 @@ pub async fn edit_survey(
     Ok(())
 }
 
+#[delete("/survey/<survey_id>")]
+pub async fn delete_survey(
+    survey_id: i32,
+    claims: Claims,
+    db: Storage,
+) -> Result<(), ApiErrorResponse<SurveyError>> {
+    let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
+        error!("{e:?}");
+        SurveyError::NotFound
+    })?;
+
+    if survey.owner_id != claims.user_id() {
+        return Err(SurveyError::NotOwner.into());
+    }
+
+    db.run(move |conn| -> anyhow::Result<()> {
+        diesel::delete(schema::surveys::table)
+            .filter(schema::surveys::id.eq(survey_id))
+            .execute(conn)?;
+        Ok(())
+    })
+    .await
+    .map_err(|e| {
+        error!("{e:?}");
+        SurveyError::Unknown
+    })?;
+
+    Ok(())
+}
+
 pub(crate) async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Survey> {
     db.run(move |conn| {
         let survey = schema::surveys::dsl::surveys
