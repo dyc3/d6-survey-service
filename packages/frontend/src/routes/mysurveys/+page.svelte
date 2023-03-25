@@ -45,9 +45,8 @@
 					<!-- TODO: replace with check box-->
 					<td class="published">{survey.published ? 'Yes' : 'No'}</td>
 
-					<!-- TODO: make this read only-->
 					<td class="share-link">
-						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" />
+						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" disabled />
 					</td>
 					<td class="actions">
 						<Button>Edit</Button>

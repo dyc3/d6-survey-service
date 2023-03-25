@@ -16,7 +16,7 @@
 </div>
 
 <div>
-	<TextBox value={responseUrl} />
+	<TextBox value={responseUrl} disabled />
 </div>
 
 <div>
