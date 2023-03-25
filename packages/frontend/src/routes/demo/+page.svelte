@@ -4,8 +4,8 @@
 	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
-	import QTextInput from '../lib/questions/QTextInput.svelte';
-	import type { Question } from '../lib/common';
+	import QTextInput from '$lib/questions/QTextInput.svelte';
+	import type { Question } from '$lib/common';
 	import QMultipleChoice from '$lib/questions/QMultipleChoice.svelte';
 
 	let editmode = false;
@@ -69,7 +69,7 @@ Buttons
 	<ButtonGroup
 		orientation="horizontal"
 		buttons={['Button 1', 'Button 2', 'Button 3', 'Button 4', 'Button 5']}
-		forceSelection ={false}
+		forceSelection={false}
 		bind:selected={group_selected}
 	/>
 </div>
@@ -110,4 +110,4 @@ Textboxes
 
 <QContainer question={questions[selected_question]} {editmode} />
 <QContainer question={questions[selected_question]} {editmode} />
-<QContainer question={questions[selected_question]} {editmode} required = {true} />
+<QContainer question={questions[selected_question]} {editmode} required={true} />
