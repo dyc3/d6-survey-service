@@ -43,10 +43,8 @@
 	let group_selected: number | undefined = undefined;
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-
-<h2>Component Demo</h2>
+<h1>Component Demo</h1>
+<p><a href="https://kit.svelte.dev">Svelte Kit docs</a></p>
 
 <h3>UI Primitives</h3>
 
