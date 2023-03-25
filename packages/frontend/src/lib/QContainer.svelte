@@ -1,31 +1,66 @@
 <script lang="ts">
-	import type { Question } from './common';
+	import type { Question, Response, RMultipleChoice, RRating, RText } from './common';
 	import QMultipleChoice from './questions/QMultipleChoice.svelte';
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
 
 	export let editmode = false;
 	export let question: Question;
+	export let required = false;
+	export let response: Response | undefined = undefined;
 </script>
 
-<div class='question-container'>
+<div class="question-container">
 	{#if question.type === 'Text'}
-		<QTextInput {...question.content} {editmode} />
+		<QTextInput
+			bind:prompt={question.content.prompt}
+			bind:description={question.content.description}
+			bind:multiline={question.content.multiline}
+			{editmode}
+			{required}
+			bind:response
+			on:change
+		/>
 	{:else if question.type === 'Rating'}
-		<QRating {...question.content} {editmode} />
+		<QRating
+			bind:prompt={question.content.prompt}
+			bind:description={question.content.description}
+			bind:max_rating={question.content.max_rating}
+			{editmode}
+			{required}
+			bind:response
+			on:change
+		/>
 	{:else if question.type == 'MultipleChoice'}
-		<QMultipleChoice {...question.content} {editmode} />
+		<QMultipleChoice
+			bind:prompt={question.content.prompt}
+			bind:description={question.content.description}
+			bind:multiple={question.content.multiple}
+			bind:choices={question.content.choices}
+			{editmode}
+			{required}
+			bind:response
+			on:change
+		/>
+	{/if}
+
+	{#if editmode}
+	<div>
+		<label for="requiredquestion">Required?</label>
+		<input type="checkbox" id="requiredquestion" bind:checked={required} />
+	</div>
 	{/if}
 </div>
 
 <style lang="scss">
 	@import './ui/variables';
 
-	.question-container{
+	.question-container {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin:auto;
+		flex-direction: column;
+		margin: auto;
 		padding-top: $large-padding;
 	}
 </style>

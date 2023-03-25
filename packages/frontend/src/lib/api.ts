@@ -10,15 +10,20 @@ import type {
 	SurveyPatch,
 	UserLoginParams,
 	UserToken,
-	ValidationError
+	ValidationError,
+	ListedSurvey,
+	SurveyResponses,
+	ResponseAccepted,
+	SurveyResponse
 } from './common';
 import { jwt } from '../stores';
+import { browser } from '$app/environment';
 
-const API_URL = 'http://localhost:5347'; // TODO: see #42
+const API_URL = 'http://localhost:5347';
 
 export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 export type ApiResponse<T> = Result<T, ApiErrorResponse<any>>;
-export type ExtraOptions = { fetch?: typeof fetch };
+export type ExtraOptions = { fetch?: typeof fetch; token?: string };
 
 type ApiRequestOptions = RequestInit & ExtraOptions;
 
@@ -47,8 +52,13 @@ async function apiReq<T>(path: string, options?: ApiRequestOptions): Promise<Api
 }
 
 async function apiReqAuth<T>(path: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
-	const token = jwt.get();
+	const token = options?.token ?? (browser ? jwt.get() : undefined);
 	if (!token) {
+		if (!browser) {
+			throw new Error(
+				"Can't make authenticated request from server unless token is provided, see #42"
+			);
+		}
 		throw new Error(`Not logged in, cannot make authenticated request to ${path}`);
 	}
 	return apiReq(path, {
@@ -89,6 +99,17 @@ export async function getSurvey(
 	return apiReq(`/api/survey/${survey_id}`, { ...opts });
 }
 
+export async function getSurveyList(opts?: ExtraOptions): Promise<ApiResponse<ListedSurvey[]>> {
+	return apiReqAuth(`/api/user/surveys`, { ...opts });
+}
+
+export async function getSurveyAuth(
+	survey_id: number,
+	opts?: ExtraOptions
+): Promise<ApiResponse<Survey>> {
+	return apiReqAuth(`/api/survey/${survey_id}`, { ...opts });
+}
+
 export async function createSurvey(opts?: ExtraOptions): Promise<ApiResponse<Survey>> {
 	return apiReqAuth(`/api/survey/create`, { method: 'POST', ...opts });
 }
@@ -101,6 +122,42 @@ export async function editSurvey(
 	return apiReqAuth(`/api/survey/${survey_id}`, {
 		method: 'PATCH',
 		body: JSON.stringify(survey),
+		...opts
+	});
+}
+
+export async function createSurveyResponse(
+	survey_id: number,
+	responses: SurveyResponses,
+	opts?: ExtraOptions
+): Promise<ApiResponse<ResponseAccepted>> {
+	return apiReq(`/api/survey/${survey_id}/respond`, {
+		method: 'POST',
+		body: JSON.stringify(responses),
+		...opts
+	});
+}
+
+export async function editSurveyResponse(
+	survey_id: number,
+	responder: string,
+	responses: SurveyResponses,
+	opts?: ExtraOptions
+): Promise<ApiResponse<null>> {
+	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
+		method: 'PATCH',
+		body: JSON.stringify(responses),
+		...opts
+	});
+}
+
+export async function getSurveyResponse(
+	survey_id: number,
+	responder: string,
+	opts?: ExtraOptions
+): Promise<ApiResponse<SurveyResponse>> {
+	return apiReq(`/api/survey/${survey_id}/respond?responder=${responder}`, {
+		method: 'GET',
 		...opts
 	});
 }

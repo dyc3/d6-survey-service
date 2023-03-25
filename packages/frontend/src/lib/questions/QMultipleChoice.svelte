@@ -1,29 +1,62 @@
 <script lang="ts">
-	import type { Choice } from '$lib/common';
+	import type { Choice, Response } from '$lib/common';
 	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import Container from '$lib/ui/Container.svelte';
+	import { createEventDispatcher } from 'svelte';
+	import './questions.scss';
 
 	export let editmode = false;
 	export let prompt: string;
 	export let description: string;
+	export let multiple = false;
 	export let choices: Choice[] = [];
+	export let required = false;
+
+	let dispatch = createEventDispatcher();
 
 	function addChoice() {
 		choices = [...choices, { uuid: crypto.randomUUID(), text: '' }];
+		dispatch('change');
 	}
 	function removeChoice(index: number) {
 		choices = choices.filter((_, i) => i !== index);
+		dispatch('change');
 	}
 
 	let group_selected: number | undefined = undefined;
+
+	export let response: Response | undefined = undefined;
+	$: {
+		if (response !== undefined && group_selected === undefined) {
+			if (response.type === 'MultipleChoice') {
+				// TODO: handle multiple selections
+				group_selected = choices.findIndex((choice) => {
+					if (response !== undefined && response.type === 'MultipleChoice') {
+						return response.content.selected.includes(choice.uuid);
+					}
+				});
+			}
+		}
+		if (group_selected !== undefined) {
+			// TODO: handle multiple selections
+			response = { type: 'MultipleChoice', content: { selected: [choices[group_selected].uuid] } };
+		} else {
+			response = undefined;
+		}
+	}
 </script>
 
 <Container>
+
+	{#if required}
+			<span class = "required">*</span>
+	{/if}
+	
 	<div>
 		{#if editmode}
-			<TextBox placeholder="Enter prompt..." bind:value={prompt} />
+			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />
 		{:else}
 			<span class="prompt-text">{prompt}</span>
 		{/if}
@@ -31,7 +64,7 @@
 
 	<div>
 		{#if editmode}
-			<TextBox placeholder="Enter description..." bind:value={description} />
+			<TextBox placeholder="Enter description..." bind:value={description} on:change />
 		{:else}
 			<span class="description-text">{description}</span>
 		{/if}
@@ -41,15 +74,19 @@
 		{#if editmode}
 			{#each choices as choice, i}
 				<div class="editable-choice">
-					<TextBox bind:value={choice.text} placeholder="Enter text..." />
+					<TextBox bind:value={choice.text} placeholder="Enter text..." on:change />
 					<Button kind="danger" size="small" on:click={() => removeChoice(i)}>x</Button>
 				</div>
 			{/each}
 			<Button on:click={addChoice}>+</Button>
 		{:else}
-			<ButtonGroup orientation="vertical" buttons={choices.map((choice) => choice.text)} forceSelection = {false} bind:selected={group_selected} />
+			<ButtonGroup
+				orientation="vertical"
+				buttons={choices.map((choice) => choice.text)}
+				forceSelection={false}
+				bind:selected={group_selected}
+			/>
 		{/if}
-
 	</div>
 </Container>
 
@@ -65,14 +102,14 @@
 		display: flex;
 		flex-direction: row;
 	}
-	
-	.prompt-text{
+
+	.prompt-text {
 		font-size: $bold-font-size;
 		font-weight: bold;
 		color: $color-blue;
 	}
 
-	.description-text{
+	.description-text {
 		font-size: $main-font-size;
 		color: $color-blue;
 	}

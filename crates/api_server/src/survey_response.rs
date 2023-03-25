@@ -113,7 +113,7 @@ pub async fn edit_survey_response(
     survey_response: Json<SurveyResponses>,
     responder: Uuid,
     race_check: Option<RaceCheck>,
-) -> Result<(), ApiErrorResponse<SurveyResponseError>> {
+) -> Result<Json<()>, ApiErrorResponse<SurveyResponseError>> {
     if let Some(race_check) = race_check {
         let old_response = db
             .run(move |conn| {
@@ -154,7 +154,7 @@ pub async fn edit_survey_response(
         SurveyResponseError::Unknown
     })?;
 
-    Ok(())
+    Ok(Json(()))
 }
 
 #[get("/survey/<survey_id>/respond?<responder>")]

@@ -23,6 +23,7 @@ pub fn rocket() -> _ {
     rocket::build()
         .attach(db::stage())
         .attach(cors::Cors)
+        .mount("/", routes![cors::handle_preflight])
         .mount(
             "/api",
             routes![
@@ -39,4 +40,5 @@ pub fn rocket() -> _ {
                 survey_response::get_survey_response,
             ],
         )
+        .register("/", catchers![api::default_catcher])
 }
