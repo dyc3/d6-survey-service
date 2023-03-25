@@ -5,22 +5,22 @@
 	import { createSurvey, getSurveyList } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { jwt } from '../../stores';
 
 	async function createNewSurvey() {
 		let surveyInfo = await createSurvey();
 		if (surveyInfo.ok) {
 			goto('/survey/' + surveyInfo.value.id + '/edit');
+		} else {
+			console.error(surveyInfo.error);
 		}
 	}
-	
+
 	let surveys: ListedSurvey[] = [];
 	onMount(async () => {
 		let resp = await getSurveyList();
 		if (resp.ok) {
 			surveys = resp.value;
-		}
-		else {
+		} else {
 			console.error(resp.error);
 		}
 	});
@@ -28,7 +28,7 @@
 
 <div class="toolbar">
 	<h1>My Surveys</h1>
-	<Button kind="primary" size="large" on:click={ createNewSurvey }>Create Survey</Button>
+	<Button kind="primary" size="large" on:click={createNewSurvey}>Create Survey</Button>
 </div>
 <div class="main-container">
 	<table class="container">
