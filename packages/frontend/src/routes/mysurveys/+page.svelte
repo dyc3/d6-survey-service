@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Button from '../../lib/ui/Button.svelte';
-	import TextBox from '../../lib/ui/TextBox.svelte';
-	import type { ListedSurvey } from '../../lib/common';
+	import Button from '$lib/ui/Button.svelte';
+	import TextBox from '$lib/ui/TextBox.svelte';
+	import type { ListedSurvey } from '$lib/common';
 	import { createSurvey, getSurveyList } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
