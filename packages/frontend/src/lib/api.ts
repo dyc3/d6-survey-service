@@ -126,6 +126,10 @@ export async function editSurvey(
 	});
 }
 
+export async function deleteSurvey(survey_id: number, opts?: ExtraOptions): Promise<ApiResponse<null>> {
+	return apiReqAuth(`/api/survey/${survey_id}`, { method: 'DELETE', ...opts });
+}
+
 export async function createSurveyResponse(
 	survey_id: number,
 	responses: SurveyResponses,

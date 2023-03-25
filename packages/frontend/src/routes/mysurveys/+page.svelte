@@ -2,7 +2,7 @@
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import type { ListedSurvey } from '$lib/common';
-	import { createSurvey, getSurveyList } from '$lib/api';
+	import { createSurvey, deleteSurvey, getSurveyList } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
@@ -24,6 +24,15 @@
 			console.error(resp.error);
 		}
 	});
+
+	async function doDeleteSurvey(survey_id: number) {
+		let resp = await deleteSurvey(survey_id);
+		if (resp.ok) {
+			surveys = surveys.filter((survey) => survey.id !== survey_id);
+		} else {
+			console.error(resp.error);
+		}
+	}
 </script>
 
 <div class="toolbar">
@@ -49,8 +58,8 @@
 						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" disabled />
 					</td>
 					<td class="actions">
-						<Button>Edit</Button>
-						<Button kind="danger">Delete</Button>
+						<Button on:click={() => goto(`/survey/${survey.id}/edit`)}>Edit</Button>
+						<Button kind="danger" on:click={() => doDeleteSurvey(survey.id)}>Delete</Button>
 					</td>
 				</tr>
 			{/each}
