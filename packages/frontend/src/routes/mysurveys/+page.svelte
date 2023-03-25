@@ -2,9 +2,12 @@
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import type { ListedSurvey } from '$lib/common';
-	import { createSurvey, deleteSurvey, getSurveyList } from '$lib/api';
+	import { createSurvey, deleteSurvey } from '$lib/api';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+	let surveys: ListedSurvey[] = data.surveys;
 
 	async function createNewSurvey() {
 		let surveyInfo = await createSurvey();
@@ -14,16 +17,6 @@
 			console.error(surveyInfo.error);
 		}
 	}
-
-	let surveys: ListedSurvey[] = [];
-	onMount(async () => {
-		let resp = await getSurveyList();
-		if (resp.ok) {
-			surveys = resp.value;
-		} else {
-			console.error(resp.error);
-		}
-	});
 
 	async function doDeleteSurvey(survey_id: number) {
 		let resp = await deleteSurvey(survey_id);
