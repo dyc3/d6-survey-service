@@ -17,8 +17,12 @@
 				return `${error.data.field} must be unique, but was ${error.data.value}`;
 			case 'Required':
 				return `${error.data.field} is required`;
+			case 'Inner':
+				return `Invalid value for ${error.data.field} (${error.data.uuid}): ${buildMessage(
+					error.data.inner
+				)}`;
 			default:
-				return `Unable to render error: ${error.type}`;
+				return `Unable to render error: ${JSON.stringify(error)}`;
 		}
 	}
 
