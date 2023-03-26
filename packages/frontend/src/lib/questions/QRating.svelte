@@ -92,6 +92,9 @@
 			<span class="description-text">{minText}</span>
 			<span class="description-text">{maxText}</span>
 		</div>
+		{#each validationErrors.get('response') ?? [] as error}
+			<ValidationErrorRenderer {error} />
+		{/each}
 	</div>
 </Container>
 
