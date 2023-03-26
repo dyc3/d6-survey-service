@@ -145,7 +145,10 @@ pub async fn edit_survey(
         conn.build_transaction()
             .read_write()
             .run::<_, diesel::result::Error, _>(|conn| {
-                schema::surveys::table.for_update().find(survey_id).load::<Survey>(conn)?;
+                schema::surveys::table
+                    .for_update()
+                    .find(survey_id)
+                    .load::<Survey>(conn)?;
                 diesel::update(schema::surveys::table)
                     .filter(schema::surveys::id.eq(survey_id))
                     .set(new_survey.into_inner())

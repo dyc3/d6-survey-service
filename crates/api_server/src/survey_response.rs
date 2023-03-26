@@ -122,8 +122,12 @@ pub async fn edit_survey_response(
                 let patch_survey_response = PatchSurveyResponse {
                     content: survey_responses,
                 };
-                crate::db::schema::responses::table.for_update().filter(crate::db::schema::responses::survey_id.eq(survey_id))
-                    .filter(crate::db::schema::responses::responder_uuid.eq(responder)).limit(1).load::<SurveyResponse>(conn)?;
+                crate::db::schema::responses::table
+                    .for_update()
+                    .filter(crate::db::schema::responses::survey_id.eq(survey_id))
+                    .filter(crate::db::schema::responses::responder_uuid.eq(responder))
+                    .limit(1)
+                    .load::<SurveyResponse>(conn)?;
                 diesel::update(crate::db::schema::responses::table)
                     .filter(crate::db::schema::responses::survey_id.eq(survey_id))
                     .filter(crate::db::schema::responses::responder_uuid.eq(responder))
