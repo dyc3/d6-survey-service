@@ -57,7 +57,7 @@
 	{#if editmode}
 		<div>
 			<label for="requiredquestion">Required?</label>
-			<input type="checkbox" id="requiredquestion" bind:checked={required} />
+			<input type="checkbox" id="requiredquestion" bind:checked={required} on:change />
 		</div>
 	{/if}
 </div>
