@@ -62,8 +62,6 @@
 		dirtyFields.add(field);
 		submitChangesDebounced();
 	}
-
-	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 </script>
 
 <div class="toolbar">
