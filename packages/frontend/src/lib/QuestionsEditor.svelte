@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { Question, SurveyQuestions } from './common';
-	import QContainer from './QContainer.svelte';
-	import Button from './ui/Button.svelte';
+	import type { Question, SurveyQuestions, ValidationError } from '$lib/common';
+	import QContainer from '$lib/QContainer.svelte';
+	import Button from '$lib/ui/Button.svelte';
+	import { buildErrorMapFromUuids } from '$lib/validation';
+	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
 
 	export let questions: SurveyQuestions = [];
+	export let errors: ValidationError[] = [];
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 	const dispatch = createEventDispatcher();
@@ -65,11 +68,20 @@
 		questions = questions.filter((q) => q.uuid !== uuid);
 		dispatch('change');
 	}
+
+	let errorsByUUID: Map<string, ValidationError[]> = new Map();
+
+	$: {
+		errorsByUUID = buildErrorMapFromUuids(errors);
+	}
 </script>
 
 {#each questions as q}
 	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
 	<QContainer bind:question={q.question} bind:required={q.required} editmode={true} on:change />
+	{#each errorsByUUID.get(q.uuid) ?? [] as error}
+		<ValidationErrorRenderer {error} />
+	{/each}
 {/each}
 
 <div class="panel">
