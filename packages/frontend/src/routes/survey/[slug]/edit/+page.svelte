@@ -35,7 +35,7 @@
 		}
 	}
 
-	let submitChangesDebounced = _.debounce(submitChanges, 1000);
+	let submitChangesDebounced = _.debounce(submitChanges, 2000);
 
 	async function publishSurvey() {
 		// make sure we don't submit changes twice, or publish a survey with unsaved changes
