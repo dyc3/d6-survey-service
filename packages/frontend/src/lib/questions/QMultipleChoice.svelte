@@ -1,11 +1,13 @@
 <script lang="ts">
-	import type { Choice, Response } from '$lib/common';
+	import type { Choice, Response, ValidationError } from '$lib/common';
 	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import Container from '$lib/ui/Container.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import './questions.scss';
+	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
+	import { buildErrorMapFromFields } from '$lib/validation';
 
 	export let editmode = false;
 	export let prompt: string;
@@ -46,17 +48,22 @@
 			response = undefined;
 		}
 	}
+
+	export let errors: ValidationError[] = [];
+	$: validationErrors = buildErrorMapFromFields(errors);
 </script>
 
 <Container>
-
 	{#if required}
-			<span class = "required">*</span>
+		<span class="required">*</span>
 	{/if}
-	
+
 	<div>
 		{#if editmode}
 			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />
+			{#each validationErrors.get('prompt') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{:else}
 			<span class="prompt-text">{prompt}</span>
 		{/if}
@@ -65,6 +72,9 @@
 	<div>
 		{#if editmode}
 			<TextBox placeholder="Enter description..." bind:value={description} on:change />
+			{#each validationErrors.get('description') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{:else}
 			<span class="description-text">{description}</span>
 		{/if}
@@ -79,6 +89,10 @@
 				</div>
 			{/each}
 			<Button on:click={addChoice}>+</Button>
+			<!-- TODO: show errors under the choices that have them -->
+			{#each validationErrors.get('choices') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{:else}
 			<ButtonGroup
 				orientation="vertical"
@@ -86,6 +100,9 @@
 				forceSelection={false}
 				bind:selected={group_selected}
 			/>
+			{#each validationErrors.get('response') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{/if}
 	</div>
 </Container>

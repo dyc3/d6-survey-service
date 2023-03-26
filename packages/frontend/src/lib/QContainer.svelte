@@ -50,6 +50,7 @@
 			{required}
 			bind:response
 			on:change
+			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
 		/>
 	{/if}
 
