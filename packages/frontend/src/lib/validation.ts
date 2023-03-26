@@ -22,6 +22,22 @@ export function buildErrorMapFromFields(errors: ValidationError[]): Map<string, 
 					errmap.set(err.data.field, [err]);
 				}
 				break;
+			case 'NotInRange':
+				prev = errmap.get(err.data.field);
+				if (prev) {
+					prev.push(err);
+				} else {
+					errmap.set(err.data.field, [err]);
+				}
+				break;
+			case 'NotUnique':
+				prev = errmap.get(err.data.field);
+				if (prev) {
+					prev.push(err);
+				} else {
+					errmap.set(err.data.field, [err]);
+				}
+				break;
 			case 'Inner':
 				prev = errmap.get(err.data.field);
 				if (prev) {
