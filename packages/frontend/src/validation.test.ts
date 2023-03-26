@@ -6,7 +6,7 @@ describe('processing validation errors', () => {
 	it('should correctly determine that the response contains validation errors', () => {
 		const err: ApiErrorResponse<unknown> = {
 			message: {
-				ValidationError: [],
+				ValidationError: []
 			}
 		};
 		expect(isValidationError(err)).toEqual(true);
@@ -14,12 +14,12 @@ describe('processing validation errors', () => {
 
 	it('should correctly determine that the response does NOT contain validation errors', () => {
 		let err: ApiErrorResponse<unknown> = {
-			message: "Not found"
+			message: 'Not found'
 		};
 		expect(isValidationError(err)).toEqual(false);
 		err = {
 			message: {
-				foo: "bar"
+				foo: 'bar'
 			}
 		};
 		expect(isValidationError(err)).toEqual(false);

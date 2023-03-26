@@ -1,7 +1,7 @@
-import type { ValidationError } from "./common";
+import type { ValidationError } from './common';
 
 export function buildErrorMapFromFields(errors: ValidationError[]): Map<string, ValidationError[]> {
-	let errmap = new Map<string, ValidationError[]>();
+	const errmap = new Map<string, ValidationError[]>();
 
 	errors.forEach((err) => {
 		let prev: ValidationError[] | undefined;
@@ -56,11 +56,11 @@ export function buildErrorMapFromFields(errors: ValidationError[]): Map<string, 
 }
 
 export function buildErrorMapFromUuids(errors: ValidationError[]) {
-	let errmap = new Map<string, ValidationError[]>();
+	const errmap = new Map<string, ValidationError[]>();
 
 	for (const error of errors) {
 		if (error.type === 'Inner') {
-			let prev = errmap.get(error.data.uuid);
+			const prev = errmap.get(error.data.uuid);
 			if (prev) {
 				prev.push(error.data.inner);
 			} else {
@@ -75,7 +75,7 @@ export function buildErrorMapFromUuids(errors: ValidationError[]) {
 }
 
 export function unwrapInnerErrors(errors: ValidationError[]): ValidationError[] {
-	return errors.map(error => {
+	return errors.map((error) => {
 		if (error.type === 'Inner') {
 			return error.data.inner;
 		} else {

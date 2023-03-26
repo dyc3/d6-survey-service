@@ -29,7 +29,7 @@ type ApiRequestOptions = RequestInit & ExtraOptions;
 
 export function isValidationError(
 	apiErr: ApiErrorResponse<any>
-): apiErr is ApiErrorResponse<{ "ValidationError": ValidationError[] }> {
+): apiErr is ApiErrorResponse<{ ValidationError: ValidationError[] }> {
 	if (!apiErr.message) return false;
 	if (typeof apiErr.message === 'string') return false;
 	return (
