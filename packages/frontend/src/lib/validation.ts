@@ -58,7 +58,7 @@ export function buildErrorMapFromUuids(errors: ValidationError[]) {
 	return errmap;
 }
 
-export function unwrapInnerErrors(errors: ValidationError[]) {
+export function unwrapInnerErrors(errors: ValidationError[]): ValidationError[] {
 	return errors.map(error => {
 		if (error.type === 'Inner') {
 			return error.data.inner;
