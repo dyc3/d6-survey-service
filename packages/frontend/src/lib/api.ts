@@ -27,13 +27,13 @@ export type ExtraOptions = { fetch?: typeof fetch; token?: string };
 
 type ApiRequestOptions = RequestInit & ExtraOptions;
 
-function isValidationError(
+export function isValidationError(
 	apiErr: ApiErrorResponse<any>
-): apiErr is ApiErrorResponse<ValidationError> {
+): apiErr is ApiErrorResponse<{ "ValidationError": ValidationError[] }> {
 	if (!apiErr.message) return false;
-	if (typeof apiErr.message !== 'string') return false;
+	if (typeof apiErr.message === 'string') return false;
 	return (
-		typeof apiErr.message !== 'object' &&
+		typeof apiErr.message === 'object' &&
 		Object.prototype.hasOwnProperty.call(apiErr.message, 'ValidationError')
 	);
 }
