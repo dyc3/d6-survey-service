@@ -57,3 +57,13 @@ export function buildErrorMapFromUuids(errors: ValidationError[]) {
 
 	return errmap;
 }
+
+export function unwrapInnerErrors(errors: ValidationError[]) {
+	return errors.map(error => {
+		if (error.type === 'Inner') {
+			return error.data.inner;
+		} else {
+			return error;
+		}
+	});
+}
