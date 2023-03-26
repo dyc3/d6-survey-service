@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { editSurvey } from '$lib/api';
-	import type { Question, SurveyPatch, SurveyQuestions } from '$lib/common';
-	import QContainer from '$lib/QContainer.svelte';
-
+	import type { SurveyPatch, SurveyQuestions } from '$lib/common';
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import type { PageData } from './$types';
 
 	import _ from 'lodash';
 	import { goto } from '$app/navigation';
+	import QuestionsEditor from '$lib/QuestionsEditor.svelte';
 
 	let title = 'Untitled Survey';
 	let description = '';
@@ -18,63 +17,6 @@
 	title = data.survey.title;
 	description = data.survey.description;
 	questions = data.survey.questions;
-
-	function buildQuestion(type: 'Text' | 'Rating' | 'MultipleChoice'): Question {
-		let question: Question;
-		switch (type) {
-			case 'Text':
-				question = {
-					type: 'Text',
-					content: {
-						prompt: '',
-						description: '',
-						multiline: false
-					}
-				};
-				break;
-			case 'Rating':
-				question = {
-					type: 'Rating',
-					content: {
-						prompt: '',
-						description: '',
-						max_rating: 5
-					}
-				};
-				break;
-			case 'MultipleChoice':
-				question = {
-					type: 'MultipleChoice',
-					content: {
-						prompt: '',
-						description: '',
-						multiple: false,
-						choices: []
-					}
-				};
-				break;
-			default:
-				throw new Error('Invalid question type');
-		}
-		return question;
-	}
-
-	function addQuestion(type: 'Text' | 'Rating' | 'MultipleChoice') {
-		questions = [
-			...questions,
-			{
-				uuid: crypto.randomUUID(),
-				required: false,
-				question: buildQuestion(type)
-			}
-		];
-		onChange('questions');
-	}
-
-	function removeQuestion(uuid: string) {
-		questions = questions.filter((q) => q.uuid !== uuid);
-		onChange('questions');
-	}
 
 	let dirtyFields: Set<keyof SurveyPatch> = new Set();
 
@@ -142,19 +84,7 @@
 		/>
 	</div>
 
-	{#each questions as q}
-		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>x</Button>
-		<QContainer question={q.question} editmode={true} on:change={() => onChange('questions')} />
-	{/each}
-
-	<div class="panel">
-		<select bind:value={questionToAdd}>
-			<option value="Text">Text</option>
-			<option value="MultipleChoice">Multiple Choice</option>
-			<option value="Rating">Rating</option>
-		</select>
-		<Button size="small" on:click={() => addQuestion(questionToAdd)}>+ Add Question</Button>
-	</div>
+	<QuestionsEditor bind:questions />
 
 	<div class="panel">
 		<Button on:click={publishSurvey}>Publish Survey</Button>

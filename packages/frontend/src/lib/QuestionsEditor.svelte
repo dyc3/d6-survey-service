@@ -1,0 +1,89 @@
+<script lang="ts">
+	import type { Question, SurveyQuestions } from './common';
+	import QContainer from './QContainer.svelte';
+	import Button from './ui/Button.svelte';
+
+	export let questions: SurveyQuestions = [];
+
+	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
+
+	function buildQuestion(type: 'Text' | 'Rating' | 'MultipleChoice'): Question {
+		let question: Question;
+		switch (type) {
+			case 'Text':
+				question = {
+					type: 'Text',
+					content: {
+						prompt: '',
+						description: '',
+						multiline: false
+					}
+				};
+				break;
+			case 'Rating':
+				question = {
+					type: 'Rating',
+					content: {
+						prompt: '',
+						description: '',
+						max_rating: 5
+					}
+				};
+				break;
+			case 'MultipleChoice':
+				question = {
+					type: 'MultipleChoice',
+					content: {
+						prompt: '',
+						description: '',
+						multiple: false,
+						choices: []
+					}
+				};
+				break;
+			default:
+				throw new Error('Invalid question type');
+		}
+		return question;
+	}
+
+	function addQuestion(type: 'Text' | 'Rating' | 'MultipleChoice') {
+		questions = [
+			...questions,
+			{
+				uuid: crypto.randomUUID(),
+				required: false,
+				question: buildQuestion(type)
+			}
+		];
+	}
+
+	function removeQuestion(uuid: string) {
+		questions = questions.filter((q) => q.uuid !== uuid);
+	}
+</script>
+
+{#each questions as q}
+	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
+	<QContainer bind:question={q.question} editmode={true} />
+{/each}
+
+<div class="panel">
+	<select bind:value={questionToAdd}>
+		<option value="Text">Text</option>
+		<option value="MultipleChoice">Multiple Choice</option>
+		<option value="Rating">Rating</option>
+	</select>
+	<Button size="small" on:click={() => addQuestion(questionToAdd)}>+ Add Question</Button>
+</div>
+
+<style lang="scss">
+	// TODO: deduplicate this class, copied from survey edit page
+	.panel {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		margin: 40px;
+	}
+</style>
