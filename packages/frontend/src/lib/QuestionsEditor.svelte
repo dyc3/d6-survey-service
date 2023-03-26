@@ -65,7 +65,7 @@
 
 {#each questions as q}
 	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-	<QContainer bind:question={q.question} editmode={true} />
+	<QContainer bind:question={q.question} bind:required={q.required} editmode={true} />
 {/each}
 
 <div class="panel">
