@@ -38,6 +38,7 @@
 			{required}
 			bind:response
 			on:change
+			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
 		/>
 	{:else if question.type == 'MultipleChoice'}
 		<QMultipleChoice

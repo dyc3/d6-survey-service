@@ -1,9 +1,11 @@
 <script lang="ts">
-	import type { Response } from '$lib/common';
+	import type { Response, ValidationError } from '$lib/common';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import Container from '$lib/ui/Container.svelte';
 	import './questions.scss';
+	import { buildErrorMapFromFields } from '$lib/validation';
+	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
 
 	export let editmode = false;
 	export let prompt: string;
@@ -29,12 +31,14 @@
 			response = undefined;
 		}
 	}
+
+	export let errors: ValidationError[] = [];
+	$: validationErrors = buildErrorMapFromFields(errors);
 </script>
 
 <Container>
-
 	{#if required}
-			<span class = "required">*</span>
+		<span class="required">*</span>
 	{/if}
 
 	<div>
@@ -44,6 +48,9 @@
 				>Where 1 is <input bind:value={minText} on:change /> and {max_rating} is
 				<input bind:value={maxText} on:change /></span
 			>
+			{#each validationErrors.get('max_rating') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{:else}
 			<span class="prompt-text">On a scale of 1-{max_rating}...</span>
 		{/if}
@@ -52,6 +59,9 @@
 	<div class="text-box-container">
 		{#if editmode}
 			<TextBox placeholder="Insert prompt..." bind:value={prompt} />
+			{#each validationErrors.get('prompt') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{:else}
 			<span class="prompt-text">{prompt}</span>
 		{/if}
@@ -60,6 +70,9 @@
 	<div class="text-box-container">
 		{#if editmode}
 			<TextBox placeholder="Insert description..." bind:value={description} />
+			{#each validationErrors.get('description') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{:else}
 			<span class="description-text">{description}</span>
 		{/if}
