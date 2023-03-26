@@ -116,14 +116,21 @@ pub async fn edit_survey_response(
     (&survey.questions, &survey_responses).validate()?;
 
     db.run(move |conn| {
-        let patch_survey_response = PatchSurveyResponse {
-            content: survey_responses,
-        };
-        diesel::update(crate::db::schema::responses::table)
-            .filter(crate::db::schema::responses::survey_id.eq(survey_id))
-            .filter(crate::db::schema::responses::responder_uuid.eq(responder))
-            .set(&patch_survey_response)
-            .execute(conn)
+        conn.build_transaction()
+            .read_write()
+            .run::<_, diesel::result::Error, _>(|conn| {
+                let patch_survey_response = PatchSurveyResponse {
+                    content: survey_responses,
+                };
+                crate::db::schema::responses::table.for_update().filter(crate::db::schema::responses::survey_id.eq(survey_id))
+                    .filter(crate::db::schema::responses::responder_uuid.eq(responder)).limit(1).load::<SurveyResponse>(conn)?;
+                diesel::update(crate::db::schema::responses::table)
+                    .filter(crate::db::schema::responses::survey_id.eq(survey_id))
+                    .filter(crate::db::schema::responses::responder_uuid.eq(responder))
+                    .set(&patch_survey_response)
+                    .execute(conn)?;
+                Ok(())
+            })
     })
     .await
     .map_err(|e| {
