@@ -85,9 +85,6 @@
 		on:change
 		errors={errorsByUUID.get(q.uuid) ?? []}
 	/>
-	{#each errorsByUUID.get(q.uuid) ?? [] as error}
-		<ValidationErrorRenderer {error} />
-	{/each}
 {/each}
 
 <div class="panel">
