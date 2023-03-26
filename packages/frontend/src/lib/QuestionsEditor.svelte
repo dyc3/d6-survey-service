@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import type { Question, SurveyQuestions } from './common';
 	import QContainer from './QContainer.svelte';
 	import Button from './ui/Button.svelte';
@@ -6,6 +7,7 @@
 	export let questions: SurveyQuestions = [];
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
+	const dispatch = createEventDispatcher();
 
 	function buildQuestion(type: 'Text' | 'Rating' | 'MultipleChoice'): Question {
 		let question: Question;
@@ -56,16 +58,18 @@
 				question: buildQuestion(type)
 			}
 		];
+		dispatch('change');
 	}
 
 	function removeQuestion(uuid: string) {
 		questions = questions.filter((q) => q.uuid !== uuid);
+		dispatch('change');
 	}
 </script>
 
 {#each questions as q}
 	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-	<QContainer bind:question={q.question} bind:required={q.required} editmode={true} />
+	<QContainer bind:question={q.question} bind:required={q.required} editmode={true} on:change />
 {/each}
 
 <div class="panel">

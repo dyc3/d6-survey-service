@@ -82,7 +82,7 @@
 		/>
 	</div>
 
-	<QuestionsEditor bind:questions />
+	<QuestionsEditor bind:questions on:change={() => onChange('questions')} />
 
 	<div class="panel">
 		<Button on:click={publishSurvey}>Publish Survey</Button>
