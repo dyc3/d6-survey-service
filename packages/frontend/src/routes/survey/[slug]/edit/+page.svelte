@@ -9,6 +9,7 @@
 	import { goto } from '$app/navigation';
 	import QuestionsEditor from '$lib/QuestionsEditor.svelte';
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
+	import { buildErrorMapFromFields } from '$lib/validation';
 
 	let title = 'Untitled Survey';
 	let description = '';
@@ -74,40 +75,7 @@
 	}
 
 	function applyValidationErrors(errors: ValidationError[]) {
-		let newerrors: typeof validationErrors = new Map();
-		errors.forEach((err) => {
-			let prev: ValidationError[] | undefined;
-			switch (err.type) {
-				case 'BadValue':
-					prev = newerrors.get(err.data.field);
-					if (prev) {
-						prev.push(err);
-					} else {
-						newerrors.set(err.data.field, [err]);
-					}
-					break;
-				case 'Required':
-					prev = newerrors.get(err.data.field);
-					if (prev) {
-						prev.push(err);
-					} else {
-						newerrors.set(err.data.field, [err]);
-					}
-					break;
-				case 'Inner':
-					prev = newerrors.get(err.data.field);
-					if (prev) {
-						prev.push(err);
-					} else {
-						newerrors.set(err.data.field, [err]);
-					}
-					break;
-				default:
-					console.warn('Unknown validation error type', err);
-					break;
-			}
-		});
-		validationErrors = newerrors;
+		validationErrors = buildErrorMapFromFields(errors);
 	}
 </script>
 
@@ -135,7 +103,11 @@
 		{/each}
 	</div>
 
-	<QuestionsEditor bind:questions on:change={() => onChange('questions')} />
+	<QuestionsEditor
+		bind:questions
+		on:change={() => onChange('questions')}
+		errors={validationErrors.get('questions') ?? []}
+	/>
 
 	<div class="panel">
 		<Button on:click={publishSurvey}>Publish Survey</Button>
