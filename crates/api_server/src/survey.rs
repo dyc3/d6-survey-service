@@ -125,7 +125,7 @@ pub async fn edit_survey(
     claims: Claims,
     db: Storage,
     new_survey: Json<SurveyPatch>,
-) -> Result<(), ApiErrorResponse<SurveyError>> {
+) -> Result<Json<()>, ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
@@ -154,7 +154,7 @@ pub async fn edit_survey(
         SurveyError::Unknown
     })?;
 
-    Ok(())
+    Ok(Json(()))
 }
 
 #[delete("/survey/<survey_id>")]
