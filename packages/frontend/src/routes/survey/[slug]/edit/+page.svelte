@@ -16,6 +16,7 @@
 	let questions: SurveyQuestions = [];
 
 	let isSaving = false;
+	let wasSaveSuccessful = true;
 	let validationErrors: Map<string, ValidationError[]> = new Map();
 
 	export let data: PageData;
@@ -32,17 +33,25 @@
 			questions
 		};
 
-		let resp = await editSurvey(data.surveyId, _.pick(patch, Array.from(dirtyFields)));
-		if (resp.ok) {
-			dirtyFields.clear();
-		} else {
-			if (isValidationError(resp.error)) {
-				applyValidationErrors(resp.error.message.ValidationError);
+		try {
+			let resp = await editSurvey(data.surveyId, _.pick(patch, Array.from(dirtyFields)));
+			if (resp.ok) {
+				wasSaveSuccessful = true;
+				dirtyFields.clear();
 			} else {
-				alert(`Error saving survey: ${resp.error.message}`);
+				wasSaveSuccessful = false;
+				if (isValidationError(resp.error)) {
+					applyValidationErrors(resp.error.message.ValidationError);
+				} else {
+					alert(`Error saving survey: ${resp.error.message}`);
+				}
 			}
+		} catch (e) {
+			console.error(e);
+			wasSaveSuccessful = false;
+		} finally {
+			isSaving = false;
 		}
-		isSaving = false;
 	}
 
 	let submitChangesDebounced = _.debounce(submitChanges, 2000);
@@ -64,7 +73,7 @@
 		if (resp.ok) {
 			await goto(`/mysurveys`);
 		} else {
-			alert('Error publishing survey');
+			alert('Error publishing survey: ' + resp.error.message);
 		}
 	}
 
@@ -83,6 +92,13 @@
 	<div>
 		<h1>{title}</h1>
 		<h2>Editing</h2>
+		{#if isSaving}
+			<span>Saving...</span>
+		{:else if wasSaveSuccessful}
+			<span>Changes saved</span>
+		{:else}
+			<span>Changes not saved</span>
+		{/if}
 	</div>
 	<Button>View Results</Button>
 </div>
