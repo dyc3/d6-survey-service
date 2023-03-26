@@ -4,7 +4,7 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { buildErrorMapFromUuids } from '$lib/validation';
-	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
+	import ValidationErrorRenderer from './ValidationErrorRenderer.svelte';
 
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
@@ -78,7 +78,13 @@
 
 {#each questions as q}
 	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-	<QContainer bind:question={q.question} bind:required={q.required} editmode={true} on:change />
+	<QContainer
+		bind:question={q.question}
+		bind:required={q.required}
+		editmode={true}
+		on:change
+		errors={errorsByUUID.get(q.uuid) ?? []}
+	/>
 	{#each errorsByUUID.get(q.uuid) ?? [] as error}
 		<ValidationErrorRenderer {error} />
 	{/each}

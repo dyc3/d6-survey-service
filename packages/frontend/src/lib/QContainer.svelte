@@ -1,13 +1,20 @@
 <script lang="ts">
-	import type { Question, Response, RMultipleChoice, RRating, RText } from './common';
+	import type { Question, Response, ValidationError } from '$lib/common';
 	import QMultipleChoice from './questions/QMultipleChoice.svelte';
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
+	import { buildErrorMapFromFields } from '$lib/validation';
 
 	export let editmode = false;
 	export let question: Question;
 	export let required = false;
 	export let response: Response | undefined = undefined;
+	export let errors: ValidationError[] = [];
+
+	let validationErrors: Map<string, ValidationError[]> = new Map();
+	$: {
+		validationErrors = buildErrorMapFromFields(errors);
+	}
 </script>
 
 <div class="question-container">
@@ -45,10 +52,10 @@
 	{/if}
 
 	{#if editmode}
-	<div>
-		<label for="requiredquestion">Required?</label>
-		<input type="checkbox" id="requiredquestion" bind:checked={required} />
-	</div>
+		<div>
+			<label for="requiredquestion">Required?</label>
+			<input type="checkbox" id="requiredquestion" bind:checked={required} />
+		</div>
 	{/if}
 </div>
 
