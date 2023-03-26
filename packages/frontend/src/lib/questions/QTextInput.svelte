@@ -1,8 +1,10 @@
 <script lang="ts">
-	import type { Response } from '$lib/common';
+	import type { Response, ValidationError } from '$lib/common';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import Container from '$lib/ui/Container.svelte';
 	import './questions.scss';
+	import { buildErrorMapFromFields } from '$lib/validation';
+	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
 
 	export let editmode = false;
 	export let multiline = false;
@@ -21,6 +23,9 @@
 		}
 		response = { type: 'Text', content: { text: responseContent } };
 	}
+
+	export let errors: ValidationError[] = [];
+	$: validationErrors = buildErrorMapFromFields(errors);
 </script>
 
 <Container>
@@ -31,6 +36,9 @@
 	<div>
 		{#if editmode}
 			<TextBox bind:value={prompt} placeholder="Prompt" on:change />
+			{#each validationErrors.get('prompt') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{:else}
 			<span>{prompt}</span>
 		{/if}
@@ -39,10 +47,16 @@
 	<div>
 		{#if editmode}
 			<TextBox bind:value={description} placeholder="Description" on:change />
+			{#each validationErrors.get('description') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
 		{:else}
 			<span>{description}</span>
 		{/if}
 	</div>
 
 	<TextBox bind:value={responseContent} disabled={editmode} {multiline} />
+	{#each validationErrors.get('response') ?? [] as error}
+		<ValidationErrorRenderer {error} />
+	{/each}
 </Container>

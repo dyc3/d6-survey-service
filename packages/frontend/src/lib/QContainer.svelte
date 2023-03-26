@@ -3,7 +3,7 @@
 	import QMultipleChoice from './questions/QMultipleChoice.svelte';
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
-	import { buildErrorMapFromFields } from '$lib/validation';
+	import { buildErrorMapFromFields, unwrapInnerErrors } from '$lib/validation';
 
 	export let editmode = false;
 	export let question: Question;
@@ -27,6 +27,7 @@
 			{required}
 			bind:response
 			on:change
+			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
 		/>
 	{:else if question.type === 'Rating'}
 		<QRating
