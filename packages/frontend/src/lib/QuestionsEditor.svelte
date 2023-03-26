@@ -4,7 +4,6 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { buildErrorMapFromUuids } from '$lib/validation';
-	import ValidationErrorRenderer from './ValidationErrorRenderer.svelte';
 
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
