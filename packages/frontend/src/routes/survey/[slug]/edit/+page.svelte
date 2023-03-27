@@ -1,80 +1,28 @@
 <script lang="ts">
-	import { editSurvey } from '$lib/api';
-	import type { Question, SurveyPatch, SurveyQuestions } from '$lib/common';
-	import QContainer from '$lib/QContainer.svelte';
-
+	import { editSurvey, isValidationError } from '$lib/api';
+	import type { SurveyPatch, SurveyQuestions, ValidationError } from '$lib/common';
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import type { PageData } from './$types';
 
 	import _ from 'lodash';
 	import { goto } from '$app/navigation';
+	import QuestionsEditor from '$lib/QuestionsEditor.svelte';
+	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
+	import { buildErrorMapFromFields } from '$lib/validation';
 
 	let title = 'Untitled Survey';
 	let description = '';
 	let questions: SurveyQuestions = [];
 
+	let isSaving = false;
+	let wasSaveSuccessful = true;
+	let validationErrors: Map<string, ValidationError[]> = new Map();
+
 	export let data: PageData;
 	title = data.survey.title;
 	description = data.survey.description;
 	questions = data.survey.questions;
-
-	function buildQuestion(type: 'Text' | 'Rating' | 'MultipleChoice'): Question {
-		let question: Question;
-		switch (type) {
-			case 'Text':
-				question = {
-					type: 'Text',
-					content: {
-						prompt: '',
-						description: '',
-						multiline: false
-					}
-				};
-				break;
-			case 'Rating':
-				question = {
-					type: 'Rating',
-					content: {
-						prompt: '',
-						description: '',
-						max_rating: 5
-					}
-				};
-				break;
-			case 'MultipleChoice':
-				question = {
-					type: 'MultipleChoice',
-					content: {
-						prompt: '',
-						description: '',
-						multiple: false,
-						choices: []
-					}
-				};
-				break;
-			default:
-				throw new Error('Invalid question type');
-		}
-		return question;
-	}
-
-	function addQuestion(type: 'Text' | 'Rating' | 'MultipleChoice') {
-		questions = [
-			...questions,
-			{
-				uuid: crypto.randomUUID(),
-				required: false,
-				question: buildQuestion(type)
-			}
-		];
-		onChange('questions');
-	}
-
-	function removeQuestion(uuid: string) {
-		questions = questions.filter((q) => q.uuid !== uuid);
-		onChange('questions');
-	}
 
 	let dirtyFields: Set<keyof SurveyPatch> = new Set();
 
@@ -85,15 +33,28 @@
 			questions
 		};
 
-		let resp = await editSurvey(data.surveyId, _.pick(patch, Array.from(dirtyFields)));
-		if (resp.ok) {
-			dirtyFields.clear();
-		} else {
-			alert('Error saving changes');
+		try {
+			let resp = await editSurvey(data.surveyId, _.pick(patch, Array.from(dirtyFields)));
+			if (resp.ok) {
+				wasSaveSuccessful = true;
+				dirtyFields.clear();
+			} else {
+				wasSaveSuccessful = false;
+				if (isValidationError(resp.error)) {
+					applyValidationErrors(resp.error.message.ValidationError);
+				} else {
+					alert(`Error saving survey: ${resp.error.message}`);
+				}
+			}
+		} catch (e) {
+			console.error(e);
+			wasSaveSuccessful = false;
+		} finally {
+			isSaving = false;
 		}
 	}
 
-	let submitChangesDebounced = _.debounce(submitChanges, 1000);
+	let submitChangesDebounced = _.debounce(submitChanges, 2000);
 
 	async function publishSurvey() {
 		// make sure we don't submit changes twice, or publish a survey with unsaved changes
@@ -112,22 +73,32 @@
 		if (resp.ok) {
 			await goto(`/mysurveys`);
 		} else {
-			alert('Error publishing survey');
+			alert('Error publishing survey: ' + resp.error.message);
 		}
 	}
 
 	function onChange(field: keyof SurveyPatch) {
+		isSaving = true;
 		dirtyFields.add(field);
 		submitChangesDebounced();
 	}
 
-	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
+	function applyValidationErrors(errors: ValidationError[]) {
+		validationErrors = buildErrorMapFromFields(errors);
+	}
 </script>
 
 <div class="toolbar">
 	<div>
 		<h1>{title}</h1>
 		<h2>Editing</h2>
+		{#if isSaving}
+			<span>Saving...</span>
+		{:else if wasSaveSuccessful}
+			<span>Changes saved</span>
+		{:else}
+			<span>Changes not saved</span>
+		{/if}
 	</div>
 	<Button>View Results</Button>
 </div>
@@ -135,26 +106,24 @@
 <div class="container">
 	<div class="panel">
 		<TextBox placeholder="Survey Title" bind:value={title} on:change={() => onChange('title')} />
+		{#each validationErrors.get('title') ?? [] as err}
+			<ValidationErrorRenderer error={err} />
+		{/each}
 		<TextBox
 			placeholder="Survey Description"
 			bind:value={description}
 			on:change={() => onChange('description')}
 		/>
+		{#each validationErrors.get('description') ?? [] as err}
+			<ValidationErrorRenderer error={err} />
+		{/each}
 	</div>
 
-	{#each questions as q}
-		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>x</Button>
-		<QContainer question={q.question} editmode={true} on:change={() => onChange('questions')} />
-	{/each}
-
-	<div class="panel">
-		<select bind:value={questionToAdd}>
-			<option value="Text">Text</option>
-			<option value="MultipleChoice">Multiple Choice</option>
-			<option value="Rating">Rating</option>
-		</select>
-		<Button size="small" on:click={() => addQuestion(questionToAdd)}>+ Add Question</Button>
-	</div>
+	<QuestionsEditor
+		bind:questions
+		on:change={() => onChange('questions')}
+		errors={validationErrors.get('questions') ?? []}
+	/>
 
 	<div class="panel">
 		<Button on:click={publishSurvey}>Publish Survey</Button>
