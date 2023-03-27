@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Question, Response, RMultipleChoice, RRating, RText } from './common';
+	import type { Question, Response } from './common';
 	import QMultipleChoice from './questions/QMultipleChoice.svelte';
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
@@ -45,10 +45,10 @@
 	{/if}
 
 	{#if editmode}
-	<div>
-		<label for="requiredquestion">Required?</label>
-		<input type="checkbox" id="requiredquestion" bind:checked={required} />
-	</div>
+		<div>
+			<label for="requiredquestion">Required?</label>
+			<input type="checkbox" id="requiredquestion" bind:checked={required} />
+		</div>
 	{/if}
 </div>
 

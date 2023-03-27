@@ -22,13 +22,13 @@ import { browser } from '$app/environment';
 const API_URL = 'http://localhost:5347';
 
 export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
-export type ApiResponse<T> = Result<T, ApiErrorResponse<any>>;
+export type ApiResponse<T> = Result<T, ApiErrorResponse<unknown>>;
 export type ExtraOptions = { fetch?: typeof fetch; token?: string };
 
 type ApiRequestOptions = RequestInit & ExtraOptions;
 
 function isValidationError(
-	apiErr: ApiErrorResponse<any>
+	apiErr: ApiErrorResponse<unknown>
 ): apiErr is ApiErrorResponse<ValidationError> {
 	if (!apiErr.message) return false;
 	if (typeof apiErr.message !== 'string') return false;
@@ -124,6 +124,13 @@ export async function editSurvey(
 		body: JSON.stringify(survey),
 		...opts
 	});
+}
+
+export async function deleteSurvey(
+	survey_id: number,
+	opts?: ExtraOptions
+): Promise<ApiResponse<null>> {
+	return apiReqAuth(`/api/survey/${survey_id}`, { method: 'DELETE', ...opts });
 }
 
 export async function createSurveyResponse(

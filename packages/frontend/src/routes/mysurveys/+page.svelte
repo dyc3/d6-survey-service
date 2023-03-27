@@ -1,34 +1,36 @@
 <script lang="ts">
-	import Button from '../../lib/ui/Button.svelte';
-	import TextBox from '../../lib/ui/TextBox.svelte';
-	import type { ListedSurvey } from '../../lib/common';
-	import { createSurvey, getSurveyList } from '$lib/api';
+	import Button from '$lib/ui/Button.svelte';
+	import TextBox from '$lib/ui/TextBox.svelte';
+	import type { ListedSurvey } from '$lib/common';
+	import { createSurvey, deleteSurvey } from '$lib/api';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { jwt } from '../../stores';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+	let surveys: ListedSurvey[] = data.surveys;
 
 	async function createNewSurvey() {
 		let surveyInfo = await createSurvey();
 		if (surveyInfo.ok) {
 			goto('/survey/' + surveyInfo.value.id + '/edit');
+		} else {
+			console.error(surveyInfo.error);
 		}
 	}
-	
-	let surveys: ListedSurvey[] = [];
-	onMount(async () => {
-		let resp = await getSurveyList();
+
+	async function doDeleteSurvey(survey_id: number) {
+		let resp = await deleteSurvey(survey_id);
 		if (resp.ok) {
-			surveys = resp.value;
-		}
-		else {
+			surveys = surveys.filter((survey) => survey.id !== survey_id);
+		} else {
 			console.error(resp.error);
 		}
-	});
+	}
 </script>
 
 <div class="toolbar">
 	<h1>My Surveys</h1>
-	<Button kind="primary" size="large" on:click={ createNewSurvey }>Create Survey</Button>
+	<Button kind="primary" size="large" on:click={createNewSurvey}>Create Survey</Button>
 </div>
 <div class="main-container">
 	<table class="container">
@@ -45,13 +47,12 @@
 					<!-- TODO: replace with check box-->
 					<td class="published">{survey.published ? 'Yes' : 'No'}</td>
 
-					<!-- TODO: make this read only-->
 					<td class="share-link">
-						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" />
+						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" disabled />
 					</td>
 					<td class="actions">
-						<Button>Edit</Button>
-						<Button kind="danger">Delete</Button>
+						<Button on:click={() => goto(`/survey/${survey.id}/edit`)}>Edit</Button>
+						<Button kind="danger" on:click={() => doDeleteSurvey(survey.id)}>Delete</Button>
 					</td>
 				</tr>
 			{/each}
