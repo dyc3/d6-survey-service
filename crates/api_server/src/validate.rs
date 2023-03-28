@@ -247,7 +247,7 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
                     // Throw errors for required questions that are missing responses
                     if question.required {
                         errors.push(ValidationError::Inner {
-                            field: "response".to_string(),
+                            field: "question".to_string(),
                             uuid: question.uuid,
                             inner: Box::new(ValidationError::Required {
                                 field: "response".to_string(),
@@ -263,7 +263,7 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
             if let Err(mut inner_errors) = result {
                 for inner_error in inner_errors.drain(..) {
                     errors.push(ValidationError::Inner {
-                        field: "response".to_string(),
+                        field: "question".to_string(),
                         uuid: question.uuid,
                         inner: Box::new(inner_error),
                     });
@@ -297,7 +297,7 @@ impl Validate for (&SurveyQuestion, &Response) {
                 &mut e
                     .into_iter()
                     .map(|v| ValidationError::Inner {
-                        field: "response".to_string(),
+                        field: "question".to_string(),
                         uuid: question.uuid,
                         inner: Box::new(v),
                     })
