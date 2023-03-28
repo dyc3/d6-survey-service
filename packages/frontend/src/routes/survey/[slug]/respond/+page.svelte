@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { Survey, SurveyResponses } from '$lib/common';
+	import type { Survey, SurveyResponses, ValidationError } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { createSurveyResponse, editSurveyResponse } from '$lib/api';
+	import { createSurveyResponse, editSurveyResponse, isValidationError } from '$lib/api';
+	import { buildErrorMapFromUuids } from '$lib/validation';
 
 	export let data: PageData;
 
@@ -24,6 +25,7 @@
 	}
 
 	let submitInProgress = false;
+	let validationErrors: Map<string, ValidationError[]> = new Map();
 
 	async function submitResponse() {
 		let query = parseQuery(window.location.search);
@@ -36,16 +38,24 @@
 					responderUuid = resp.value.responder_uuid;
 					goto(`/survey/${survey.id}/submitted?response=${responderUuid}`);
 				} else {
-					alert(JSON.stringify(resp.error));
-					console.error(resp.error);
+					if (isValidationError(resp.error)) {
+						applyValidationErrors(resp.error.message.ValidationError);
+					} else {
+						// TODO: don't alert, show this on the page instead.
+						alert(`Error saving survey: ${resp.error.message}`);
+					}
 				}
 			} else {
 				let resp = await editSurveyResponse(survey.id, responderUuid, response);
 				if (resp.ok) {
 					goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
 				} else {
-					alert(JSON.stringify(resp.error));
-					console.error(resp.error);
+					if (isValidationError(resp.error)) {
+						applyValidationErrors(resp.error.message.ValidationError);
+					} else {
+						// TODO: don't alert, show this on the page instead.
+						alert(`Error saving survey: ${resp.error.message}`);
+					}
 				}
 			}
 		} catch (e) {
@@ -53,6 +63,10 @@
 		} finally {
 			submitInProgress = false;
 		}
+	}
+
+	function applyValidationErrors(errors: ValidationError[]) {
+		validationErrors = buildErrorMapFromUuids(errors);
 	}
 </script>
 
@@ -64,6 +78,7 @@
 		question={surveyquestion.question}
 		bind:response={response[surveyquestion.uuid]}
 		required={surveyquestion.required}
+		errors={validationErrors.get(surveyquestion.uuid) ?? []}
 	/>
 {/each}
 

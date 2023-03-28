@@ -4,6 +4,7 @@
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
 	import { buildErrorMapFromFields, unwrapInnerErrors } from '$lib/validation';
+	import ValidationErrorRenderer from './ValidationErrorRenderer.svelte';
 
 	export let editmode = false;
 	export let question: Question;
@@ -59,6 +60,13 @@
 			<label for="requiredquestion">Required?</label>
 			<input type="checkbox" id="requiredquestion" bind:checked={required} on:change />
 		</div>
+	{/if}
+
+	{#if !editmode}
+		<!-- HACK: the question components already render response errors, we shouldn't do it up here -->
+		{#each validationErrors.get('response') ?? [] as error}
+			<ValidationErrorRenderer {error} />
+		{/each}
 	{/if}
 </div>
 
