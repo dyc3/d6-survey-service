@@ -60,7 +60,11 @@
 <p>{survey.description}</p>
 
 {#each survey.questions as surveyquestion}
-	<QContainer question={surveyquestion.question} bind:response={response[surveyquestion.uuid]} />
+	<QContainer
+		question={surveyquestion.question}
+		bind:response={response[surveyquestion.uuid]}
+		required={surveyquestion.required}
+	/>
 {/each}
 
 {#if submitInProgress}
