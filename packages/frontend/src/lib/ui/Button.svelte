@@ -64,6 +64,7 @@
 		* {
 			transition: all $transition-duration ease-in-out;
 		}
+		margin: var(--margin, 0px);
 	}
 
 	.surface {

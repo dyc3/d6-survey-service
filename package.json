@@ -19,5 +19,8 @@
 		"optic:capture": "optic oas capture docs/api.yml http://localhost:5347",
 		"optic:verify": "optic oas verify docs/api.yml",
 		"optic:clear": "optic oas clear docs/api.yml"
+	},
+	"dependencies": {
+		"lodash": "^4.17.21"
 	}
 }

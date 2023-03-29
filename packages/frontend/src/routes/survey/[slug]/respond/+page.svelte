@@ -67,4 +67,18 @@
 	<div>Submmitting...</div>
 {/if}
 
-<Button size="large" kind="primary" on:click={submitResponse}>Submit</Button>
+<div class='submit-button'>
+	<Button size="large" kind="primary" on:click={submitResponse}>Submit</Button>
+</div>
+
+
+<style lang="scss">
+	@import '../../../../lib/ui/variables';
+	
+	.submit-button{
+		display: flex;
+		justify-content: center;
+		margin-top: $large-padding
+	}
+
+</style>

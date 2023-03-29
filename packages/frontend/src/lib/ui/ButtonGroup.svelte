@@ -25,7 +25,7 @@
 
 <div class="button-group {orientation}">
 	{#each buttons as button, i}
-		<Button toggleable={true} size={size} inButtonGroup={true} pressed={selected == i} on:click={() => select(i)} role={role}>{button}</Button>
+		<Button --margin=2px toggleable={true} size={size} inButtonGroup={true} pressed={selected == i} on:click={() => select(i)} role={role}>{button}</Button>
 	{/each}
 </div>
 
@@ -34,8 +34,12 @@
 
 	.button-group {
 		display: flex;
-		justify-content: space-around;
+		justify-content: space-between;
 		align-items: center;
+	}
+
+	.button-wrapper{
+		margin: 2px
 	}
 
 	.horizontal {

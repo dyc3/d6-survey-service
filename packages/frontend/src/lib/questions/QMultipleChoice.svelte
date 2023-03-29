@@ -113,6 +113,7 @@
 	.choices {
 		display: flex;
 		flex-direction: column;
+		min-height: 50%;
 	}
 
 	.editable-choice {

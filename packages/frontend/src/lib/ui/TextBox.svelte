@@ -25,5 +25,6 @@
 		padding: 0.5em;
 		font-size: $main-font-size;
 		font-family: inherit;
+		
 	}
 </style>
