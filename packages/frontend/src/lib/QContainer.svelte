@@ -3,18 +3,13 @@
 	import QMultipleChoice from './questions/QMultipleChoice.svelte';
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
-	import { buildErrorMapFromFields, unwrapInnerErrors } from '$lib/validation';
+	import { unwrapInnerErrors } from '$lib/validation';
 
 	export let editmode = false;
 	export let question: Question;
 	export let required = false;
 	export let response: Response | undefined = undefined;
 	export let errors: ValidationError[] = [];
-
-	let validationErrors: Map<string, ValidationError[]> = new Map();
-	$: {
-		validationErrors = buildErrorMapFromFields(errors);
-	}
 </script>
 
 <div class="question-container">
@@ -27,7 +22,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
+			errors={unwrapInnerErrors(errors)}
 		/>
 	{:else if question.type === 'Rating'}
 		<QRating
@@ -38,7 +33,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
+			errors={unwrapInnerErrors(errors)}
 		/>
 	{:else if question.type == 'MultipleChoice'}
 		<QMultipleChoice
@@ -50,7 +45,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
+			errors={unwrapInnerErrors(errors)}
 		/>
 	{/if}
 
