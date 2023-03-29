@@ -65,14 +65,13 @@
 	@import '../ui/variables';
 
 	.prompt-text {
-			font-size: $bold-font-size;
-			font-weight: bold;
-			color: $color-blue;
-		}
+		font-size: $bold-font-size;
+		font-weight: bold;
+		color: $color-blue;
+	}
 
 	.description-text {
 		font-size: $main-font-size;
 		color: $color-blue;
 	}
-
 </style>
