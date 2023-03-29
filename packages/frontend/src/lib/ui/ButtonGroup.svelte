@@ -3,52 +3,54 @@
 
 	interface Item<T> {
 		label: string;
-		value?: T;
+		value: T;
 	}
 
 	type T = $$Generic;
+
+	type SelectionValue<T> = typeof buttons extends string[] ? number : NonNullable<T>;
 
 	/**
 	 * Whether the button group should show vertically or horizontally.
 	 */
 	export let orientation: 'horizontal' | 'vertical';
-	export let buttons: Item<T>[];
+	export let buttons: (string | Item<T>)[];
 	export let forceSelection: boolean;
-	let selected: Set<number> = new Set();
+	export let selected: SelectionValue<T>[] = [];
 	export let role: string | undefined = undefined;
 	export let size: 'small' | 'normal' | 'large' = 'normal';
 	export let multiple = false;
-	export let selectedIndexes: number[] = [];
-	export let selectedValues: T[] = [];
 
-	function select(i: number) {
-		if (selected.has(i)) {
-			if (forceSelection) {
-				return;
-			}
-			selected.delete(i);
-			selected = selected;
+	function isItem<T>(item: string | Item<T>): item is Item<T> {
+		return typeof item !== 'string';
+	}
+
+	function getSelectionValue<T>(i: number): SelectionValue<T> {
+		let item = buttons[i];
+		if (isItem(item)) {
+			return item.value as SelectionValue<T>;
 		} else {
-			if (multiple) {
-				selected.add(i);
-				selected = selected;
-			} else {
-				selected = new Set([i]);
-			}
+			return i as SelectionValue<T>;
 		}
 	}
 
-	$: updateSelection(selected);
-
-	function updateSelection(idxs: typeof selected) {
-		selectedIndexes = Array.from(idxs);
-		let values = selectedIndexes.map((i) => buttons[i].value).filter((v) => v !== undefined);
-		if (values.length !== selectedIndexes.length) {
-			selectedValues = [];
+	function select(i: number) {
+		let value: SelectionValue<T> = getSelectionValue(i);
+		let idx = selected.indexOf(value);
+		if (idx >= 0) {
+			if (forceSelection) {
+				return;
+			}
+			selected.splice(idx, 1);
+			selected = selected;
 		} else {
-			selectedValues = values as T[];
+			if (multiple) {
+				selected.push(value);
+				selected = selected;
+			} else {
+				selected = [value];
+			}
 		}
-		console.log(selectedIndexes, selectedValues);
 	}
 </script>
 
@@ -58,10 +60,16 @@
 			toggleable={true}
 			{size}
 			inButtonGroup={true}
-			pressed={selected.has(i)}
+			pressed={selected.includes(getSelectionValue(i))}
 			on:click={() => select(i)}
-			{role}>{button.label}</Button
+			{role}
 		>
+			{#if isItem(button)}
+				{button.label}
+			{:else}
+				{button}
+			{/if}
+		</Button>
 	{/each}
 </div>
 

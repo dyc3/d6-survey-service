@@ -69,9 +69,9 @@ Buttons
 	<p>Selected: {selected1}</p>
 	<ButtonGroup
 		orientation="horizontal"
-		buttons={[{ label: 'Button 1' }, { label: 'Button 2' }, { label: 'Button 3' }]}
+		buttons={['Button 1', 'Button 2', 'Button 3']}
 		forceSelection={false}
-		bind:selectedIndexes={selected1}
+		bind:selected={selected1}
 	/>
 
 	<h3>Multiple selection, with values</h3>
@@ -85,7 +85,7 @@ Buttons
 		]}
 		forceSelection={false}
 		multiple={true}
-		bind:selectedValues={selected2}
+		bind:selected={selected2}
 	/>
 </div>
 
