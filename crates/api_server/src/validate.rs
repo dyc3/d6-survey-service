@@ -234,7 +234,7 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
         for q_uuid in responses.keys() {
             if !question_uuids.contains(q_uuid) {
                 errors.push(ValidationError::NotFound {
-                    field: "response".to_string(),
+                    field: "question".to_string(),
                     uuid: *q_uuid,
                 });
             }
@@ -365,7 +365,7 @@ impl Validate for (&QMultipleChoice, &RMultipleChoice) {
         for choice in &response.selected {
             if !question.choices.iter().any(|c| c.uuid == *choice) {
                 errors.push(ValidationError::NotFound {
-                    field: "selected".to_string(),
+                    field: "choice".to_string(),
                     uuid: *choice,
                 });
             }
