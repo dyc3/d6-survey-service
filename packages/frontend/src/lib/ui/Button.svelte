@@ -145,15 +145,15 @@
 		}
 	}
 
-	button:hover:enabled {
+	button:hover {
 		transform: scale(1.02);
 	}
 
-	button:active:enabled {
+	button:active {
 		transform: scale(0.99);
 	}
 
-	button:active:enabled,
+	button:active,
 	[aria-pressed='true'] {
 		.surface {
 			background: transparent;
@@ -167,7 +167,6 @@
 
 	button:disabled{
 		opacity: 0.5;
-		cursor: not-allowed;
-
+		pointer-events: none;
 	}
 </style>
