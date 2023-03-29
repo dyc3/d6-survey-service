@@ -60,8 +60,8 @@
 		border-radius: 5px;
 		border: none;
 		transition: all $transition-duration ease-in-out;
-		margin: var(--margin, 0px);
-		
+		margin: var(--margin, 0);
+
 		* {
 			transition: all $transition-duration ease-in-out;
 		}
