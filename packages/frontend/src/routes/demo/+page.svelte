@@ -64,13 +64,22 @@ Buttons
 	<Button toggleable={true}>Toggle Button</Button>
 </div>
 <div>
+	<h3>Single selection</h3>
 	<p>Selected: {group_selected}</p>
 	<ButtonGroup
 		orientation="horizontal"
-		buttons={['Button 1', 'Button 2', 'Button 3', 'Button 4', 'Button 5']}
+		buttons={[{ label: 'Button 1' }, { label: 'Button 2' }, { label: 'Button 3' }]}
 		forceSelection={false}
-		bind:selected={group_selected}
 	/>
+
+	<h3>Multiple selection</h3>
+	<ButtonGroup
+		orientation="horizontal"
+		buttons={[{ label: 'Button 1' }, { label: 'Button 2' }, { label: 'Button 3' }]}
+		forceSelection={false}
+		multiple={true}
+	/>
+	<!-- bind:selected={group_selected} -->
 </div>
 
 Textboxes
