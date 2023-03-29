@@ -46,37 +46,47 @@
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>
 			<span
 				>Where 1 is <input bind:value={minText} on:change /> and {max_rating} is
-				<input bind:value={maxText} on:change /></span
-			>
-			{#each validationErrors.get('max_rating') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+				<input bind:value={maxText} on:change />
+			</span>
+			<div>
+				{#each validationErrors.get('max_rating') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
 			<span class="prompt-text">On a scale of 1-{max_rating}...</span>
 		{/if}
 	</div>
 
-	<div class="text-box-container">
-		{#if editmode}
+	{#if editmode}
+		<div class="text-box-container">
 			<TextBox placeholder="Insert prompt..." bind:value={prompt} />
+		</div>
+		<div>
 			{#each validationErrors.get('prompt') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
-		{:else}
+		</div>
+	{:else}
+		<div>
 			<span class="prompt-text">{prompt}</span>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
-	<div class="text-box-container">
-		{#if editmode}
+	{#if editmode}
+		<div class="text-box-container">
 			<TextBox placeholder="Insert description..." bind:value={description} />
+		</div>
+		<div>
 			{#each validationErrors.get('description') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
-		{:else}
+		</div>
+	{:else}
+		<div>
 			<span class="description-text">{description}</span>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
 	<div style="width: max-content;">
 		<ButtonGroup
