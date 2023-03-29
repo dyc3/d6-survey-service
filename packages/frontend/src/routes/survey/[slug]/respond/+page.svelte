@@ -32,30 +32,20 @@
 		let responderUuid = query.responder;
 		try {
 			submitInProgress = true;
-			if (!responderUuid) {
-				let resp = await createSurveyResponse(survey.id, response);
-				if (resp.ok) {
+			let resp = await (responderUuid
+				? editSurveyResponse(survey.id, responderUuid, response)
+				: createSurveyResponse(survey.id, response));
+			if (resp.ok) {
+				if (resp.value !== null) {
 					responderUuid = resp.value.responder_uuid;
-					goto(`/survey/${survey.id}/submitted?response=${responderUuid}`);
-				} else {
-					if (isValidationError(resp.error)) {
-						applyValidationErrors(resp.error.message.ValidationError);
-					} else {
-						// TODO: don't alert, show this on the page instead.
-						alert(`Error saving survey: ${resp.error.message}`);
-					}
 				}
+				goto(`/survey/${survey.id}/submitted?response=${responderUuid}`);
 			} else {
-				let resp = await editSurveyResponse(survey.id, responderUuid, response);
-				if (resp.ok) {
-					goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
+				if (isValidationError(resp.error)) {
+					applyValidationErrors(resp.error.message.ValidationError);
 				} else {
-					if (isValidationError(resp.error)) {
-						applyValidationErrors(resp.error.message.ValidationError);
-					} else {
-						// TODO: don't alert, show this on the page instead.
-						alert(`Error saving survey: ${resp.error.message}`);
-					}
+					// TODO: don't alert, show this on the page instead.
+					alert(`Error saving survey: ${resp.error.message}`);
 				}
 			}
 		} catch (e) {
