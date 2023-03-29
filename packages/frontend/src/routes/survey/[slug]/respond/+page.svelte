@@ -13,23 +13,12 @@
 
 	let response: SurveyResponses = data.surveyResponse;
 
-	// TODO: replace this with just URLSearchParams?
-	function parseQuery(queryString: string): { [key: string]: string } {
-		let query: { [key: string]: string } = {};
-		let pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
-		for (var i = 0; i < pairs.length; i++) {
-			var pair = pairs[i].split('=');
-			query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
-		}
-		return query;
-	}
-
 	let submitInProgress = false;
 	let validationErrors: Map<string, ValidationError[]> = new Map();
 
 	async function submitResponse() {
-		let query = parseQuery(window.location.search);
-		let responderUuid = query.responder;
+		let query = new URLSearchParams(window.location.search);
+		let responderUuid = query.get('responder');
 		try {
 			submitInProgress = true;
 			let resp = await (responderUuid
@@ -39,7 +28,7 @@
 				if (resp.value !== null) {
 					responderUuid = resp.value.responder_uuid;
 				}
-				goto(`/survey/${survey.id}/submitted?response=${responderUuid}`);
+				goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
 			} else {
 				if (isValidationError(resp.error)) {
 					applyValidationErrors(resp.error.message.ValidationError);
