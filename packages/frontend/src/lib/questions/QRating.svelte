@@ -16,20 +16,26 @@
 	export let minText = 'low';
 	export let maxText = 'high';
 
-	let group_selected: number | undefined = undefined;
-
 	export let response: Response | undefined = undefined;
+	let group_selected: number | undefined = loadResponse(response);
+
+	function loadResponse(response: Response | undefined): number | undefined {
+		if (response !== undefined && response.type === 'Rating') {
+			return response.content.rating - 1;
+		}
+		return undefined;
+	}
+
 	$: {
-		if (response !== undefined && group_selected === undefined) {
-			if (response.type === 'Rating') {
-				group_selected = response.content.rating - 1;
-			}
-		}
-		if (group_selected !== undefined) {
-			response = { type: 'Rating', content: { rating: group_selected + 1 } };
-		} else {
+		setResponse(group_selected);
+	}
+
+	function setResponse(rating: number | undefined) {
+		if (rating === undefined) {
 			response = undefined;
+			return;
 		}
+		response = { type: 'Rating', content: { rating: rating + 1 } };
 	}
 
 	export let errors: ValidationError[] = [];
