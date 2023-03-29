@@ -5,6 +5,7 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { createSurveyResponse, editSurveyResponse } from '$lib/api';
+	import { browser } from '$app/environment';
 
 	export let data: PageData;
 
@@ -54,6 +55,14 @@
 			submitInProgress = false;
 		}
 	}
+
+	//alert user if leaving response page
+	if (browser) {
+		window.onbeforeunload = function () {
+			return 'Are you sure you want to leave this page? Your response will not be saved.';
+		};
+	}
+	
 </script>
 
 <h1>{survey.title}</h1>
