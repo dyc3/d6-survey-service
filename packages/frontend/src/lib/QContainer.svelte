@@ -12,10 +12,10 @@
 	export let response: Response | undefined = undefined;
 	export let errors: ValidationError[] = [];
 
-	let validationErrors: Map<string, ValidationError[]> = new Map();
-	$: {
-		validationErrors = buildErrorMapFromFields(errors);
-	}
+	// let validationErrors: Map<string, ValidationError[]> = new Map();
+	// $: {
+	// 	validationErrors = buildErrorMapFromFields(errors);
+	// }
 </script>
 
 <div class="question-container">
@@ -28,7 +28,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') ?? errors)}
+			errors={unwrapInnerErrors(errors)}
 		/>
 		<!-- FIXME: it shouldn't be necessary to unwrap via `validationErrors.get('question')`, its inefficient. the server needs to change how survey validation responses are built so it doesn't wrap this twice. -->
 	{:else if question.type === 'Rating'}
@@ -40,7 +40,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') ?? errors)}
+			errors={unwrapInnerErrors(errors)}
 		/>
 	{:else if question.type == 'MultipleChoice'}
 		<QMultipleChoice
@@ -52,7 +52,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') ?? errors)}
+			errors={unwrapInnerErrors(errors)}
 		/>
 	{/if}
 
