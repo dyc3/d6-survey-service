@@ -63,11 +63,13 @@
 
 <style lang="scss">
 	@import '../ui/variables';
+	
 	.prompt-text {
 		font-weight: bold;
 		font-size: $bold-font-size;
 		color: $color-blue;
 	}
+
 	.description-text {
 		font-size: $main-font-size;
 		color: $color-blue;
