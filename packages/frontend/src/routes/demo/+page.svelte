@@ -40,7 +40,8 @@
 	];
 	let selected_question = 0;
 
-	let group_selected: number | undefined = undefined;
+	let selected1: number[] = [];
+	let selected2: string[] = [];
 </script>
 
 <h1>Component Demo</h1>
@@ -65,21 +66,27 @@ Buttons
 </div>
 <div>
 	<h3>Single selection</h3>
-	<p>Selected: {group_selected}</p>
+	<p>Selected: {selected1}</p>
 	<ButtonGroup
 		orientation="horizontal"
 		buttons={[{ label: 'Button 1' }, { label: 'Button 2' }, { label: 'Button 3' }]}
 		forceSelection={false}
+		bind:selectedIndexes={selected1}
 	/>
 
-	<h3>Multiple selection</h3>
+	<h3>Multiple selection, with values</h3>
+	<p>Selected: {selected2}</p>
 	<ButtonGroup
 		orientation="horizontal"
-		buttons={[{ label: 'Button 1' }, { label: 'Button 2' }, { label: 'Button 3' }]}
+		buttons={[
+			{ label: 'Button 1', value: 'apple' },
+			{ label: 'Button 2', value: 'orange' },
+			{ label: 'Button 3', value: 'banana' }
+		]}
 		forceSelection={false}
 		multiple={true}
+		bind:selectedValues={selected2}
 	/>
-	<!-- bind:selected={group_selected} -->
 </div>
 
 Textboxes

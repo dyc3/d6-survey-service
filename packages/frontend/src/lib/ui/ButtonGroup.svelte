@@ -6,16 +6,20 @@
 		value?: T;
 	}
 
+	type T = $$Generic;
+
 	/**
 	 * Whether the button group should show vertically or horizontally.
 	 */
 	export let orientation: 'horizontal' | 'vertical';
-	export let buttons: Item<unknown>[];
+	export let buttons: Item<T>[];
 	export let forceSelection: boolean;
 	let selected: Set<number> = new Set();
 	export let role: string | undefined = undefined;
 	export let size: 'small' | 'normal' | 'large' = 'normal';
 	export let multiple = false;
+	export let selectedIndexes: number[] = [];
+	export let selectedValues: T[] = [];
 
 	function select(i: number) {
 		if (selected.has(i)) {
@@ -32,6 +36,19 @@
 				selected = new Set([i]);
 			}
 		}
+	}
+
+	$: updateSelection(selected);
+
+	function updateSelection(idxs: typeof selected) {
+		selectedIndexes = Array.from(idxs);
+		let values = selectedIndexes.map((i) => buttons[i].value).filter((v) => v !== undefined);
+		if (values.length !== selectedIndexes.length) {
+			selectedValues = [];
+		} else {
+			selectedValues = values as T[];
+		}
+		console.log(selectedIndexes, selectedValues);
 	}
 </script>
 
