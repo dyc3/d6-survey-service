@@ -3,19 +3,13 @@
 	import QMultipleChoice from './questions/QMultipleChoice.svelte';
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
-	import { buildErrorMapFromFields, unwrapInnerErrors } from '$lib/validation';
-	import ValidationErrorRenderer from './ValidationErrorRenderer.svelte';
+	import { unwrapInnerErrors } from '$lib/validation';
 
 	export let editmode = false;
 	export let question: Question;
 	export let required = false;
 	export let response: Response | undefined = undefined;
 	export let errors: ValidationError[] = [];
-
-	// let validationErrors: Map<string, ValidationError[]> = new Map();
-	// $: {
-	// 	validationErrors = buildErrorMapFromFields(errors);
-	// }
 </script>
 
 <div class="question-container">
@@ -30,7 +24,6 @@
 			on:change
 			errors={unwrapInnerErrors(errors)}
 		/>
-		<!-- FIXME: it shouldn't be necessary to unwrap via `validationErrors.get('question')`, its inefficient. the server needs to change how survey validation responses are built so it doesn't wrap this twice. -->
 	{:else if question.type === 'Rating'}
 		<QRating
 			bind:prompt={question.content.prompt}
