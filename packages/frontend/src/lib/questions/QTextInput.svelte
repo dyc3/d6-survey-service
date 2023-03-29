@@ -33,7 +33,7 @@
 		<span class="required">*</span>
 	{/if}
 
-	<div>
+	<div class="prompt-text">
 		{#if editmode}
 			<TextBox bind:value={prompt} placeholder="Prompt" on:change />
 			{#each validationErrors.get('prompt') ?? [] as error}
@@ -45,7 +45,7 @@
 		
 	</div>
 
-	<div>
+	<div class="description-text">
 		{#if editmode}
 			<TextBox bind:value={description} placeholder="Description" on:change />
 			{#each validationErrors.get('description') ?? [] as error}
@@ -64,3 +64,18 @@
 		<ValidationErrorRenderer {error} />
 	{/each}
 </Container>
+
+<style lang="scss">
+	@import '../ui/variables';
+
+	.prompt-text {
+		font-size: $bold-font-size;
+		font-weight: bold;
+		color: $color-blue;
+	}
+
+	.description-text {
+		font-size: $main-font-size;
+		color: $color-blue;
+	}
+</style>
