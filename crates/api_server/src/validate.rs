@@ -726,7 +726,7 @@ mod tests {
             for (i, error) in errors.iter().enumerate() {
                 match error {
                     ValidationError::NotFound { field, .. } => {
-                        assert_eq!(field, "selected");
+                        assert_eq!(field, "choice");
                     }
                     _ => panic!("Unexpected error at {i}: {error:?}"),
                 }
@@ -844,7 +844,7 @@ mod tests {
             for (i, error) in errors.iter().enumerate() {
                 match error {
                     ValidationError::NotFound { field, .. } => {
-                        assert_eq!(field, "response");
+                        assert_eq!(field, "question");
                     }
                     _ => panic!("Unexpected error at {i}: {error:?}"),
                 }
@@ -881,7 +881,7 @@ mod tests {
             for (i, error) in errors.iter().enumerate() {
                 match error {
                     ValidationError::Inner { field, uuid, inner } => {
-                        assert_eq!(field, "response");
+                        assert_eq!(field, "question");
                         assert_eq!(uuid, &qs.0[0].uuid);
                         match inner.as_ref() {
                             ValidationError::Required { field } => {
