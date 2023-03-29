@@ -12,16 +12,22 @@
 	export let description: string;
 	export let required = false;
 
-	let responseContent = '';
 	export let response: Response | undefined = undefined;
+	let responseContent = loadResponse(response);
+
+	function loadResponse(response: Response | undefined): string {
+		if (response !== undefined && response.type === 'Text') {
+			return response.content.text;
+		}
+		return '';
+	}
 
 	$: {
-		if (response !== undefined && responseContent === '') {
-			if (response.type === 'Text') {
-				responseContent = response.content.text;
-			}
-		}
-		response = { type: 'Text', content: { text: responseContent } };
+		setResponse(responseContent);
+	}
+
+	function setResponse(text: string) {
+		response = { type: 'Text', content: { text } };
 	}
 
 	export let errors: ValidationError[] = [];
@@ -33,7 +39,7 @@
 		<span class="required">*</span>
 	{/if}
 
-	<div>
+	<div class="prompt-text">
 		{#if editmode}
 			<TextBox bind:value={prompt} placeholder="Prompt" on:change />
 			<div>
@@ -46,13 +52,16 @@
 		{/if}
 	</div>
 
-	<div>
+	<div class="description-text">
 		{#if editmode}
 			<TextBox bind:value={description} placeholder="Description" on:change />
 			<div>
 				{#each validationErrors.get('description') ?? [] as error}
 					<ValidationErrorRenderer {error} />
 				{/each}
+			</div>
+			<div>
+				<input type="checkbox" bind:checked={multiline} on:change /> Multiline?
 			</div>
 		{:else}
 			<span>{description}</span>
@@ -64,3 +73,18 @@
 		<ValidationErrorRenderer {error} />
 	{/each}
 </Container>
+
+<style lang="scss">
+	@import '../ui/variables';
+
+	.prompt-text {
+		font-size: $bold-font-size;
+		font-weight: bold;
+		color: $color-blue;
+	}
+
+	.description-text {
+		font-size: $main-font-size;
+		color: $color-blue;
+	}
+</style>

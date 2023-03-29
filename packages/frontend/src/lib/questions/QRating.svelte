@@ -16,20 +16,26 @@
 	export let minText = 'low';
 	export let maxText = 'high';
 
-	let group_selected: number | undefined = undefined;
-
 	export let response: Response | undefined = undefined;
+	let group_selected: number | undefined = loadResponse(response);
+
+	function loadResponse(response: Response | undefined): number | undefined {
+		if (response !== undefined && response.type === 'Rating') {
+			return response.content.rating - 1;
+		}
+		return undefined;
+	}
+
 	$: {
-		if (response !== undefined && group_selected === undefined) {
-			if (response.type === 'Rating') {
-				group_selected = response.content.rating - 1;
-			}
-		}
-		if (group_selected !== undefined) {
-			response = { type: 'Rating', content: { rating: group_selected + 1 } };
-		} else {
+		setResponse(group_selected);
+	}
+
+	function setResponse(rating: number | undefined) {
+		if (rating === undefined) {
 			response = undefined;
+			return;
 		}
+		response = { type: 'Rating', content: { rating: rating + 1 } };
 	}
 
 	export let errors: ValidationError[] = [];
@@ -41,7 +47,7 @@
 		<span class="required">*</span>
 	{/if}
 
-	<div>
+	<div class="prompt-text">
 		{#if editmode}
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>
 			<span
@@ -54,12 +60,12 @@
 				{/each}
 			</div>
 		{:else}
-			<span class="prompt-text">On a scale of 1-{max_rating}...</span>
+			<span>On a scale of 1-{max_rating}...</span>
 		{/if}
 	</div>
 
 	{#if editmode}
-		<div class="text-box-container">
+		<div class="text-box-container prompt-text">
 			<TextBox placeholder="Insert prompt..." bind:value={prompt} />
 		</div>
 		<div>
@@ -69,12 +75,12 @@
 		</div>
 	{:else}
 		<div>
-			<span class="prompt-text">{prompt}</span>
+			<span>{prompt}</span>
 		</div>
 	{/if}
 
 	{#if editmode}
-		<div class="text-box-container">
+		<div class="text-box-container description-text">
 			<TextBox placeholder="Insert description..." bind:value={description} />
 		</div>
 		<div>
@@ -84,7 +90,7 @@
 		</div>
 	{:else}
 		<div>
-			<span class="description-text">{description}</span>
+			<span>{description}</span>
 		</div>
 	{/if}
 

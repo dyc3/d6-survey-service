@@ -51,6 +51,7 @@
 Buttons
 <div>
 	<Button>Default</Button>
+	<Button disabled={true}>Disabled</Button>
 	<Button kind="primary">Primary</Button>
 	<Button kind="danger">Danger Button</Button>
 </div>
