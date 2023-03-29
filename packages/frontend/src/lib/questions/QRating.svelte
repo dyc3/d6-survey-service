@@ -41,7 +41,7 @@
 		<span class="required">*</span>
 	{/if}
 
-	<div>
+	<div class="prompt-text">
 		{#if editmode}
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>
 			<span
@@ -52,29 +52,29 @@
 				<ValidationErrorRenderer {error} />
 			{/each}
 		{:else}
-			<span class="prompt-text">On a scale of 1-{max_rating}...</span>
+			<span>On a scale of 1-{max_rating}...</span>
 		{/if}
 	</div>
 
-	<div class="text-box-container">
+	<div class="text-box-container prompt-text">
 		{#if editmode}
 			<TextBox placeholder="Insert prompt..." bind:value={prompt} />
 			{#each validationErrors.get('prompt') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
 		{:else}
-			<span class="prompt-text">{prompt}</span>
+			<span>{prompt}</span>
 		{/if}
 	</div>
 
-	<div class="text-box-container">
+	<div class="text-box-container description-text">
 		{#if editmode}
 			<TextBox placeholder="Insert description..." bind:value={description} />
 			{#each validationErrors.get('description') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
 		{:else}
-			<span class="description-text">{description}</span>
+			<span>{description}</span>
 		{/if}
 	</div>
 
