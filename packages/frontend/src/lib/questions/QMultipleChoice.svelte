@@ -27,23 +27,18 @@
 		dispatch('change');
 	}
 
-	let group_selected: number | undefined = undefined;
-
 	export let response: Response | undefined = undefined;
-	$: {
-		if (response !== undefined && group_selected === undefined) {
-			if (response.type === 'MultipleChoice') {
-				// TODO: handle multiple selections
-				group_selected = choices.findIndex((choice) => {
-					if (response !== undefined && response.type === 'MultipleChoice') {
-						return response.content.selected.includes(choice.uuid);
-					}
-				});
-			}
+	let selected: string[] = loadResponse(response);
+
+	function loadResponse(response: Response | undefined): string[] {
+		if (response !== undefined && response.type === 'MultipleChoice') {
+			return response.content.selected;
 		}
-		if (group_selected !== undefined) {
-			// TODO: handle multiple selections
-			response = { type: 'MultipleChoice', content: { selected: [choices[group_selected].uuid] } };
+		return [];
+	}
+	$: {
+		if (selected.length === 0) {
+			response = { type: 'MultipleChoice', content: { selected } };
 		} else {
 			response = undefined;
 		}
@@ -96,9 +91,11 @@
 		{:else}
 			<ButtonGroup
 				orientation="vertical"
-				buttons={choices.map((choice) => choice.text)}
+				buttons={choices.map((choice) => {
+					return { label: choice.text, value: choice.uuid };
+				})}
 				forceSelection={false}
-				bind:selected={group_selected}
+				bind:selected
 			/>
 			{#each validationErrors.get('response') ?? [] as error}
 				<ValidationErrorRenderer {error} />
