@@ -40,7 +40,7 @@
 				<ValidationErrorRenderer {error} />
 			{/each}
 		{:else}
-			<span>{prompt}</span>
+			<span class="prompt-text">{prompt}</span>
 		{/if}
 	</div>
 
@@ -51,7 +51,7 @@
 				<ValidationErrorRenderer {error} />
 			{/each}
 		{:else}
-			<span>{description}</span>
+			<span class="description-text">{description}</span>
 		{/if}
 	</div>
 
@@ -60,3 +60,19 @@
 		<ValidationErrorRenderer {error} />
 	{/each}
 </Container>
+
+<style lang="scss">
+	@import '../ui/variables';
+
+	.prompt-text {
+			font-size: $bold-font-size;
+			font-weight: bold;
+			color: $color-blue;
+		}
+
+	.description-text {
+		font-size: $main-font-size;
+		color: $color-blue;
+	}
+
+</style>
