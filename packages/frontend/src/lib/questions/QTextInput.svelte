@@ -42,6 +42,7 @@
 		{:else}
 			<span>{prompt}</span>
 		{/if}
+		
 	</div>
 
 	<div>
@@ -50,6 +51,9 @@
 			{#each validationErrors.get('description') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
+			<div>
+				<input type=checkbox bind:checked={multiline} on:change> Multiline?
+			</div>
 		{:else}
 			<span>{description}</span>
 		{/if}
