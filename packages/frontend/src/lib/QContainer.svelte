@@ -28,8 +28,9 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
+			errors={unwrapInnerErrors(validationErrors.get('question') ?? errors)}
 		/>
+		<!-- FIXME: it shouldn't be necessary to unwrap via `validationErrors.get('question')`, its inefficient. the server needs to change how survey validation responses are built so it doesn't wrap this twice. -->
 	{:else if question.type === 'Rating'}
 		<QRating
 			bind:prompt={question.content.prompt}
@@ -39,7 +40,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
+			errors={unwrapInnerErrors(validationErrors.get('question') ?? errors)}
 		/>
 	{:else if question.type == 'MultipleChoice'}
 		<QMultipleChoice
@@ -51,7 +52,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(validationErrors.get('question') || [])}
+			errors={unwrapInnerErrors(validationErrors.get('question') ?? errors)}
 		/>
 	{/if}
 
@@ -60,13 +61,6 @@
 			<label for="requiredquestion">Required?</label>
 			<input type="checkbox" id="requiredquestion" bind:checked={required} on:change />
 		</div>
-	{/if}
-
-	{#if !editmode}
-		<!-- HACK: the question components already render response errors, we shouldn't do it up here -->
-		{#each validationErrors.get('response') ?? [] as error}
-			<ValidationErrorRenderer {error} />
-		{/each}
 	{/if}
 </div>
 
