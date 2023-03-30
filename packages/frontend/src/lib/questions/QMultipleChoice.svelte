@@ -87,6 +87,10 @@
 
 	<div class="choices">
 		{#if editmode}
+			<div>
+				<label for="multiple">Multiple</label>
+				<input type="checkbox" id="multiple" bind:checked={multiple} on:change />
+			</div>
 			{#each choices as choice, i}
 				<div class="editable-choice">
 					<TextBox bind:value={choice.text} placeholder="Enter text..." on:change />
@@ -99,7 +103,13 @@
 				<ValidationErrorRenderer {error} />
 			{/each}
 		{:else}
-			<ButtonGroup orientation="vertical" buttons={items} forceSelection={false} bind:selected />
+			<ButtonGroup
+				orientation="vertical"
+				buttons={items}
+				forceSelection={false}
+				{multiple}
+				bind:selected
+			/>
 			{#each validationErrors.get('response') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
