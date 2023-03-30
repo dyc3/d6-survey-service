@@ -13,7 +13,7 @@
 </script>
 
 {#if multiline}
-	<textarea class="textbox" {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown on:change />
+	<textarea class="textbox" {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown} on:change />
 {:else}
 	<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
 {/if}
