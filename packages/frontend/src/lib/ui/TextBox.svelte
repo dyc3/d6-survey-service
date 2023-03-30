@@ -4,10 +4,16 @@
 	export let placeholder = '';
 	export let value = '';
 	export let disabled = false;
+
+	function handleKeydown() {
+		const tx = document.getElementsByTagName("textarea");
+		tx[0].style.height = "0px";
+		tx[0].style.height = tx[0].scrollHeight +"px";
+	}
 </script>
 
 {#if multiline}
-	<textarea {name} {placeholder} {disabled} bind:value on:change />
+	<textarea {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown}/>
 {:else}
 	<input {name} type="text" {placeholder} {disabled} bind:value on:change />
 {/if}
@@ -25,5 +31,6 @@
 		padding: 0.5em;
 		font-size: $main-font-size;
 		font-family: inherit;
+		overflow-y: hidden;
 	}
 </style>
