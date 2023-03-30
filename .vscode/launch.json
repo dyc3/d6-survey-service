@@ -19,15 +19,15 @@
 		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Debug executable 'api_server'",
+			"name": "Debug executable 'api_server_bin'",
 			"cargo": {
 				"args": [
 					"build",
-					"--bin=api_server",
-					"--package=api_server"
+					"--bin=api_server_bin",
+					"--package=api_server_bin"
 				],
 				"filter": {
-					"name": "api_server",
+					"name": "api_server_bin",
 					"kind": "bin"
 				}
 			},
