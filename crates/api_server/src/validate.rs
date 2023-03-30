@@ -100,15 +100,7 @@ impl Validate for SurveyPatch {
 
 impl Validate for SurveyQuestion {
     fn validate(&self) -> Result<(), Vec<ValidationError>> {
-        self.question.validate().map_err(|e| {
-            e.into_iter()
-                .map(|v| ValidationError::Inner {
-                    field: "question".to_string(),
-                    uuid: self.uuid,
-                    inner: Box::new(v),
-                })
-                .collect()
-        })
+        self.question.validate()
     }
 }
 
@@ -234,7 +226,7 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
         for q_uuid in responses.keys() {
             if !question_uuids.contains(q_uuid) {
                 errors.push(ValidationError::NotFound {
-                    field: "response".to_string(),
+                    field: "question".to_string(),
                     uuid: *q_uuid,
                 });
             }
@@ -247,7 +239,7 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
                     // Throw errors for required questions that are missing responses
                     if question.required {
                         errors.push(ValidationError::Inner {
-                            field: "response".to_string(),
+                            field: "question".to_string(),
                             uuid: question.uuid,
                             inner: Box::new(ValidationError::Required {
                                 field: "response".to_string(),
@@ -263,7 +255,7 @@ impl Validate for (&SurveyQuestions, &SurveyResponses) {
             if let Err(mut inner_errors) = result {
                 for inner_error in inner_errors.drain(..) {
                     errors.push(ValidationError::Inner {
-                        field: "response".to_string(),
+                        field: "question".to_string(),
                         uuid: question.uuid,
                         inner: Box::new(inner_error),
                     });
@@ -297,7 +289,7 @@ impl Validate for (&SurveyQuestion, &Response) {
                 &mut e
                     .into_iter()
                     .map(|v| ValidationError::Inner {
-                        field: "response".to_string(),
+                        field: "question".to_string(),
                         uuid: question.uuid,
                         inner: Box::new(v),
                     })
@@ -365,7 +357,7 @@ impl Validate for (&QMultipleChoice, &RMultipleChoice) {
         for choice in &response.selected {
             if !question.choices.iter().any(|c| c.uuid == *choice) {
                 errors.push(ValidationError::NotFound {
-                    field: "selected".to_string(),
+                    field: "choice".to_string(),
                     uuid: *choice,
                 });
             }
@@ -734,7 +726,7 @@ mod tests {
             for (i, error) in errors.iter().enumerate() {
                 match error {
                     ValidationError::NotFound { field, .. } => {
-                        assert_eq!(field, "selected");
+                        assert_eq!(field, "choice");
                     }
                     _ => panic!("Unexpected error at {i}: {error:?}"),
                 }
@@ -852,7 +844,7 @@ mod tests {
             for (i, error) in errors.iter().enumerate() {
                 match error {
                     ValidationError::NotFound { field, .. } => {
-                        assert_eq!(field, "response");
+                        assert_eq!(field, "question");
                     }
                     _ => panic!("Unexpected error at {i}: {error:?}"),
                 }
@@ -889,7 +881,7 @@ mod tests {
             for (i, error) in errors.iter().enumerate() {
                 match error {
                     ValidationError::Inner { field, uuid, inner } => {
-                        assert_eq!(field, "response");
+                        assert_eq!(field, "question");
                         assert_eq!(uuid, &qs.0[0].uuid);
                         match inner.as_ref() {
                             ValidationError::Required { field } => {

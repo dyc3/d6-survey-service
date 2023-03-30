@@ -13,24 +13,27 @@
 </script>
 
 {#if multiline}
-	<textarea {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown}/>
+	<textarea class="textbox" {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown on:change />
 {:else}
-	<input {name} type="text" {placeholder} {disabled} bind:value on:change />
+	<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
 {/if}
 
 <style lang="scss">
 	@import 'variables';
 
-	input,
-	textarea {
+	.textbox {
 		border: 3px solid $color-default;
 		border-radius: 3px;
-		background-color: #fff;
+		background-color: $color-bg;
 		min-width: 70%;
 		color: $color-default;
 		padding: 0.5em;
 		font-size: $main-font-size;
 		font-family: inherit;
 		overflow-y: hidden;
+	}
+
+	.textbox:disabled {
+		opacity: 0.5;
 	}
 </style>

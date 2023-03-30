@@ -58,25 +58,29 @@
 		<span class="required">*</span>
 	{/if}
 
-	<div>
+	<div class="prompt-text">
 		{#if editmode}
 			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />
-			{#each validationErrors.get('prompt') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+			<div>
+				{#each validationErrors.get('prompt') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
-			<span class="prompt-text">{prompt}</span>
+			<span>{prompt}</span>
 		{/if}
 	</div>
 
-	<div>
+	<div class="description-text">
 		{#if editmode}
 			<TextBox placeholder="Enter description..." bind:value={description} on:change />
-			{#each validationErrors.get('description') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+			<div>
+				{#each validationErrors.get('description') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
-			<span class="description-text">{description}</span>
+			<span>{description}</span>
 		{/if}
 	</div>
 

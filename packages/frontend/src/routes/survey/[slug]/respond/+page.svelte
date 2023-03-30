@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { Survey, SurveyResponses } from '$lib/common';
+	import type { Survey, SurveyResponses, ValidationError } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { createSurveyResponse, editSurveyResponse } from '$lib/api';
+	import { createSurveyResponse, editSurveyResponse, isValidationError } from '$lib/api';
+	import { buildErrorMapFromUuids } from '$lib/validation';
 
 	export let data: PageData;
 
@@ -12,40 +13,28 @@
 
 	let response: SurveyResponses = data.surveyResponse;
 
-	// TODO: replace this with just URLSearchParams?
-	function parseQuery(queryString: string): { [key: string]: string } {
-		let query: { [key: string]: string } = {};
-		let pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
-		for (var i = 0; i < pairs.length; i++) {
-			var pair = pairs[i].split('=');
-			query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
-		}
-		return query;
-	}
-
 	let submitInProgress = false;
+	let validationErrors: Map<string, ValidationError[]> = new Map();
 
 	async function submitResponse() {
-		let query = parseQuery(window.location.search);
-		let responderUuid = query.responder;
+		let query = new URLSearchParams(window.location.search);
+		let responderUuid = query.get('responder');
 		try {
 			submitInProgress = true;
-			if (!responderUuid) {
-				let resp = await createSurveyResponse(survey.id, response);
-				if (resp.ok) {
+			let resp = await (responderUuid
+				? editSurveyResponse(survey.id, responderUuid, response)
+				: createSurveyResponse(survey.id, response));
+			if (resp.ok) {
+				if (resp.value !== null) {
 					responderUuid = resp.value.responder_uuid;
-					goto(`/survey/${survey.id}/submitted?response=${responderUuid}`);
-				} else {
-					alert(JSON.stringify(resp.error));
-					console.error(resp.error);
 				}
+				goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
 			} else {
-				let resp = await editSurveyResponse(survey.id, responderUuid, response);
-				if (resp.ok) {
-					goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
+				if (isValidationError(resp.error)) {
+					applyValidationErrors(resp.error.message.ValidationError);
 				} else {
-					alert(JSON.stringify(resp.error));
-					console.error(resp.error);
+					// TODO: don't alert, show this on the page instead.
+					alert(`Error saving survey: ${resp.error.message}`);
 				}
 			}
 		} catch (e) {
@@ -54,13 +43,22 @@
 			submitInProgress = false;
 		}
 	}
+
+	function applyValidationErrors(errors: ValidationError[]) {
+		validationErrors = buildErrorMapFromUuids(errors);
+	}
 </script>
 
 <h1>{survey.title}</h1>
 <p>{survey.description}</p>
 
 {#each survey.questions as surveyquestion}
-	<QContainer question={surveyquestion.question} bind:response={response[surveyquestion.uuid]} />
+	<QContainer
+		question={surveyquestion.question}
+		bind:response={response[surveyquestion.uuid]}
+		required={surveyquestion.required}
+		errors={validationErrors.get(surveyquestion.uuid) ?? []}
+	/>
 {/each}
 
 {#if submitInProgress}
