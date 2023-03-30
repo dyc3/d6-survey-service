@@ -27,6 +27,10 @@
 		dispatch('change');
 	}
 
+	$: items = choices.map((choice) => {
+		return { label: choice.text, value: choice.uuid };
+	});
+
 	export let response: Response | undefined = undefined;
 	let selected: string[] = loadResponse(response);
 
@@ -36,13 +40,15 @@
 		}
 		return [];
 	}
-	$: {
-		if (selected.length === 0) {
-			response = { type: 'MultipleChoice', content: { selected } };
+
+	function setResponse(uuids: string[]) {
+		if (uuids.length > 0) {
+			response = { type: 'MultipleChoice', content: { selected: uuids } };
 		} else {
 			response = undefined;
 		}
 	}
+	$: setResponse(selected);
 
 	export let errors: ValidationError[] = [];
 	$: validationErrors = buildErrorMapFromFields(errors);
@@ -93,14 +99,7 @@
 				<ValidationErrorRenderer {error} />
 			{/each}
 		{:else}
-			<ButtonGroup
-				orientation="vertical"
-				buttons={choices.map((choice) => {
-					return { label: choice.text, value: choice.uuid };
-				})}
-				forceSelection={false}
-				bind:selected
-			/>
+			<ButtonGroup orientation="vertical" buttons={items} forceSelection={false} bind:selected />
 			{#each validationErrors.get('response') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
