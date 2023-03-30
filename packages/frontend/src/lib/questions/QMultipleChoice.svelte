@@ -56,9 +56,11 @@
 	<div class="prompt-text">
 		{#if editmode}
 			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />
-			{#each validationErrors.get('prompt') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+			<div>
+				{#each validationErrors.get('prompt') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
 			<span>{prompt}</span>
 		{/if}
@@ -67,9 +69,11 @@
 	<div class="description-text">
 		{#if editmode}
 			<TextBox placeholder="Enter description..." bind:value={description} on:change />
-			{#each validationErrors.get('description') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+			<div>
+				{#each validationErrors.get('description') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
 			<span>{description}</span>
 		{/if}
