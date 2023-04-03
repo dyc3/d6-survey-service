@@ -17,25 +17,25 @@
 	export let maxText = 'high';
 
 	export let response: Response | undefined = undefined;
-	let group_selected: number | undefined = loadResponse(response);
+	let selected: number[] = loadResponse(response);
 
-	function loadResponse(response: Response | undefined): number | undefined {
+	function loadResponse(response: Response | undefined): number[] {
 		if (response !== undefined && response.type === 'Rating') {
-			return response.content.rating - 1;
+			return [response.content.rating - 1];
 		}
-		return undefined;
+		return [];
 	}
 
 	$: {
-		setResponse(group_selected);
+		setResponse(selected);
 	}
 
-	function setResponse(rating: number | undefined) {
-		if (rating === undefined) {
+	function setResponse(rating: number[]) {
+		if (rating.length === 0) {
 			response = undefined;
 			return;
 		}
-		response = { type: 'Rating', content: { rating: rating + 1 } };
+		response = { type: 'Rating', content: { rating: rating[0] + 1 } };
 	}
 
 	export let errors: ValidationError[] = [];
@@ -102,7 +102,7 @@
 				return (i + 1).toString();
 			})}
 			forceSelection={false}
-			bind:selected={group_selected}
+			bind:selected
 		/>
 		<div class="align-rating-text">
 			<span class="description-text">{minText}</span>
