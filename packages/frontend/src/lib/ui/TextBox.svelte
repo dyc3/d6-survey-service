@@ -8,7 +8,7 @@
 	let multilineElement : HTMLTextAreaElement ;
 	function handleKeydown() {
 		multilineElement.style.height = "0px";
-		multilineElement.style.height = multilineElement.scrollHeight +"px";
+		multilineElement.style.height = multilineElement.scrollHeight + "px";
 	}
 </script>
 
