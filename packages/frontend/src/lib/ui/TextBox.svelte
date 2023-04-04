@@ -5,15 +5,15 @@
 	export let value = '';
 	export let disabled = false;
 
+	let multilineElement : HTMLTextAreaElement ;
 	function handleKeydown() {
-		const tx = document.getElementsByTagName("textarea");
-		tx[0].style.height = "0px";
-		tx[0].style.height = tx[0].scrollHeight +"px";
+		multilineElement.style.height = "0px";
+		multilineElement.style.height = multilineElement.scrollHeight +"px";
 	}
 </script>
 
 {#if multiline}
-	<textarea class="textbox" {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown} on:change />
+	<textarea class="textbox" {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown} bind:this={multilineElement} on:change />
 {:else}
 	<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
 {/if}

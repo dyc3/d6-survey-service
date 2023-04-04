@@ -50,7 +50,6 @@
 		{:else}
 			<span>{prompt}</span>
 		{/if}
-		
 	</div>
 
 	<div class="description-text">
