@@ -1,31 +1,75 @@
 <script lang="ts">
 	import Button from './Button.svelte';
 
+	interface Item<T> {
+		label: string;
+		value: T;
+	}
+
+	type T = $$Generic;
+
+	type SelectionValue<T> = typeof buttons extends string[] ? number : NonNullable<T>;
+
 	/**
 	 * Whether the button group should show vertically or horizontally.
 	 */
 	export let orientation: 'horizontal' | 'vertical';
-	export let buttons: string[];
+	export let buttons: (string | Item<T>)[];
 	export let forceSelection: boolean;
-	export let selected: number | undefined = undefined;
+	export let selected: SelectionValue<T>[] = [];
 	export let role: string | undefined = undefined;
 	export let size: 'small' | 'normal' | 'large' = 'normal';
+	export let multiple = false;
+
+	function isItem<T>(item: string | Item<T>): item is Item<T> {
+		return typeof item !== 'string';
+	}
+
+	function getSelectionValue<T>(i: number): SelectionValue<T> {
+		let item = buttons[i];
+		if (isItem(item)) {
+			return item.value as SelectionValue<T>;
+		} else {
+			return i as SelectionValue<T>;
+		}
+	}
 
 	function select(i: number) {
-		if(selected == i)
-			if(forceSelection){
+		let value: SelectionValue<T> = getSelectionValue(i);
+		let idx = selected.indexOf(value);
+		if (idx >= 0) {
+			if (forceSelection) {
 				return;
 			}
-			else
-				selected = undefined;
-		else
-			selected = i;
+			selected.splice(idx, 1);
+			selected = selected;
+		} else {
+			if (multiple) {
+				selected.push(value);
+				selected = selected;
+			} else {
+				selected = [value];
+			}
+		}
 	}
 </script>
 
 <div class="button-group {orientation}">
 	{#each buttons as button, i}
-		<Button toggleable={true} size={size} inButtonGroup={true} pressed={selected == i} on:click={() => select(i)} role={role}>{button}</Button>
+		<Button
+			toggleable={true}
+			{size}
+			inButtonGroup={true}
+			pressed={selected.includes(getSelectionValue(i))}
+			on:click={() => select(i)}
+			{role}
+		>
+			{#if isItem(button)}
+				{button.label}
+			{:else}
+				{button}
+			{/if}
+		</Button>
 	{/each}
 </div>
 

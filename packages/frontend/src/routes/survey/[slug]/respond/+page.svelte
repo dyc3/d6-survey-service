@@ -4,6 +4,7 @@
 	import Button from '$lib/ui/Button.svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import { createSurveyResponse, editSurveyResponse, isValidationError } from '$lib/api';
 	import { buildErrorMapFromUuids } from '$lib/validation';
 
@@ -44,6 +45,13 @@
 		}
 	}
 
+	//alert user if leaving response page
+	if (browser) {
+		window.onbeforeunload = function () {
+			return 'Are you sure you want to leave this page? Your response will not be saved.';
+		};
+	}
+	
 	function applyValidationErrors(errors: ValidationError[]) {
 		validationErrors = buildErrorMapFromUuids(errors);
 	}
