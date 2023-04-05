@@ -65,3 +65,36 @@ test("create and delete survey", async ({ page }) => {
 	// assert that survey is still gone
 	expect(await page.locator('cell', { hasText: "foo bar" }).count()).toEqual(0);
 });
+
+test("create a sruvey with a few questions", async ({ page }) => {
+	await page.goto("/mysurveys");
+	await page.getByRole("heading", { name: "My Surveys" }).waitFor({ state: "visible" });
+
+	await page.getByRole('button', { name: 'Create Survey' }).click();
+	await page.getByPlaceholder('Survey Title').click();
+	await page.getByPlaceholder('Survey Title').fill('foo');
+
+	await page.getByRole('combobox').selectOption('Text');
+	await page.getByRole('button', { name: '+ Add Question' }).click();
+	await page.getByPlaceholder('Prompt').click();
+	await page.getByPlaceholder('Prompt').fill('q1');
+
+	await page.getByRole('combobox').selectOption('MultipleChoice');
+	await page.getByRole('button', { name: '+ Add Question' }).click();
+	await page.getByRole('button', { name: '+', exact: true }).click();
+	await page.getByPlaceholder('Enter text...').first().click();
+	await page.getByPlaceholder('Enter text...').first().fill('c1');
+	await page.getByRole('button', { name: '+', exact: true }).click();
+	await page.getByPlaceholder('Enter text...').nth(1).click();
+	await page.getByPlaceholder('Enter text...').nth(1).fill('c2');
+
+	await page.getByRole('combobox').selectOption('Rating');
+	await page.getByRole('button', { name: '+ Add Question' }).click();
+	await page.getByPlaceholder('Enter prompt...').click();
+	await page.getByPlaceholder('Enter prompt...').fill('q2');
+	await page.getByPlaceholder('Insert prompt...').click();
+	await page.getByPlaceholder('Insert prompt...').fill('q3');
+
+	await page.getByText('Saving...').waitFor({ state: "visible" });
+	await page.getByText('Changes saved').waitFor({ state: "visible" });
+});
