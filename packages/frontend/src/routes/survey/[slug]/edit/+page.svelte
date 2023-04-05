@@ -86,6 +86,16 @@
 	function applyValidationErrors(errors: ValidationError[]) {
 		validationErrors = buildErrorMapFromFields(errors);
 	}
+
+	$: {
+		title = title;
+		onChange('title');
+	}
+
+	$: {
+		description = description;
+		onChange('description');
+	}
 </script>
 
 <div class="toolbar">
