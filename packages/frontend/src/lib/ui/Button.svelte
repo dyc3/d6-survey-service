@@ -30,6 +30,7 @@
 		}
 		dispatch('click', e);
 	}
+
 </script>
 
 <button
