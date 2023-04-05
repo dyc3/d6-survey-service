@@ -92,7 +92,7 @@
 		<option value="MultipleChoice">Multiple Choice</option>
 		<option value="Rating">Rating</option>
 	</select>
-	<Button size="small" on:click={() => addQuestion(questionToAdd)}>+ Add Question</Button>
+	<Button --margin="5px" size="small" on:click={() => addQuestion(questionToAdd)}>+ Add Question</Button>
 </div>
 
 <style lang="scss">

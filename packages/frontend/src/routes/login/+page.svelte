@@ -48,14 +48,14 @@
 		<div class="info-container">
 			<TextBox name="username" placeholder="Username" bind:value={username} /> <br />
 			<TextBox name="password" placeholder="Password" bind:value={password} /> <br />
-			<Button type="submit" kind="primary" on:click={doLogin}>Submit</Button>
+			<Button --margin="5px" type="submit" kind="primary" on:click={doLogin}>Submit</Button>
 			<span>{response}</span>
 		</div>
 	{:else if group_selected === 1}
 		<div class="info-container">
 			<TextBox name="username" placeholder="New Username" bind:value={username} /> <br />
 			<TextBox name="password" placeholder="New Password" bind:value={password} /> <br />
-			<Button type="submit" kind="primary" on:click={doRegister}>Submit</Button>
+			<Button --margin="5px" type="submit" kind="primary" on:click={doRegister}>Submit</Button>
 			<span>{response}</span>
 		</div>
 	{/if}

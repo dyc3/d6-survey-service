@@ -68,7 +68,7 @@
 {/if}
 
 <div class='submit-button'>
-	<Button size="large" kind="primary" on:click={submitResponse}>Submit</Button>
+	<Button --margin="5px" size="large" kind="primary" on:click={submitResponse}>Submit</Button>
 </div>
 
 
