@@ -32,7 +32,8 @@
 		handleLogin(await registerUser({ username, password }));
 	}
 
-	let group_selected = 0;
+	let selected: number[] = [0];
+	$: tab = selected[0];
 </script>
 
 <Container>
@@ -40,18 +41,18 @@
 		orientation="horizontal"
 		buttons={['Log In', 'Register']}
 		forceSelection={true}
-		bind:selected={group_selected}
+		bind:selected
 		role="tab"
 	/>
 	<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->
-	{#if group_selected === 0}
+	{#if tab === 0}
 		<div class="info-container">
 			<TextBox name="username" placeholder="Username" bind:value={username} /> <br />
 			<TextBox name="password" placeholder="Password" bind:value={password} /> <br />
 			<Button --margin="5px" type="submit" kind="primary" on:click={doLogin}>Submit</Button>
 			<span>{response}</span>
 		</div>
-	{:else if group_selected === 1}
+	{:else if tab === 1}
 		<div class="info-container">
 			<TextBox name="username" placeholder="New Username" bind:value={username} /> <br />
 			<TextBox name="password" placeholder="New Password" bind:value={password} /> <br />

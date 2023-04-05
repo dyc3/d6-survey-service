@@ -17,25 +17,25 @@
 	export let maxText = 'high';
 
 	export let response: Response | undefined = undefined;
-	let group_selected: number | undefined = loadResponse(response);
+	let selected: number[] = loadResponse(response);
 
-	function loadResponse(response: Response | undefined): number | undefined {
+	function loadResponse(response: Response | undefined): number[] {
 		if (response !== undefined && response.type === 'Rating') {
-			return response.content.rating - 1;
+			return [response.content.rating - 1];
 		}
-		return undefined;
+		return [];
 	}
 
 	$: {
-		setResponse(group_selected);
+		setResponse(selected);
 	}
 
-	function setResponse(rating: number | undefined) {
-		if (rating === undefined) {
+	function setResponse(rating: number[]) {
+		if (rating.length === 0) {
 			response = undefined;
 			return;
 		}
-		response = { type: 'Rating', content: { rating: rating + 1 } };
+		response = { type: 'Rating', content: { rating: rating[0] + 1 } };
 	}
 
 	export let errors: ValidationError[] = [];
@@ -52,37 +52,47 @@
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>
 			<span
 				>Where 1 is <input bind:value={minText} on:change /> and {max_rating} is
-				<input bind:value={maxText} on:change /></span
-			>
-			{#each validationErrors.get('max_rating') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+				<input bind:value={maxText} on:change />
+			</span>
+			<div>
+				{#each validationErrors.get('max_rating') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
 			<span>On a scale of 1-{max_rating}...</span>
 		{/if}
 	</div>
 
-	<div class="text-box-container prompt-text">
-		{#if editmode}
+	{#if editmode}
+		<div class="text-box-container prompt-text">
 			<TextBox placeholder="Insert prompt..." bind:value={prompt} />
+		</div>
+		<div>
 			{#each validationErrors.get('prompt') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
-		{:else}
+		</div>
+	{:else}
+		<div>
 			<span>{prompt}</span>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
-	<div class="text-box-container description-text">
-		{#if editmode}
+	{#if editmode}
+		<div class="text-box-container description-text">
 			<TextBox placeholder="Insert description..." bind:value={description} />
+		</div>
+		<div>
 			{#each validationErrors.get('description') ?? [] as error}
 				<ValidationErrorRenderer {error} />
 			{/each}
-		{:else}
+		</div>
+	{:else}
+		<div>
 			<span>{description}</span>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
 	<div style="width: max-content;">
 		<ButtonGroup
@@ -92,7 +102,7 @@
 				return (i + 1).toString();
 			})}
 			forceSelection={false}
-			bind:selected={group_selected}
+			bind:selected
 		/>
 		<div class="align-rating-text">
 			<span class="description-text">{minText}</span>

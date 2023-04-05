@@ -27,27 +27,28 @@
 		dispatch('change');
 	}
 
-	let group_selected: number | undefined = undefined;
+	$: items = choices.map((choice) => {
+		return { label: choice.text, value: choice.uuid };
+	});
 
 	export let response: Response | undefined = undefined;
-	$: {
-		if (response !== undefined && group_selected === undefined) {
-			if (response.type === 'MultipleChoice') {
-				// TODO: handle multiple selections
-				group_selected = choices.findIndex((choice) => {
-					if (response !== undefined && response.type === 'MultipleChoice') {
-						return response.content.selected.includes(choice.uuid);
-					}
-				});
-			}
+	let selected: string[] = loadResponse(response);
+
+	function loadResponse(response: Response | undefined): string[] {
+		if (response !== undefined && response.type === 'MultipleChoice') {
+			return response.content.selected;
 		}
-		if (group_selected !== undefined) {
-			// TODO: handle multiple selections
-			response = { type: 'MultipleChoice', content: { selected: [choices[group_selected].uuid] } };
+		return [];
+	}
+
+	function setResponse(uuids: string[]) {
+		if (uuids.length > 0) {
+			response = { type: 'MultipleChoice', content: { selected: uuids } };
 		} else {
 			response = undefined;
 		}
 	}
+	$: setResponse(selected);
 
 	export let errors: ValidationError[] = [];
 	$: validationErrors = buildErrorMapFromFields(errors);
@@ -61,9 +62,11 @@
 	<div class="prompt-text">
 		{#if editmode}
 			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />
-			{#each validationErrors.get('prompt') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+			<div>
+				{#each validationErrors.get('prompt') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
 			<span>{prompt}</span>
 		{/if}
@@ -72,9 +75,11 @@
 	<div class="description-text">
 		{#if editmode}
 			<TextBox placeholder="Enter description..." bind:value={description} on:change />
-			{#each validationErrors.get('description') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+			<div>
+				{#each validationErrors.get('description') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
 			<span>{description}</span>
 		{/if}
@@ -82,6 +87,10 @@
 
 	<div class="choices">
 		{#if editmode}
+			<div>
+				<label for="multiple">Multiple</label>
+				<input type="checkbox" id="multiple" bind:checked={multiple} on:change />
+			</div>
 			{#each choices as choice, i}
 				<div class="editable-choice">
 					<TextBox bind:value={choice.text} placeholder="Enter text..." on:change />
@@ -96,9 +105,10 @@
 		{:else}
 			<ButtonGroup
 				orientation="vertical"
-				buttons={choices.map((choice) => choice.text)}
+				buttons={items}
 				forceSelection={false}
-				bind:selected={group_selected}
+				{multiple}
+				bind:selected
 			/>
 			{#each validationErrors.get('response') ?? [] as error}
 				<ValidationErrorRenderer {error} />

@@ -42,23 +42,26 @@
 	<div class="prompt-text">
 		{#if editmode}
 			<TextBox bind:value={prompt} placeholder="Prompt" on:change />
-			{#each validationErrors.get('prompt') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
+			<div>
+				{#each validationErrors.get('prompt') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
 			<span class='prompt-text'>{prompt}</span>
 		{/if}
-		
 	</div>
 
 	<div class="description-text">
 		{#if editmode}
 			<TextBox bind:value={description} placeholder="Description" on:change />
-			{#each validationErrors.get('description') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
 			<div>
-				<input type=checkbox bind:checked={multiline} on:change> Multiline?
+				{#each validationErrors.get('description') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
+			<div>
+				<input type="checkbox" bind:checked={multiline} on:change /> Multiline?
 			</div>
 		{:else}
 			<span class='description-text'>{description}</span>

@@ -15,6 +15,7 @@
 	export let size: 'small' | 'normal' | 'large' = 'normal';
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
 	export let inButtonGroup = false;
+	export let disabled = false;
 
 	$: classes = `kind-${kind} sz-${size}`;
 
@@ -22,6 +23,10 @@
 
 	function toggle() {
 		pressed = !pressed;
+	}
+
+	function disable() {
+		disabled = !disabled;
 	}
 
 	function handleClick(e: Event) {
@@ -38,6 +43,7 @@
 	on:click={handleClick}
 	aria-pressed={toggleable ? pressed : undefined}
 	{role}
+	{disabled}
 >
 	<div class="surface">
 		<span class="subsurface">
@@ -158,5 +164,10 @@
 		.subsurface {
 			color: inherit;
 		}
+	}
+
+	button:disabled{
+		opacity: 0.5;
+		pointer-events: none;
 	}
 </style>
