@@ -51,8 +51,8 @@
 						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" disabled />
 					</td>
 					<td class="actions">
-						<Button on:click={() => goto(`/survey/${survey.id}/edit`)}>Edit</Button>
-						<Button kind="danger" on:click={() => doDeleteSurvey(survey.id)}>Delete</Button>
+						<Button --margin="5px" on:click={() => goto(`/survey/${survey.id}/edit`)}>Edit</Button>
+						<Button --margin="5px" kind="danger" on:click={() => doDeleteSurvey(survey.id)}>Delete</Button>
 					</td>
 				</tr>
 			{/each}
@@ -66,6 +66,7 @@
 	.main-container {
 		height: 70vh;
 		border: 2px solid $color-default;
+		min-width: fit-content;
 	}
 
 	.container {
