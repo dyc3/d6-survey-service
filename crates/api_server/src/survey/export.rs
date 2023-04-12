@@ -75,7 +75,11 @@ fn build_csv_header(survey: &Survey) -> Vec<String> {
     header
 }
 
-fn write_csv_rows<C: std::io::Write>(wtr: &mut csv::Writer<C>, survey: &Survey, responses: &Vec<SurveyResponse>) -> anyhow::Result<()> {
+fn write_csv_rows<C: std::io::Write>(
+    wtr: &mut csv::Writer<C>,
+    survey: &Survey,
+    responses: &Vec<SurveyResponse>,
+) -> anyhow::Result<()> {
     let header = build_csv_header(survey);
     wtr.write_record(&header)?;
 
