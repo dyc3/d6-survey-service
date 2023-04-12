@@ -13,6 +13,10 @@ use crate::{
     validate::{Validate, ValidationError},
 };
 
+mod export;
+
+pub use export::export_responses;
+
 #[derive(Debug, Error, Serialize, Deserialize)]
 pub enum SurveyError {
     #[error("Can't edit questions on a published survey")]
