@@ -26,6 +26,7 @@
 			console.error(resp.error);
 		}
 	}
+
 </script>
 
 <div class="toolbar">
@@ -48,7 +49,7 @@
 					<td class="published">{survey.published ? 'Yes' : 'No'}</td>
 
 					<td class="share-link">
-						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" disabled />
+						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" disabled copyable />
 					</td>
 					<td class="actions">
 						<Button --margin="5px" on:click={() => goto(`/survey/${survey.id}/edit`)}>Edit</Button>

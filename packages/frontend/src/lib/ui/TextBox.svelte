@@ -1,10 +1,18 @@
 <script lang="ts">
+	import Button from "./Button.svelte";
+
 	export let name = '';
 	export let multiline = false;
 	export let placeholder = '';
 	export let value = '';
 	export let disabled = false;
 
+	export let copyable = false;
+
+	async function copyToClipboard() {
+		await navigator.clipboard.writeText(value);
+	}
+	
 	let multilineElement : HTMLTextAreaElement ;
 	function handleKeydown() {
 		multilineElement.style.height = "0px";
@@ -16,6 +24,10 @@
 	<textarea class="textbox" {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown} bind:this={multilineElement} on:change />
 {:else}
 	<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
+{/if}
+
+{#if copyable}
+	<Button size="small" on:click={copyToClipboard}>Copy</Button>
 {/if}
 
 <style lang="scss">
