@@ -87,7 +87,10 @@ fn write_csv_rows<C: std::io::Write>(wtr: &mut csv::Writer<C>, survey: &Survey, 
         row.push(response.updated_at.to_string());
 
         for question in survey.questions.iter() {
-            let qresponse = response.content.0.get(&question.uuid).unwrap();
+            let Some(qresponse) = response.content.0.get(&question.uuid) else {
+                row.push("".to_string());
+                continue;
+            };
             let value = match qresponse {
                 Response::Text(r) => Cow::from(&r.text),
                 Response::MultipleChoice(r) => {
