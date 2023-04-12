@@ -29,6 +29,12 @@
 				if (resp.value !== null) {
 					responderUuid = resp.value.responder_uuid;
 				}
+				//override the event listener then properly remove it below.
+				window.onbeforeunload = function () {
+					return;
+				}
+
+				window.removeEventListener('beforeunload', window.onbeforeunload);
 				goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
 			} else {
 				if (isValidationError(resp.error)) {
