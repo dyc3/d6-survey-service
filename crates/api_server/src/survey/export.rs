@@ -132,13 +132,20 @@ pub struct ExportedResults {
 #[rocket::async_trait]
 impl<'r> Responder<'r, 'static> for ExportedResults {
     fn respond_to(self, req: &rocket::Request<'_>) -> rocket::response::Result<'static> {
-        // TODO: make file name the title of the survey with non alphanumeric characters replaced with underscores
+        let filename = format!("results_{}.csv", self.survey.title.chars().map(|c| {
+            if c.is_alphanumeric() {
+                c.to_lowercase().next().unwrap()
+            } else {
+                '_'
+            }
+        }).collect::<String>());
+
         rocket::Response::build()
             .status(Status::Ok)
             .header(ContentType::new("text", "csv"))
             .header(Header::new(
                 "Content-Disposition",
-                "attachment; filename=\"results.csv\"",
+                format!("attachment; filename=\"{}\"", filename),
             ))
             .sized_body(self.csv.len(), Cursor::new(self.csv))
             .ok()
