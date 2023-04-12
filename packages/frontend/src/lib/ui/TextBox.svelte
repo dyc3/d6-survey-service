@@ -9,7 +9,7 @@
 
 	export let copyable = false;
 
-	async function copyToClipboard(){
+	async function copyToClipboard() {
 		await navigator.clipboard.writeText(value);
 	}
 	
