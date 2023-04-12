@@ -7,7 +7,7 @@
 	export let value = '';
 	export let disabled = false;
 
-	export let copy = false;
+	export let copyable = false;
 
 	async function copyToClipboard(){
 		await navigator.clipboard.writeText(value);
@@ -26,7 +26,7 @@
 	<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
 {/if}
 
-{#if copy}
+{#if copyable}
 	<Button size="small" on:click={copyToClipboard}>Copy</Button>
 {/if}
 

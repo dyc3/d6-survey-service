@@ -16,7 +16,7 @@
 </div>
 
 <div>
-	<TextBox value={responseUrl} disabled copy />
+	<TextBox value={responseUrl} disabled copyable />
 </div>
 
 <div>
