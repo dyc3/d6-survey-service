@@ -4,6 +4,7 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { buildErrorMapFromUuids } from '$lib/validation';
+	import Draggable from './Draggable.svelte';
 
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
@@ -77,13 +78,20 @@
 
 {#each questions as q}
 	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-	<QContainer
-		bind:question={q.question}
-		bind:required={q.required}
-		editmode={true}
-		on:change
-		errors={errorsByUUID.get(q.uuid) ?? []}
-	/>
+	<div class='dragAndDropArea'>
+		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="M20 9H4V11H20V9ZM4 15H11V13H4V15ZM20 13V15H13V13H20Z" fill="currentColor"/>
+		</svg>
+	</div>
+	<Draggable>
+		<QContainer
+			bind:question={q.question}
+			bind:required={q.required}
+			editmode={true}
+			on:change
+			errors={errorsByUUID.get(q.uuid) ?? []}
+		/>
+	</Draggable>
 {/each}
 
 <div class="panel">
