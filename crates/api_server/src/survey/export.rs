@@ -132,13 +132,20 @@ pub struct ExportedResults {
 #[rocket::async_trait]
 impl<'r> Responder<'r, 'static> for ExportedResults {
     fn respond_to(self, _req: &rocket::Request<'_>) -> rocket::response::Result<'static> {
-        let filename = format!("results_{}.csv", self.survey.title.chars().map(|c| {
-            if c.is_alphanumeric() {
-                c.to_lowercase().next().unwrap()
-            } else {
-                '_'
-            }
-        }).collect::<String>());
+        let filename = format!(
+            "results_{}.csv",
+            self.survey
+                .title
+                .chars()
+                .map(|c| {
+                    if c.is_alphanumeric() {
+                        c.to_lowercase().next().unwrap()
+                    } else {
+                        '_'
+                    }
+                })
+                .collect::<String>()
+        );
 
         rocket::Response::build()
             .status(Status::Ok)
@@ -149,5 +156,139 @@ impl<'r> Responder<'r, 'static> for ExportedResults {
             ))
             .sized_body(self.csv.len(), Cursor::new(self.csv))
             .ok()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use std::str::FromStr;
+
+    use crate::{
+        db::models::{SurveyPatch, SurveyQuestions},
+        questions::{Choice, QMultipleChoice, QRating, QText, Question, SurveyQuestion},
+        test_helpers::*,
+    };
+    use rocket::local::blocking::Client;
+    use uuid::Uuid;
+
+    #[test]
+    fn csv_export() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+
+            let response = client
+                .patch(uri!("/api", crate::survey::edit_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .body(
+                    serde_json::to_vec(&SurveyPatch {
+                        title: Some("test".to_owned()),
+                        description: None,
+                        published: Some(true),
+                        questions: Some(SurveyQuestions(vec![
+                            SurveyQuestion {
+                                uuid: Uuid::from_str("00000000-0000-0000-0000-000000000000")
+                                    .unwrap(),
+                                question: Question::MultipleChoice(QMultipleChoice {
+                                    prompt: "test".to_owned(),
+                                    description: "".to_owned(),
+                                    choices: vec![
+                                        Choice {
+                                            uuid: Uuid::from_str(
+                                                "00000000-0000-0000-0000-000000000000",
+                                            )
+                                            .unwrap(),
+                                            text: "foo".to_owned(),
+                                        },
+                                        Choice {
+                                            uuid: Uuid::from_str(
+                                                "00000000-0000-0000-0000-000000000001",
+                                            )
+                                            .unwrap(),
+                                            text: "bar".to_owned(),
+                                        },
+                                    ],
+                                    multiple: true,
+                                }),
+                                required: true,
+                            },
+                            SurveyQuestion {
+                                uuid: Uuid::from_str("00000000-0000-0000-0000-000000000001")
+                                    .unwrap(),
+                                question: Question::Rating(QRating {
+                                    prompt: "How much do you like this?".to_owned(),
+                                    description: "".to_owned(),
+                                    max_rating: 10,
+                                }),
+                                required: true,
+                            },
+                            SurveyQuestion {
+                                uuid: Uuid::from_str("00000000-0000-0000-0000-000000000002")
+                                    .unwrap(),
+                                question: Question::Text(QText {
+                                    prompt: "Anything else?".to_owned(),
+                                    description: "".to_owned(),
+                                    multiline: false,
+                                }),
+                                required: true,
+                            },
+                        ])),
+                    })
+                    .unwrap(),
+                )
+                .dispatch();
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let response = client
+                .post(uri!("/api", crate::survey_response::create_survey_response(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .body(
+                    serde_json::to_vec(&serde_json::json!({
+                        "00000000-0000-0000-0000-000000000000": {
+                            "type": "MultipleChoice",
+                            "content": {
+                                "selected": [
+                                    "00000000-0000-0000-0000-000000000000",
+                                    "00000000-0000-0000-0000-000000000001",
+                                ],
+                            },
+                        },
+                        "00000000-0000-0000-0000-000000000001": {
+                            "type": "Rating",
+                            "content": {
+                                "rating": 8
+                            },
+                        },
+                        "00000000-0000-0000-0000-000000000002": {
+                            "type": "Text",
+                            "content": {
+                                "text": "test"
+                            },
+                        }
+                    }))
+                    .unwrap(),
+                )
+                .dispatch();
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let response = client
+                .get(uri!("/api", export_responses(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .dispatch();
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+            assert_eq!(response.content_type(), Some(rocket::http::ContentType::new("text", "csv")));
+            assert_eq!(response.headers().get_one("Content-Disposition"), Some("attachment; filename=\"results_test.csv\""));
+            let csv = response.into_string().unwrap();
+            // a better assertion would be a regex, but im lazy and this is fine
+            assert!(csv.starts_with("responder,created_at,updated_at,test,How much do you like this?,Anything else?\n"));
+            assert!(csv.ends_with("\"foo, bar\",8,test\n"));
+        });
     }
 }
