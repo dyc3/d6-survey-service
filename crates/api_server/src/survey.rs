@@ -196,6 +196,39 @@ pub async fn delete_survey(
     Ok(Json(()))
 }
 
+pub async fn clear_survey_responses(
+    db: Storage,
+    survey_id: i32,
+    claims: Claims,
+) -> Result<Json<()>, ApiErrorResponse<SurveyError>> {
+    let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
+        error!("{e:?}");
+        SurveyError::NotFound
+    })?;
+
+    if survey.owner_id != claims.user_id() {
+        return Err(SurveyError::NotOwner.into());
+    }
+
+    if !survey.published {
+        return Err(SurveyError::NotPublished.into());
+    }
+
+    db.run(move |conn| -> anyhow::Result<()> {
+        diesel::delete(crate::db::schema::responses::table)
+            .filter(crate::db::schema::responses::survey_id.eq(survey_id))
+            .execute(conn)?;
+        Ok(())
+    })
+    .await
+    .map_err(|e| {
+        error!("{e:?}");
+        SurveyError::Unknown
+    })?;
+
+    Ok(Json(()))
+}
+
 pub(crate) async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Survey> {
     db.run(move |conn| {
         let survey = schema::surveys::dsl::surveys
