@@ -131,7 +131,7 @@ pub struct ExportedResults {
 
 #[rocket::async_trait]
 impl<'r> Responder<'r, 'static> for ExportedResults {
-    fn respond_to(self, req: &rocket::Request<'_>) -> rocket::response::Result<'static> {
+    fn respond_to(self, _req: &rocket::Request<'_>) -> rocket::response::Result<'static> {
         let filename = format!("results_{}.csv", self.survey.title.chars().map(|c| {
             if c.is_alphanumeric() {
                 c.to_lowercase().next().unwrap()
