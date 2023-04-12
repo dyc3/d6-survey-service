@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use std::io::Cursor;
 
 use diesel::prelude::*;
@@ -59,50 +58,46 @@ pub async fn export_responses(
     })
 }
 
-fn build_csv_header(survey: &Survey) -> Vec<String> {
-    let mut header = Vec::with_capacity(survey.questions.len() + 3);
-    header.push("responder".to_string());
-    header.push("created_at".to_string());
-    header.push("updated_at".to_string());
+fn write_csv_rows<C: std::io::Write>(
+    wtr: &mut csv::Writer<C>,
+    survey: &Survey,
+    responses: &Vec<SurveyResponse>,
+) -> anyhow::Result<()> {
+    // write header
+    wtr.write_field("responder")?;
+    wtr.write_field("created_at")?;
+    wtr.write_field("updated_at")?;
     for question in survey.questions.iter() {
         let prompt = match &question.question {
             Question::Text(q) => &q.prompt,
             Question::MultipleChoice(q) => &q.prompt,
             Question::Rating(q) => &q.prompt,
         };
-        header.push(prompt.clone()); // TODO: get rid of clone
+        wtr.write_field(prompt)?;
     }
-    header
-}
+    wtr.write_record(None::<&[u8]>)?;
 
-fn write_csv_rows<C: std::io::Write>(
-    wtr: &mut csv::Writer<C>,
-    survey: &Survey,
-    responses: &Vec<SurveyResponse>,
-) -> anyhow::Result<()> {
-    let header = build_csv_header(survey);
-    wtr.write_record(&header)?;
-
+    // write rows
     for response in responses {
-        // TODO: use write field instead
-        let mut row: Vec<String> = Vec::with_capacity(survey.questions.len() + 3);
-        row.push(response.responder_uuid.to_string());
-        row.push(response.created_at.to_string());
-        row.push(response.updated_at.to_string());
+        wtr.write_field(response.responder_uuid.to_string())?;
+        wtr.write_field(response.created_at.to_string())?;
+        wtr.write_field(response.updated_at.to_string())?;
 
         for question in survey.questions.iter() {
             let Some(qresponse) = response.content.0.get(&question.uuid) else {
-                row.push("".to_string());
+                wtr.write_field("")?;
                 continue;
             };
-            let value = match qresponse {
-                Response::Text(r) => Cow::from(&r.text),
+            match qresponse {
+                Response::Text(r) => {
+                    wtr.write_field(&r.text)?;
+                },
                 Response::MultipleChoice(r) => {
                     let Question::MultipleChoice(q) = &question.question else {
                         anyhow::bail!("question type mismatch");
                     };
 
-                    r.selected
+                    let selected = r.selected
                         .iter()
                         .filter_map(|choice_id| {
                             let Some(choice) = q.choices.iter().find(|c| c.uuid == *choice_id) else {
@@ -110,16 +105,15 @@ fn write_csv_rows<C: std::io::Write>(
                             };
                             Some(choice.text.clone())
                         })
-                        .collect::<Vec<String>>()
-                        .join(", ")
-                        .to_owned().into()
+                        .collect::<Vec<String>>().join(",").to_string();
+                    wtr.write_field(&selected)?;
                 }
-                Response::Rating(r) => r.rating.to_string().into(),
-            };
-            row.push(value.to_string());
+                Response::Rating(r) => {
+                    wtr.write_field(r.rating.to_string())?;
+                },
+            }
         }
-
-        wtr.write_record(&row)?;
+        wtr.write_record(None::<&[u8]>)?;
     }
     Ok(())
 }
@@ -287,8 +281,8 @@ mod tests {
             assert_eq!(response.headers().get_one("Content-Disposition"), Some("attachment; filename=\"results_test.csv\""));
             let csv = response.into_string().unwrap();
             // a better assertion would be a regex, but im lazy and this is fine
-            assert!(csv.starts_with("responder,created_at,updated_at,test,How much do you like this?,Anything else?\n"));
-            assert!(csv.ends_with("\"foo, bar\",8,test\n"));
+            assert!(csv.starts_with("responder,created_at,updated_at,test,How much do you like this?,Anything else?\n"), "csv: {}", csv);
+            assert!(csv.ends_with("\"foo,bar\",8,test\n"), "csv: {}", csv);
         });
     }
 }
