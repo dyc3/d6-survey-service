@@ -91,7 +91,7 @@ fn write_csv_rows<C: std::io::Write>(
             match qresponse {
                 Response::Text(r) => {
                     wtr.write_field(&r.text)?;
-                },
+                }
                 Response::MultipleChoice(r) => {
                     let Question::MultipleChoice(q) = &question.question else {
                         anyhow::bail!("question type mismatch");
@@ -110,7 +110,7 @@ fn write_csv_rows<C: std::io::Write>(
                 }
                 Response::Rating(r) => {
                     wtr.write_field(r.rating.to_string())?;
-                },
+                }
             }
         }
         wtr.write_record(None::<&[u8]>)?;
@@ -239,7 +239,13 @@ mod tests {
             assert_eq!(response.status(), rocket::http::Status::Ok);
 
             let response = client
-                .post(uri!("/api", crate::survey_response::create_survey_response(survey_id)).to_string())
+                .post(
+                    uri!(
+                        "/api",
+                        crate::survey_response::create_survey_response(survey_id)
+                    )
+                    .to_string(),
+                )
                 .header(rocket::http::ContentType::JSON)
                 .header(rocket::http::Header::new("Authorization", token.clone()))
                 .body(
@@ -277,8 +283,14 @@ mod tests {
                 .header(rocket::http::Header::new("Authorization", token.clone()))
                 .dispatch();
             assert_eq!(response.status(), rocket::http::Status::Ok);
-            assert_eq!(response.content_type(), Some(rocket::http::ContentType::new("text", "csv")));
-            assert_eq!(response.headers().get_one("Content-Disposition"), Some("attachment; filename=\"results_test.csv\""));
+            assert_eq!(
+                response.content_type(),
+                Some(rocket::http::ContentType::new("text", "csv"))
+            );
+            assert_eq!(
+                response.headers().get_one("Content-Disposition"),
+                Some("attachment; filename=\"results_test.csv\"")
+            );
             let csv = response.into_string().unwrap();
             // a better assertion would be a regex, but im lazy and this is fine
             assert!(csv.starts_with("responder,created_at,updated_at,test,How much do you like this?,Anything else?\n"), "csv: {}", csv);
