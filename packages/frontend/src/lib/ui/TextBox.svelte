@@ -27,7 +27,7 @@
 {/if}
 
 {#if copy}
-	<Button on:click={copyToClipboard}>Copy to Clipboard</Button>
+	<Button size="small" on:click={copyToClipboard}>Copy</Button>
 {/if}
 
 <style lang="scss">
