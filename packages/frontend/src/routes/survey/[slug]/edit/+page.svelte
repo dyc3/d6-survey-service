@@ -100,7 +100,7 @@
 			<span>Changes not saved</span>
 		{/if}
 	</div>
-	<Button>View Results</Button>
+	<Button --margin='5px'>View Results</Button>
 </div>
 
 <div class="container">
@@ -126,7 +126,7 @@
 	/>
 
 	<div class="panel">
-		<Button on:click={publishSurvey}>Publish Survey</Button>
+		<Button --margin="5px" on:click={publishSurvey}>Publish Survey</Button>
 	</div>
 </div>
 

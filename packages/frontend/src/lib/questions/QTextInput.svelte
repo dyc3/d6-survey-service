@@ -48,7 +48,7 @@
 				{/each}
 			</div>
 		{:else}
-			<span>{prompt}</span>
+			<span class='prompt-text'>{prompt}</span>
 		{/if}
 	</div>
 
@@ -64,7 +64,7 @@
 				<input type="checkbox" bind:checked={multiline} on:change /> Multiline?
 			</div>
 		{:else}
-			<span>{description}</span>
+			<span class='description-text'>{description}</span>
 		{/if}
 	</div>
 

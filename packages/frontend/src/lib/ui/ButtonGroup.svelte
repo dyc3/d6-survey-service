@@ -63,6 +63,7 @@
 			pressed={selected.includes(getSelectionValue(i))}
 			on:click={() => select(i)}
 			{role}
+      --margin=2px
 		>
 			{#if isItem(button)}
 				{button.label}
@@ -78,8 +79,12 @@
 
 	.button-group {
 		display: flex;
-		justify-content: space-around;
+		justify-content: space-between;
 		align-items: center;
+	}
+
+	.button-wrapper{
+		margin: 2px
 	}
 
 	.horizontal {
