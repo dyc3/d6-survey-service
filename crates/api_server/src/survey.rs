@@ -5,12 +5,13 @@ use thiserror::Error;
 
 use crate::{
     api::{ApiErrorResponse, ApiOkCacheableResource},
+    cache::{CacheCheck, Cacheable, RaceCheck},
     db::{
         models::{NewSurvey, Survey, SurveyPatch, SurveyUpdateCheck},
         schema, Storage,
     },
     jwt::Claims,
-    validate::{Validate, ValidationError}, cache::{RaceCheck, CacheCheck, Cacheable},
+    validate::{Validate, ValidationError},
 };
 
 #[derive(Debug, Error, Serialize, Deserialize)]
@@ -144,15 +145,22 @@ pub async fn edit_survey(
     new_survey: Json<SurveyPatch>,
     race_check: Option<RaceCheck>,
 ) -> Result<Json<()>, ApiErrorResponse<SurveyError>> {
-    let survey = db.run(move |conn| {
-        schema::surveys::dsl::surveys
-            .find(survey_id)
-            .select((crate::db::schema::surveys::published, crate::db::schema::surveys::owner_id, crate::db::schema::surveys::updated_at))
-            .first::<SurveyUpdateCheck>(conn)
-    }).await.map_err(|e| {
-        error!("{e:?}");
-        SurveyError::NotFound
-    })?;
+    let survey = db
+        .run(move |conn| {
+            schema::surveys::dsl::surveys
+                .find(survey_id)
+                .select((
+                    crate::db::schema::surveys::published,
+                    crate::db::schema::surveys::owner_id,
+                    crate::db::schema::surveys::updated_at,
+                ))
+                .first::<SurveyUpdateCheck>(conn)
+        })
+        .await
+        .map_err(|e| {
+            error!("{e:?}");
+            SurveyError::NotFound
+        })?;
 
     if survey.owner_id != claims.user_id() {
         return Err(SurveyError::NotOwner.into());

@@ -1,6 +1,6 @@
 use std::io::Cursor;
 
-use rocket::http::{ContentType, Status, Header};
+use rocket::http::{ContentType, Header, Status};
 use rocket::request::Request;
 use rocket::response::{self, Responder, Response};
 use serde::Serialize;
@@ -28,16 +28,15 @@ where
 
                 let mut resp = Response::build();
                 resp.header(ContentType::JSON);
-                t.last_modified_header().map(|h| resp.header(Header::new("Last-Modified", h)));
+                t.last_modified_header()
+                    .map(|h| resp.header(Header::new("Last-Modified", h)));
                 t.etag_header().map(|h| resp.header(Header::new("ETag", h)));
-                resp.sized_body(body.len(), Cursor::new(body))
-                    .ok()
-            },
-            ApiOkCacheableResource::NotModified => Response::build()
-                .status(Status::NotModified)
-                .ok(),
+                resp.sized_body(body.len(), Cursor::new(body)).ok()
+            }
+            ApiOkCacheableResource::NotModified => {
+                Response::build().status(Status::NotModified).ok()
+            }
         }
-
     }
 }
 
