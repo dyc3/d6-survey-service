@@ -197,9 +197,13 @@ export async function exportResponses(
 	survey_id: number,
 	opts?: ExtraOptions
 ): Promise<ApiResponse<ExportResponse>> {
-	const resp = await apiReqAuth<Response>(`/api/survey/${survey_id}/export`, { raw: true, ...opts });
+	const resp = await apiReqAuth<Response>(`/api/survey/${survey_id}/export`, {
+		raw: true,
+		...opts
+	});
 	if (resp.ok) {
-		const filename = resp.value.headers.get('content-disposition')?.split('=')[1] ?? 'responses.csv';
+		const filename =
+			resp.value.headers.get('content-disposition')?.split('=')[1] ?? 'responses.csv';
 		return { ok: true, value: { blob: await resp.value.blob(), filename } };
 	}
 	return resp;
