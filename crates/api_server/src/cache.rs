@@ -43,21 +43,13 @@ pub trait Cacheable {
     }
 
     fn last_modified_header(&self) -> Option<String> {
-        match self.modified_time() {
-            Some(modified_time) => Some(
-                modified_time
-                    .format("%a, %d %b %Y %H:%M:%S GMT")
-                    .to_string(),
-            ),
-            None => None,
-        }
+        self.modified_time().map(|modified_time| modified_time
+            .format("%a, %d %b %Y %H:%M:%S GMT")
+            .to_string())
     }
 
     fn etag_header(&self) -> Option<String> {
-        match self.etag() {
-            Some(etag) => Some(etag.to_owned()),
-            None => None,
-        }
+        self.etag().map(|etag| etag.clone())
     }
 }
 
