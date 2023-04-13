@@ -51,7 +51,7 @@ pub trait Cacheable {
     }
 
     fn etag_header(&self) -> Option<String> {
-        self.etag().map(|etag| etag.clone())
+        self.etag().cloned()
     }
 }
 
