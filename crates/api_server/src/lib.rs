@@ -35,6 +35,7 @@ pub fn rocket() -> _ {
                 survey::get_survey,
                 survey::get_survey_auth,
                 survey::edit_survey,
+                survey::delete_survey,
                 survey_response::create_survey_response,
                 survey_response::edit_survey_response,
                 survey_response::get_survey_response,

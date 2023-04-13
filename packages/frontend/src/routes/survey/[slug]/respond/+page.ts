@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { getSurvey, getSurveyResponse } from '$lib/api';
-import type { SurveyResponse, SurveyResponses } from '$lib/common';
+import type { SurveyResponses } from '$lib/common';
 
 export const load = (async ({ params, fetch, url }) => {
 	const surveyId = parseInt(params.slug);

@@ -20,7 +20,7 @@
 			goto('/mysurveys');
 		} else {
 			console.error(resp.error);
-			response = resp.error.message;
+			response = resp.error.message as string;
 		}
 	}
 
@@ -32,40 +32,40 @@
 		handleLogin(await registerUser({ username, password }));
 	}
 
-	let group_selected = 0;
+	let selected: number[] = [0];
+	$: tab = selected[0];
 </script>
 
-
-	<Container> 
-		<ButtonGroup
+<Container>
+	<ButtonGroup
 		orientation="horizontal"
 		buttons={['Log In', 'Register']}
 		forceSelection={true}
-		bind:selected={group_selected}
-		role='tab'
-		/>
-		<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->
-		{#if group_selected === 0}
-			<div class = 'info-container'>
-				<TextBox name="username" placeholder="Username" bind:value={username} /> <br />
-				<TextBox name="password" placeholder="Password" bind:value={password} /> <br />
-				<Button type="submit" kind="primary" on:click={doLogin}>Submit</Button>
-				<span>{response}</span>
-			</div>
-		{:else if group_selected === 1}
-			<div class = 'info-container'>
-				<TextBox name="username" placeholder="New Username" bind:value={username} /> <br />
-				<TextBox name="password" placeholder="New Password" bind:value={password} /> <br />
-				<Button type="submit" kind="primary" on:click={doRegister}>Submit</Button>
-				<span>{response}</span>
-			</div>
-		{/if}
-	</Container>
+		bind:selected
+		role="tab"
+	/>
+	<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->
+	{#if tab === 0}
+		<div class="info-container">
+			<TextBox name="username" placeholder="Username" bind:value={username} /> <br />
+			<TextBox name="password" placeholder="Password" bind:value={password} /> <br />
+			<Button --margin="5px" type="submit" kind="primary" on:click={doLogin}>Submit</Button>
+			<span>{response}</span>
+		</div>
+	{:else if tab === 1}
+		<div class="info-container">
+			<TextBox name="username" placeholder="New Username" bind:value={username} /> <br />
+			<TextBox name="password" placeholder="New Password" bind:value={password} /> <br />
+			<Button --margin="5px" type="submit" kind="primary" on:click={doRegister}>Submit</Button>
+			<span>{response}</span>
+		</div>
+	{/if}
+</Container>
 
 <style lang="scss">
 	@import '../../lib/ui/variables';
 
-	.info-container{
+	.info-container {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;

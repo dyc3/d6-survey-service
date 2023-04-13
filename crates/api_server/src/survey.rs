@@ -143,7 +143,7 @@ pub async fn edit_survey(
     db: Storage,
     new_survey: Json<SurveyPatch>,
     race_check: Option<RaceCheck>,
-) -> Result<(), ApiErrorResponse<SurveyError>> {
+) -> Result<Json<()>, ApiErrorResponse<SurveyError>> {
     let survey = db.run(move |conn| {
         schema::surveys::dsl::surveys
             .find(survey_id)
@@ -171,10 +171,19 @@ pub async fn edit_survey(
     new_survey.validate()?;
 
     db.run(move |conn| -> anyhow::Result<()> {
-        diesel::update(schema::surveys::table)
-            .filter(schema::surveys::id.eq(survey_id))
-            .set(new_survey.into_inner())
-            .execute(conn)?;
+        conn.build_transaction()
+            .read_write()
+            .run::<_, diesel::result::Error, _>(|conn| {
+                schema::surveys::table
+                    .for_update()
+                    .find(survey_id)
+                    .load::<Survey>(conn)?;
+                diesel::update(schema::surveys::table)
+                    .filter(schema::surveys::id.eq(survey_id))
+                    .set(new_survey.into_inner())
+                    .execute(conn)?;
+                Ok(())
+            })?;
         Ok(())
     })
     .await
@@ -183,7 +192,7 @@ pub async fn edit_survey(
         SurveyError::Unknown
     })?;
 
-    Ok(())
+    Ok(Json(()))
 }
 
 #[delete("/survey/<survey_id>")]
@@ -191,7 +200,7 @@ pub async fn delete_survey(
     survey_id: i32,
     claims: Claims,
     db: Storage,
-) -> Result<(), ApiErrorResponse<SurveyError>> {
+) -> Result<Json<()>, ApiErrorResponse<SurveyError>> {
     let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
         error!("{e:?}");
         SurveyError::NotFound
@@ -213,7 +222,7 @@ pub async fn delete_survey(
         SurveyError::Unknown
     })?;
 
-    Ok(())
+    Ok(Json(()))
 }
 
 pub(crate) async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Survey> {

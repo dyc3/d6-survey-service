@@ -1,13 +1,15 @@
 <script lang="ts">
-	import type { Question, Response, RMultipleChoice, RRating, RText } from './common';
+	import type { Question, Response, ValidationError } from '$lib/common';
 	import QMultipleChoice from './questions/QMultipleChoice.svelte';
 	import QRating from './questions/QRating.svelte';
 	import QTextInput from './questions/QTextInput.svelte';
+	import { unwrapInnerErrors } from '$lib/validation';
 
 	export let editmode = false;
 	export let question: Question;
 	export let required = false;
 	export let response: Response | undefined = undefined;
+	export let errors: ValidationError[] = [];
 </script>
 
 <div class="question-container">
@@ -20,6 +22,7 @@
 			{required}
 			bind:response
 			on:change
+			errors={unwrapInnerErrors(errors)}
 		/>
 	{:else if question.type === 'Rating'}
 		<QRating
@@ -30,6 +33,7 @@
 			{required}
 			bind:response
 			on:change
+			errors={unwrapInnerErrors(errors)}
 		/>
 	{:else if question.type == 'MultipleChoice'}
 		<QMultipleChoice
@@ -41,14 +45,15 @@
 			{required}
 			bind:response
 			on:change
+			errors={unwrapInnerErrors(errors)}
 		/>
 	{/if}
 
 	{#if editmode}
-	<div>
-		<label for="requiredquestion">Required?</label>
-		<input type="checkbox" id="requiredquestion" bind:checked={required} />
-	</div>
+		<div>
+			<label for="requiredquestion">Required?</label>
+			<input type="checkbox" id="requiredquestion" bind:checked={required} on:change />
+		</div>
 	{/if}
 </div>
 

@@ -1,9 +1,11 @@
 <script lang="ts">
-	import type { Response } from '$lib/common';
+	import type { Response, ValidationError } from '$lib/common';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import Container from '$lib/ui/Container.svelte';
 	import './questions.scss';
+	import { buildErrorMapFromFields } from '$lib/validation';
+	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
 
 	export let editmode = false;
 	export let prompt: string;
@@ -14,56 +16,83 @@
 	export let minText = 'low';
 	export let maxText = 'high';
 
-	let group_selected: number | undefined = undefined;
-
 	export let response: Response | undefined = undefined;
-	$: {
-		if (response !== undefined && group_selected === undefined) {
-			if (response.type === 'Rating') {
-				group_selected = response.content.rating - 1;
-			}
+	let selected: number[] = loadResponse(response);
+
+	function loadResponse(response: Response | undefined): number[] {
+		if (response !== undefined && response.type === 'Rating') {
+			return [response.content.rating - 1];
 		}
-		if (group_selected !== undefined) {
-			response = { type: 'Rating', content: { rating: group_selected + 1 } };
-		} else {
-			response = undefined;
-		}
+		return [];
 	}
+
+	$: {
+		setResponse(selected);
+	}
+
+	function setResponse(rating: number[]) {
+		if (rating.length === 0) {
+			response = undefined;
+			return;
+		}
+		response = { type: 'Rating', content: { rating: rating[0] + 1 } };
+	}
+
+	export let errors: ValidationError[] = [];
+	$: validationErrors = buildErrorMapFromFields(errors);
 </script>
 
 <Container>
-
 	{#if required}
-			<span class = "required">*</span>
+		<span class="required">*</span>
 	{/if}
 
-	<div>
+	<div class="prompt-text">
 		{#if editmode}
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>
 			<span
 				>Where 1 is <input bind:value={minText} on:change /> and {max_rating} is
-				<input bind:value={maxText} on:change /></span
-			>
+				<input bind:value={maxText} on:change />
+			</span>
+			<div>
+				{#each validationErrors.get('max_rating') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 		{:else}
-			<span class="prompt-text">On a scale of 1-{max_rating}...</span>
+			<span>On a scale of 1-{max_rating}...</span>
 		{/if}
 	</div>
 
-	<div class="text-box-container">
-		{#if editmode}
+	{#if editmode}
+		<div class="text-box-container prompt-text">
 			<TextBox placeholder="Insert prompt..." bind:value={prompt} />
-		{:else}
-			<span class="prompt-text">{prompt}</span>
-		{/if}
-	</div>
+		</div>
+		<div>
+			{#each validationErrors.get('prompt') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
+		</div>
+	{:else}
+		<div>
+			<span>{prompt}</span>
+		</div>
+	{/if}
 
-	<div class="text-box-container">
-		{#if editmode}
+	{#if editmode}
+		<div class="text-box-container description-text">
 			<TextBox placeholder="Insert description..." bind:value={description} />
-		{:else}
-			<span class="description-text">{description}</span>
-		{/if}
-	</div>
+		</div>
+		<div>
+			{#each validationErrors.get('description') ?? [] as error}
+				<ValidationErrorRenderer {error} />
+			{/each}
+		</div>
+	{:else}
+		<div>
+			<span>{description}</span>
+		</div>
+	{/if}
 
 	<div style="width: max-content;">
 		<ButtonGroup
@@ -73,12 +102,15 @@
 				return (i + 1).toString();
 			})}
 			forceSelection={false}
-			bind:selected={group_selected}
+			bind:selected
 		/>
 		<div class="align-rating-text">
 			<span class="description-text">{minText}</span>
 			<span class="description-text">{maxText}</span>
 		</div>
+		{#each validationErrors.get('response') ?? [] as error}
+			<ValidationErrorRenderer {error} />
+		{/each}
 	</div>
 </Container>
 
