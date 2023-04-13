@@ -23,7 +23,7 @@ const API_URL = 'http://localhost:5347';
 
 export type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 export type ApiResponse<T> = Result<T, ApiErrorResponse<unknown>>;
-export type ExtraOptions = { fetch?: typeof fetch; token?: string };
+export type ExtraOptions = { fetch?: typeof fetch; token?: string; raw?: boolean };
 
 type ApiRequestOptions = RequestInit & ExtraOptions;
 
@@ -42,11 +42,30 @@ async function apiReq<T>(path: string, options?: ApiRequestOptions): Promise<Api
 	const realfetch = options?.fetch ?? fetch;
 	const response = await realfetch(`${API_URL}${path}`, options);
 
+	if (options?.raw) {
+		if (response.ok) {
+			return { ok: true, value: response as unknown as T };
+		} else {
+			return { ok: false, error: await response.json() };
+		}
+	}
+
 	let apiResponse: ApiResponse<T>;
-	if (response.ok) {
-		apiResponse = { ok: true, value: await response.json() };
+	if (response.headers.get('Content-Type')?.startsWith('application/json')) {
+		if (response.ok) {
+			apiResponse = { ok: true, value: await response.json() };
+		} else {
+			apiResponse = { ok: false, error: await response.json() };
+		}
 	} else {
-		apiResponse = { ok: false, error: await response.json() };
+		if (response.ok) {
+			apiResponse = { ok: true, value: (await response.text()) as unknown as T };
+		} else {
+			apiResponse = {
+				ok: false,
+				error: { message: await response.text() }
+			};
+		}
 	}
 	return apiResponse;
 }
@@ -167,4 +186,25 @@ export async function getSurveyResponse(
 		method: 'GET',
 		...opts
 	});
+}
+
+interface ExportResponse {
+	blob: Blob;
+	filename: string;
+}
+
+export async function exportResponses(
+	survey_id: number,
+	opts?: ExtraOptions
+): Promise<ApiResponse<ExportResponse>> {
+	const resp = await apiReqAuth<Response>(`/api/survey/${survey_id}/export`, {
+		raw: true,
+		...opts
+	});
+	if (resp.ok) {
+		const filename =
+			resp.value.headers.get('content-disposition')?.split('=')[1] ?? 'responses.csv';
+		return { ok: true, value: { blob: await resp.value.blob(), filename } };
+	}
+	return resp;
 }

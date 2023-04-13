@@ -443,3 +443,16 @@ sequenceDiagram
 
 - Closing the broswer tab without submitting will prompt the user before exiting.
 - At the end of the survey, the user will be provided with a link that allows them to edit their responses.
+
+# Survey Results
+
+Users must be able to view the responses of the survey. We'll do this by providing the ability to export the responses as a CSV file.
+
+The CSV file will contain the following columns:
+
+- Responder ID
+- Tithe of each quesetion, one column per question
+
+The rows will contain the responses of each responder.
+
+

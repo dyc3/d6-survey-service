@@ -80,10 +80,32 @@ pub struct ListedSurvey {
     pub owner_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow, Default)]
 #[diesel(sql_type = Jsonb)]
 #[typeshare(serialized_as = "Vec<SurveyQuestion>")]
 pub struct SurveyQuestions(pub Vec<SurveyQuestion>);
+
+impl SurveyQuestions {
+    pub fn new() -> Self {
+        Self(Vec::new())
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &SurveyQuestion> {
+        self.0.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut SurveyQuestion> {
+        self.0.iter_mut()
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
 
 impl From<Vec<SurveyQuestion>> for SurveyQuestions {
     fn from(v: Vec<SurveyQuestion>) -> Self {
