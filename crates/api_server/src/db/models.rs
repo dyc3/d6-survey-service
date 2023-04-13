@@ -80,7 +80,7 @@ pub struct ListedSurvey {
     pub owner_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow, Default)]
 #[diesel(sql_type = Jsonb)]
 #[typeshare(serialized_as = "Vec<SurveyQuestion>")]
 pub struct SurveyQuestions(pub Vec<SurveyQuestion>);
@@ -100,6 +100,10 @@ impl SurveyQuestions {
 
     pub fn len(&self) -> usize {
         self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 }
 

@@ -146,7 +146,7 @@ impl<'r> Responder<'r, 'static> for ExportedResults {
             .header(ContentType::new("text", "csv"))
             .header(Header::new(
                 "Content-Disposition",
-                format!("attachment; filename=\"{}\"", filename),
+                format!("attachment; filename=\"{filename}\""),
             ))
             .sized_body(self.csv.len(), Cursor::new(self.csv))
             .ok()
