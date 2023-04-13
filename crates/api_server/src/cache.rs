@@ -43,9 +43,11 @@ pub trait Cacheable {
     }
 
     fn last_modified_header(&self) -> Option<String> {
-        self.modified_time().map(|modified_time| modified_time
-            .format("%a, %d %b %Y %H:%M:%S GMT")
-            .to_string())
+        self.modified_time().map(|modified_time| {
+            modified_time
+                .format("%a, %d %b %Y %H:%M:%S GMT")
+                .to_string()
+        })
     }
 
     fn etag_header(&self) -> Option<String> {
