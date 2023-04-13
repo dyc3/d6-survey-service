@@ -280,7 +280,7 @@ mod tests {
             let response = client
                 .get(uri!("/api", export_responses(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token.clone()))
+                .header(rocket::http::Header::new("Authorization", token))
                 .dispatch();
             assert_eq!(response.status(), rocket::http::Status::Ok);
             assert_eq!(
