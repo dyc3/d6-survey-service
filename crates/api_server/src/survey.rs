@@ -196,6 +196,7 @@ pub async fn delete_survey(
     Ok(Json(()))
 }
 
+#[delete("/survey/<survey_id>/respond")]
 pub async fn clear_survey_responses(
     db: Storage,
     survey_id: i32,
@@ -473,6 +474,21 @@ mod tests {
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Forbidden);
+        });
+    }
+
+    #[test]
+    fn test_clear_survey_responses() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let token = create_test_user(&client);
+            let survey_id = make_survey(&client, &token);
+            publish_survey(&client, &token, survey_id);
+
+            let token = make_jwt(&client, 58008);
+
+            
         });
     }
 }
