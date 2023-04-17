@@ -81,6 +81,8 @@
 	function onChange(field: keyof SurveyPatch) {
 		isSaving = true;
 		dirtyFields.add(field);
+		validationErrors.delete(field);
+		validationErrors = validationErrors;
 		submitChangesDebounced();
 	}
 
