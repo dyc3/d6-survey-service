@@ -117,22 +117,11 @@
 <style lang="scss">
 	@import '../ui/variables';
 
-	.prompt-text {
-		font-weight: bold;
-		font-size: $bold-font-size;
-		color: $color-blue;
-	}
-
 	.text-box-container {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		width: 100%;
-	}
-
-	.description-text {
-		font-size: $main-font-size;
-		color: $color-blue;
 	}
 
 	.align-rating-text {

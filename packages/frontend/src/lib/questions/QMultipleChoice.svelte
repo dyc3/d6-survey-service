@@ -138,17 +138,6 @@
 		flex-direction: row;
 	}
 
-	.prompt-text {
-		font-size: $bold-font-size;
-		font-weight: bold;
-		color: $color-blue;
-	}
-
-	.description-text {
-		font-size: $main-font-size;
-		color: $color-blue;
-	}
-
 	.instructions {
 		font-style: italic;
 		opacity: 0.6;
