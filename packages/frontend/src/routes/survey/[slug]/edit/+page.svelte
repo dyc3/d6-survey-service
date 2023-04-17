@@ -123,13 +123,20 @@
 	<div>
 		<h1>{title}</h1>
 		<h2>Editing</h2>
-		{#if isSaving}
-			<span>Saving...</span>
-		{:else if wasSaveSuccessful}
-			<span>Changes saved</span>
-		{:else}
-			<span>Changes not saved</span>
-		{/if}
+		<span
+			class="save-indicator"
+			class:saving={isSaving}
+			class:success={!isSaving && wasSaveSuccessful}
+			class:fail={!isSaving && !wasSaveSuccessful}
+		>
+			{#if isSaving}
+				Saving...
+			{:else if wasSaveSuccessful}
+				Changes saved
+			{:else}
+				Changes not saved
+			{/if}
+		</span>
 	</div>
 	<Button --margin="5px" on:click={downloadResults}>Export Results</Button>
 </div>
@@ -181,5 +188,9 @@
 		align-items: center;
 		flex-direction: column;
 		margin: 40px;
+	}
+
+	.save-indicator.fail {
+		color: $color-danger;
 	}
 </style>
