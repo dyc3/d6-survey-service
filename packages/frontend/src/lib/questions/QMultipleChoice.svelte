@@ -85,6 +85,14 @@
 		{/if}
 	</div>
 
+	<div class="instructions">
+		{#if multiple}
+			Select all that apply.
+		{:else}
+			Select one.
+		{/if}
+	</div>
+
 	<div class="choices">
 		{#if editmode}
 			<div>
@@ -139,5 +147,10 @@
 	.description-text {
 		font-size: $main-font-size;
 		color: $color-blue;
+	}
+
+	.instructions {
+		font-style: italic;
+		opacity: 0.6;
 	}
 </style>
