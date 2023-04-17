@@ -19,6 +19,10 @@
 	}
 
 	async function doDeleteSurvey(survey_id: number) {
+		let confirm = window.confirm('Are you sure you want to delete this survey?');
+		if (!confirm) {
+			return;
+		}
 		let resp = await deleteSurvey(survey_id);
 		if (resp.ok) {
 			surveys = surveys.filter((survey) => survey.id !== survey_id);
