@@ -89,10 +89,10 @@ test('create a sruvey with a few questions', async ({ page }) => {
 
 	await page.getByRole('combobox').selectOption('Rating');
 	await page.getByRole('button', { name: '+ Add Question' }).click();
-	await page.getByPlaceholder('Enter prompt...').click();
-	await page.getByPlaceholder('Enter prompt...').fill('q2');
-	await page.getByPlaceholder('Insert prompt...').click();
-	await page.getByPlaceholder('Insert prompt...').fill('q3');
+	await page.getByPlaceholder('Enter prompt...').nth(0).click();
+	await page.getByPlaceholder('Enter prompt...').nth(0).fill('q2');
+	await page.getByPlaceholder('Enter prompt...').nth(1).click();
+	await page.getByPlaceholder('Enter prompt...').nth(1).fill('q3');
 
 	await page.getByText('Saving...').waitFor({ state: 'visible' });
 	await page.getByText('Changes saved').waitFor({ state: 'visible' });
