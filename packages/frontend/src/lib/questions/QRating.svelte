@@ -49,9 +49,9 @@
 
 	<div class="prompt-text">
 		{#if editmode}
-			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /> ...</span>
-			<span
-				>Where 1 is <input bind:value={minText} on:change /> and {max_rating} is
+			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /></span>
+			<span>
+				where 1 is <input bind:value={minText} on:change /> and {max_rating} is
 				<input bind:value={maxText} on:change />
 			</span>
 			<div>
@@ -66,7 +66,7 @@
 
 	{#if editmode}
 		<div class="text-box-container prompt-text">
-			<TextBox placeholder="Insert prompt..." bind:value={prompt} />
+			<TextBox placeholder="Enter prompt..." bind:value={prompt} />
 		</div>
 		<div>
 			{#each validationErrors.get('prompt') ?? [] as error}
