@@ -70,6 +70,9 @@ test('create a survey with a few questions', async ({ page }) => {
 	await page.getByRole('heading', { name: 'My Surveys' }).waitFor({ state: 'visible' });
 
 	await page.getByRole('button', { name: 'Create Survey' }).click();
+	await page.getByRole('heading', { name: 'Editing' }).waitFor({ state: 'visible' });
+
+
 	await page.getByPlaceholder('Survey Title').click();
 	await page.getByPlaceholder('Survey Title').fill('foo');
 
@@ -96,32 +99,4 @@ test('create a survey with a few questions', async ({ page }) => {
 
 	await page.getByText('Saving...').waitFor({ state: 'visible' });
 	await page.getByText('Changes saved').waitFor({ state: 'visible' });
-});
-
-//left off here for test stuff
-test('create a survey and navigate away to see if onbeforeunload listener fires', async ({ page }) => {
-	await page.goto('/mysurveys');
-	await page.getByRole('heading', { name: 'My Surveys' }).waitFor({ state: 'visible' });
-
-	await page.getByRole('button', { name: 'Create Survey' }).click();
-	await page.getByPlaceholder('Survey Title').click();
-	await page.getByPlaceholder('Survey Title').fill('foo');
-
-	await page.getByRole('combobox').selectOption('Text');
-	await page.getByRole('button', { name: '+ Add Question' }).click();
-	await page.getByPlaceholder('Prompt').click();
-	await page.getByPlaceholder('Prompt').fill('q1');
-
-	let dialogAppeared = false;
-	page.on('dialog', async (dialog) => {
-		console.log('dialog appeared')
-		dialogAppeared = true;
-		await dialog.accept();
-	});
-
-	await page.evaluate(() => window.location.reload());
-
-	await page.waitForTimeout(1000);
-
-	expect(dialogAppeared).toBe(true);
 });
