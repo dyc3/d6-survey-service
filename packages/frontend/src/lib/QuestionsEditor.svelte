@@ -64,6 +64,8 @@
 	}
 
 	function removeQuestion(uuid: string) {
+		let confirm = window.confirm('Are you sure you want to delete this question?');
+		if (!confirm) return;
 		questions = questions.filter((q) => q.uuid !== uuid);
 		dispatch('change');
 	}
@@ -92,7 +94,9 @@
 		<option value="MultipleChoice">Multiple Choice</option>
 		<option value="Rating">Rating</option>
 	</select>
-	<Button --margin="5px" size="small" on:click={() => addQuestion(questionToAdd)}>+ Add Question</Button>
+	<Button --margin="5px" size="small" on:click={() => addQuestion(questionToAdd)}>
+		+ Add Question
+	</Button>
 </div>
 
 <style lang="scss">

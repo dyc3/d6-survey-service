@@ -19,6 +19,10 @@
 	}
 
 	async function doDeleteSurvey(survey_id: number) {
+		let confirm = window.confirm('Are you sure you want to delete this survey?');
+		if (!confirm) {
+			return;
+		}
 		let resp = await deleteSurvey(survey_id);
 		if (resp.ok) {
 			surveys = surveys.filter((survey) => survey.id !== survey_id);
@@ -26,7 +30,6 @@
 			console.error(resp.error);
 		}
 	}
-
 </script>
 
 <div class="toolbar">
@@ -49,11 +52,17 @@
 					<td class="published">{survey.published ? 'Yes' : 'No'}</td>
 
 					<td class="share-link">
-						<TextBox value="{window.location.origin}/survey/{survey.id}/respond" disabled copyable />
+						<TextBox
+							value="{window.location.origin}/survey/{survey.id}/respond"
+							disabled
+							copyable
+						/>
 					</td>
 					<td class="actions">
 						<Button --margin="5px" on:click={() => goto(`/survey/${survey.id}/edit`)}>Edit</Button>
-						<Button --margin="5px" kind="danger" on:click={() => doDeleteSurvey(survey.id)}>Delete</Button>
+						<Button --margin="5px" kind="danger" on:click={() => doDeleteSurvey(survey.id)}>
+							Delete
+						</Button>
 					</td>
 				</tr>
 			{/each}
