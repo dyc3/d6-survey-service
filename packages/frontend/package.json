@@ -13,9 +13,9 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:unit": "vitest",
-		"lint": "prettier --plugin-search-dir . --check . && eslint . && stylelint \"**/*.{css,scss,svelte}\"",
-		"lint:fix": "prettier --plugin-search-dir . --write . && eslint . --fix && stylelint \"**/*.{css,scss,svelte}\" --fix",
-		"format": "prettier --plugin-search-dir . --write ."
+		"lint": "prettier --plugin-search-dir . --check . && prettier --plugin-search-dir . --check \"**/*.svelte\" && eslint . && stylelint \"**/*.{css,scss,svelte}\"",
+		"lint:fix": "prettier --plugin-search-dir . --write . && prettier --plugin-search-dir . --write \"**/*.svelte\"  && eslint . --fix && stylelint \"**/*.{css,scss,svelte}\" --fix",
+		"format": "prettier --plugin-search-dir . --write . && prettier --plugin-search-dir . --write \"**/*.svelte\" "
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
