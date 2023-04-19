@@ -1,27 +1,32 @@
-<script>
-	export let top = 0;
-    let oldTop = 0;
-	
-	let moving = false;
-	
-	function onMouseDown() {
-		moving = true;
-        oldTop = top;
-	}
-	
-	/**
-	 * @param {{ movementY: number; }} e
-	 */
-	function onMouseMove(e) {
-		if (moving) {
-			top += e.movementY;
+<script lang='ts'>
+	export let index: number;
+	import { createEventDispatcher } from "svelte";
+  	let hovering: number | boolean | null = null;
+
+	//create event dispatcher
+	const dispatch = createEventDispatcher();
+
+  	const drop = (event: DragEvent & { currentTarget: EventTarget & HTMLDivElement; }, target: number) => {
+		if(event.dataTransfer !== null){
+			event.dataTransfer.dropEffect = 'move'; 
+			const oldIndex = parseInt(event.dataTransfer.getData("text/plain"));
+			const newIndex = target;
+			//dispatch event
+			dispatch('move', {oldIndex, newIndex});
+		
+
+			hovering = false;
 		}
 	}
-	
-	function onMouseUp() {
-		moving = false;
-        top = oldTop;
+
+  const dragstart = ( event: DragEvent & { currentTarget: EventTarget & HTMLDivElement; }, i: number) => {
+	if(event.dataTransfer !== null){
+		event.dataTransfer.effectAllowed = 'move';
+		event.dataTransfer.dropEffect = 'move';
+		const start = i;
+		event.dataTransfer.setData('text/plain', start.toString());
 	}
+  }
 </script>
 
 
@@ -31,9 +36,17 @@
 
 <svelte:window on:mouseup={onMouseUp} on:mousemove={onMouseMove} /> -->
 
-<section draggable="true" style="top: {top}px;" class="draggable">
+<div 
+class='draggable'
+draggable={true}
+on:dragstart={event => dragstart(event, index)}
+on:drop|preventDefault={event => drop(event, index)}
+on:dragover={() => false}
+on:dragenter={() => hovering = index}
+class:is-active={hovering === index}
+>
 	<slot></slot>
-</section>
+</div>
 
 <style>
 	.draggable {
