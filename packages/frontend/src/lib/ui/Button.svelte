@@ -72,7 +72,6 @@
 		* {
 			transition: all $transition-duration ease-in-out;
 		}
-		
 	}
 
 	.surface {
