@@ -13,13 +13,9 @@
 	const dispatch = createEventDispatcher();
 	let indexQ : HTMLDivElement;
 
-	function getIndex() {
-		let index : string = indexQ.getAttribute('id')!;
-		return parseInt(index);
-	}
-
 	function swapIndex(increment : number) {
-		let currentIndex = getIndex();
+		let index : string = indexQ.getAttribute('id')!;
+		let currentIndex = parseInt(index);
 		indexQ.setAttribute('id', (currentIndex + increment).toString());
 		let temp = questions[currentIndex];
 		questions[currentIndex] = questions[currentIndex + increment];
