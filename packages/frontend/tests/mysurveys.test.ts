@@ -72,7 +72,6 @@ test('create a survey with a few questions', async ({ page }) => {
 	await page.getByRole('button', { name: 'Create Survey' }).click();
 	await page.getByRole('heading', { name: 'Editing' }).waitFor({ state: 'visible' });
 
-
 	await page.getByPlaceholder('Survey Title').click();
 	await page.getByPlaceholder('Survey Title').fill('foo');
 
