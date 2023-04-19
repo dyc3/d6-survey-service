@@ -48,14 +48,14 @@
 	{#if tab === 0}
 		<div class="info-container">
 			<TextBox name="username" placeholder="Username" bind:value={username} /> <br />
-			<TextBox name="password" placeholder="Password" bind:value={password} /> <br />
+			<TextBox name="password" password placeholder="Password" bind:value={password} /> <br />
 			<Button --margin="5px" type="submit" kind="primary" on:click={doLogin}>Submit</Button>
 			<span>{response}</span>
 		</div>
 	{:else if tab === 1}
 		<div class="info-container">
 			<TextBox name="username" placeholder="New Username" bind:value={username} /> <br />
-			<TextBox name="password" placeholder="New Password" bind:value={password} /> <br />
+			<TextBox name="password" password placeholder="New Password" bind:value={password} /> <br />
 			<Button --margin="5px" type="submit" kind="primary" on:click={doRegister}>Submit</Button>
 			<span>{response}</span>
 		</div>
