@@ -44,7 +44,6 @@
 		bind:selected
 		role="tab"
 	/>
-	<!--TODO: Make it so that whichever page is present makes the respective button highlighted.-->
 	{#if tab === 0}
 		<div class="info-container">
 			<TextBox name="username" placeholder="Username" bind:value={username} /> <br />
