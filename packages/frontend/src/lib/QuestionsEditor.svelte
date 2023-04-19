@@ -4,12 +4,29 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { buildErrorMapFromUuids } from '$lib/validation';
+	import Page from '../routes/+page.svelte';
 
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 	const dispatch = createEventDispatcher();
+	let indexQ : HTMLDivElement;
+
+	function moveDown() {
+		let currentIndex = parseInt(indexQ.getAttribute('id')); // currently unsure of how to retrieve id
+		indexQ.setAttribute('id', (currentIndex + 1).toString());
+		let temp = questions[currentIndex];
+		questions[currentIndex] = questions[currentIndex + 1];
+		questions[currentIndex + 1] = temp;
+	}
+	function moveUp(){
+		let currentIndex = parseInt(indexQ.getAttribute('id')); // currently unsure of how to retrieve id
+		indexQ.setAttribute('id', (currentIndex - 1).toString());
+		let temp = questions[currentIndex];
+		questions[currentIndex] = questions[currentIndex - 1];
+		questions[currentIndex - 1] = temp;
+	}
 
 	function buildQuestion(type: 'Text' | 'Rating' | 'MultipleChoice'): Question {
 		let question: Question;
@@ -77,8 +94,11 @@
 	}
 </script>
 
-{#each questions as q}
+{#each questions as q, index}
+<div bind:this={indexQ} id={index.toString()}>
 	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
+	<Button kind="default" size="small" on:click={moveUp}>^</Button>
+	<Button kind="default" size="small" on:click={moveDown}>v</Button>
 	<QContainer
 		bind:question={q.question}
 		bind:required={q.required}
@@ -86,6 +106,7 @@
 		on:change
 		errors={errorsByUUID.get(q.uuid) ?? []}
 	/>
+</div>
 {/each}
 
 <div class="panel">
