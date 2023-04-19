@@ -65,11 +65,13 @@ test('create and delete survey', async ({ page }) => {
 	expect(await page.locator('cell', { hasText: 'foo bar' }).count()).toEqual(0);
 });
 
-test('create a sruvey with a few questions', async ({ page }) => {
+test('create a survey with a few questions', async ({ page }) => {
 	await page.goto('/mysurveys');
 	await page.getByRole('heading', { name: 'My Surveys' }).waitFor({ state: 'visible' });
 
 	await page.getByRole('button', { name: 'Create Survey' }).click();
+	await page.getByRole('heading', { name: 'Editing' }).waitFor({ state: 'visible' });
+
 	await page.getByPlaceholder('Survey Title').click();
 	await page.getByPlaceholder('Survey Title').fill('foo');
 

@@ -136,6 +136,7 @@
 	.editable-choice {
 		display: flex;
 		flex-direction: row;
+		align-items: center;
 	}
 
 	.instructions {
