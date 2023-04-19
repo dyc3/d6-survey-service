@@ -63,7 +63,7 @@
 			pressed={selected.includes(getSelectionValue(i))}
 			on:click={() => select(i)}
 			{role}
-      --margin=2px
+			--margin="2px"
 		>
 			{#if isItem(button)}
 				{button.label}
@@ -83,8 +83,8 @@
 		align-items: center;
 	}
 
-	.button-wrapper{
-		margin: 2px
+	.button-wrapper {
+		margin: 2px;
 	}
 
 	.horizontal {
