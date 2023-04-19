@@ -64,6 +64,8 @@
 	}
 
 	function removeQuestion(uuid: string) {
+		let confirm = window.confirm('Are you sure you want to delete this question?');
+		if(!confirm) return;
 		questions = questions.filter((q) => q.uuid !== uuid);
 		dispatch('change');
 	}
