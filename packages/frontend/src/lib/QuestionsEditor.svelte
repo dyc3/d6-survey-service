@@ -79,23 +79,21 @@
 
 	//listen for move event
 	const handleMove = (e: CustomEvent) => {
-		console.log(e.detail)
 		const { oldIndex, newIndex } = e.detail;
-		console.log(questions)
-		console.log(oldIndex, newIndex)
-		console.log(questions)
-		dispatch('change');
-	}
+		let tempQ = questions[oldIndex];
+		questions[oldIndex] = questions[newIndex];
+		questions[newIndex] = tempQ;
+	};
 </script>
 
 {#each questions as q, index}
 	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-	<div class='dragAndDropArea'>
+	<div class="dragAndDropArea">
 		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<path d="M20 9H4V11H20V9ZM4 15H11V13H4V15ZM20 13V15H13V13H20Z" fill="currentColor"/>
+			<path d="M20 9H4V11H20V9ZM4 15H11V13H4V15ZM20 13V15H13V13H20Z" fill="currentColor" />
 		</svg>
 	</div>
-	<Draggable index={index} on:move={handleMove}>
+	<Draggable {index} on:move={handleMove}>
 		<QContainer
 			bind:question={q.question}
 			bind:required={q.required}
