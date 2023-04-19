@@ -13,19 +13,17 @@
 	const dispatch = createEventDispatcher();
 	let indexQ : HTMLDivElement;
 
-	function moveDown() {
-		let currentIndex = parseInt(indexQ.getAttribute('id')); // currently unsure of how to retrieve id
-		indexQ.setAttribute('id', (currentIndex + 1).toString());
-		let temp = questions[currentIndex];
-		questions[currentIndex] = questions[currentIndex + 1];
-		questions[currentIndex + 1] = temp;
+	function getIndex() {
+		let index : string = indexQ.getAttribute('id')!;
+		return parseInt(index);
 	}
-	function moveUp(){
-		let currentIndex = parseInt(indexQ.getAttribute('id')); // currently unsure of how to retrieve id
-		indexQ.setAttribute('id', (currentIndex - 1).toString());
+
+	function swapIndex(increment : number) {
+		let currentIndex = getIndex();
+		indexQ.setAttribute('id', (currentIndex + increment).toString());
 		let temp = questions[currentIndex];
-		questions[currentIndex] = questions[currentIndex - 1];
-		questions[currentIndex - 1] = temp;
+		questions[currentIndex] = questions[currentIndex + increment];
+		questions[currentIndex + increment] = temp;
 	}
 
 	function buildQuestion(type: 'Text' | 'Rating' | 'MultipleChoice'): Question {
@@ -97,8 +95,8 @@
 {#each questions as q, index}
 <div bind:this={indexQ} id={index.toString()}>
 	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-	<Button kind="default" size="small" on:click={moveUp}>^</Button>
-	<Button kind="default" size="small" on:click={moveDown}>v</Button>
+	<Button kind="default" size="small" on:click={() => swapIndex(-1)}>^</Button>
+	<Button kind="default" size="small" on:click={() => swapIndex(1)}>v</Button>
 	<QContainer
 		bind:question={q.question}
 		bind:required={q.required}
