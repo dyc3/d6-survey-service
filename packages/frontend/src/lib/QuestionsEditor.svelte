@@ -11,10 +11,10 @@
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 	const dispatch = createEventDispatcher();
-	let indexQ : HTMLDivElement;
+	let indexQ: HTMLDivElement;
 
-	function swapIndex(increment : number) {
-		let index : string = indexQ.getAttribute('id')!;
+	function swapIndex(increment: number) {
+		let index: string = indexQ.getAttribute('id')!;
 		let currentIndex = parseInt(index);
 		indexQ.setAttribute('id', (currentIndex + increment).toString());
 		let temp = questions[currentIndex];
@@ -89,18 +89,18 @@
 </script>
 
 {#each questions as q, index}
-<div bind:this={indexQ} id={index.toString()}>
-	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-	<Button kind="default" size="small" on:click={() => swapIndex(-1)}>^</Button>
-	<Button kind="default" size="small" on:click={() => swapIndex(1)}>v</Button>
-	<QContainer
-		bind:question={q.question}
-		bind:required={q.required}
-		editmode={true}
-		on:change
-		errors={errorsByUUID.get(q.uuid) ?? []}
-	/>
-</div>
+	<div bind:this={indexQ} id={index.toString()}>
+		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
+		<Button kind="default" size="small" on:click={() => swapIndex(-1)}>↑</Button>
+		<Button kind="default" size="small" on:click={() => swapIndex(1)}>↓</Button>
+		<QContainer
+			bind:question={q.question}
+			bind:required={q.required}
+			editmode={true}
+			on:change
+			errors={errorsByUUID.get(q.uuid) ?? []}
+		/>
+	</div>
 {/each}
 
 <div class="panel">
