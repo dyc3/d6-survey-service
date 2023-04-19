@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from "./Button.svelte";
+	import Button from './Button.svelte';
 
 	export let name = '';
 	export let multiline = false;
@@ -12,16 +12,25 @@
 	async function copyToClipboard() {
 		await navigator.clipboard.writeText(value);
 	}
-	
-	let multilineElement : HTMLTextAreaElement ;
+
+	let multilineElement: HTMLTextAreaElement;
 	function handleKeydown() {
-		multilineElement.style.height = "0px";
-		multilineElement.style.height = multilineElement.scrollHeight + "px";
+		multilineElement.style.height = '0px';
+		multilineElement.style.height = multilineElement.scrollHeight + 'px';
 	}
 </script>
 
 {#if multiline}
-	<textarea class="textbox" {name} {placeholder} {disabled} bind:value on:keydown={handleKeydown} bind:this={multilineElement} on:change />
+	<textarea
+		class="textbox"
+		{name}
+		{placeholder}
+		{disabled}
+		bind:value
+		on:keydown={handleKeydown}
+		bind:this={multilineElement}
+		on:change
+	/>
 {:else}
 	<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
 {/if}

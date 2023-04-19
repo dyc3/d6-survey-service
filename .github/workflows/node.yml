@@ -35,6 +35,7 @@ jobs:
         uses: baptiste0928/cargo-install@v1
         with:
           crate: typeshare-cli
+          version: "1.5.0"
       - name: Ensure generated files are up to date
         run: ./scripts/ensure-generated.sh
 

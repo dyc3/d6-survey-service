@@ -18,6 +18,7 @@ impl Fairing for Cors {
         response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
         response.set_header(Header::new("Access-Control-Allow-Methods", "*"));
         response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Expose-Headers", "*"));
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
         response.set_header(Header::new("Access-Control-Max-Age", "7200"));
     }

@@ -5,9 +5,13 @@ use thiserror::Error;
 use uuid::Uuid;
 
 use crate::{
-    api::ApiErrorResponse,
+    api::{ApiErrorResponse, ApiOkCacheableResource},
+    cache::{CacheCheck, Cacheable, RaceCheck},
     db::{
-        models::{NewSurveyResponse, PatchSurveyResponse, Survey, SurveyResponse, SurveyResponses},
+        models::{
+            NewSurveyResponse, PatchSurveyResponse, Survey, SurveyResponse,
+            SurveyResponseUpdateCheck, SurveyResponses,
+        },
         Storage,
     },
     validate::{Validate, ValidationError},
@@ -22,6 +26,8 @@ pub struct ResponseAccepted {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Error)]
 pub enum SurveyResponseError {
+    #[error("Data race")]
+    RaceError,
     #[error("Survey not found")]
     SurveyNotFound,
     #[error("Survey not published")]
@@ -37,6 +43,7 @@ pub enum SurveyResponseError {
 impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
     fn from(value: SurveyResponseError) -> Self {
         let status = match &value {
+            SurveyResponseError::RaceError => Status::PreconditionFailed,
             SurveyResponseError::SurveyNotFound => Status::NotFound,
             SurveyResponseError::SurveyNotPublished => Status::Forbidden,
             SurveyResponseError::ResponderNotFound => Status::NotFound,
@@ -109,7 +116,27 @@ pub async fn edit_survey_response(
     survey_id: i32,
     survey_response: Json<SurveyResponses>,
     responder: Uuid,
+    race_check: Option<RaceCheck>,
 ) -> Result<Json<()>, ApiErrorResponse<SurveyResponseError>> {
+    if let Some(race_check) = race_check {
+        let old_response = db
+            .run(move |conn| {
+                crate::db::schema::responses::table
+                    .select((crate::db::schema::responses::updated_at,))
+                    .find(responder)
+                    .first::<SurveyResponseUpdateCheck>(conn)
+            })
+            .await
+            .map_err(|e| {
+                error!("{e:?}");
+                SurveyResponseError::Unknown
+            })?;
+
+        if !old_response.has_no_mid_air_collision(race_check) {
+            return Err(SurveyResponseError::RaceError.into());
+        }
+    }
+
     let survey = get_survey_from_db(&db, survey_id).await?;
 
     let survey_responses = survey_response.into_inner();
@@ -150,7 +177,8 @@ pub async fn get_survey_response(
     db: Storage,
     survey_id: i32,
     responder: Uuid,
-) -> Result<Json<SurveyResponse>, ApiErrorResponse<SurveyResponseError>> {
+    cache_check: Option<CacheCheck>,
+) -> Result<ApiOkCacheableResource<SurveyResponse>, ApiErrorResponse<SurveyResponseError>> {
     let survey_response = db
         .run(move |conn| {
             crate::db::schema::responses::table
@@ -164,5 +192,11 @@ pub async fn get_survey_response(
             SurveyResponseError::Unknown
         })?;
 
-    Ok(Json(survey_response))
+    if let Some(cache_check) = cache_check {
+        if survey_response.is_cache_fresh(cache_check) {
+            return Ok(ApiOkCacheableResource::NotModified);
+        }
+    }
+
+    Ok(ApiOkCacheableResource::Ok(survey_response))
 }
