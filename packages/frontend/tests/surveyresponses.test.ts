@@ -59,7 +59,7 @@ test('create a survey and navigate away to see if onbeforeunload listener fires'
 
 	//publish survey, wait to ensure it passes, then navigate to survey response
 	await page.getByRole('button', { name: 'Publish Survey' }).click();
-	await page.waitForTimeout(100);
+	await page.getByRole('heading', { name: 'My Surveys' }).waitFor({ state: 'visible' });
 	await page.goto(url);
 
 	//make sure survey response page is loaded
