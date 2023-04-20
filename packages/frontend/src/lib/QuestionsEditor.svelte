@@ -4,7 +4,6 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { buildErrorMapFromUuids } from '$lib/validation';
-	import Page from '../routes/+page.svelte';
 
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
@@ -13,7 +12,7 @@
 	const dispatch = createEventDispatcher();
 	let indexQ: HTMLDivElement;
 
-	function move(oldIndex : number, newIndex : number) {
+	function move(oldIndex: number, newIndex: number) {
 		let temp = questions[oldIndex];
 		questions[oldIndex] = questions[newIndex];
 		questions[newIndex] = temp;
