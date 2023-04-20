@@ -13,13 +13,10 @@
 	const dispatch = createEventDispatcher();
 	let indexQ: HTMLDivElement;
 
-	function swapIndex(increment: number) {
-		let index: string = indexQ.getAttribute('id')!;
-		let currentIndex = parseInt(index);
-		indexQ.setAttribute('id', (currentIndex + increment).toString());
-		let temp = questions[currentIndex];
-		questions[currentIndex] = questions[currentIndex + increment];
-		questions[currentIndex + increment] = temp;
+	function move(oldIndex : number, newIndex : number) {
+		let temp = questions[oldIndex];
+		questions[oldIndex] = questions[newIndex];
+		questions[newIndex] = temp;
 	}
 
 	function buildQuestion(type: 'Text' | 'Rating' | 'MultipleChoice'): Question {
@@ -89,10 +86,10 @@
 </script>
 
 {#each questions as q, index}
-	<div bind:this={indexQ} id={index.toString()}>
+	<div bind:this={indexQ}>
 		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-		<Button kind="default" size="small" on:click={() => swapIndex(-1)}>↑</Button>
-		<Button kind="default" size="small" on:click={() => swapIndex(1)}>↓</Button>
+		<Button kind="default" size="small" on:click={() => move(index, index - 1)}>↑</Button>
+		<Button kind="default" size="small" on:click={() => move(index, index + 1)}>↓</Button>
 		<QContainer
 			bind:question={q.question}
 			bind:required={q.required}
