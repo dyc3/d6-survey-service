@@ -80,30 +80,30 @@
 	//listen for move event
 	const handleMove = (e: CustomEvent) => {
 		const { oldIndex, newIndex } = e.detail;
+		if (oldIndex === newIndex) return;
 		let tempQ = questions[oldIndex];
+		console.log(oldIndex, newIndex);
 		questions[oldIndex] = questions[newIndex];
 		questions[newIndex] = tempQ;
 	};
 </script>
 
-{#each questions as q, index}
-	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-	<div class="dragAndDropArea">
-		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<path d="M20 9H4V11H20V9ZM4 15H11V13H4V15ZM20 13V15H13V13H20Z" fill="currentColor" />
-		</svg>
-	</div>
-	<Draggable {index} on:move={handleMove}>
-		<QContainer
-			bind:question={q.question}
-			bind:required={q.required}
-			editmode={true}
-			on:change
-			errors={errorsByUUID.get(q.uuid) ?? []}
-		/>
-	</Draggable>
-{/each}
-
+<div class="question-container">
+	{#each questions as q, index}
+		<div>
+			<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
+			<Draggable {index} on:move={handleMove}>
+				<QContainer
+					bind:question={q.question}
+					bind:required={q.required}
+					editmode={true}
+					on:change
+					errors={errorsByUUID.get(q.uuid) ?? []}
+				/>
+			</Draggable>
+		</div>
+	{/each}
+</div>
 <div class="panel">
 	<select bind:value={questionToAdd}>
 		<option value="Text">Text</option>
@@ -123,5 +123,11 @@
 		align-items: center;
 		flex-direction: column;
 		margin: 40px;
+	}
+
+	.question-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 </style>
