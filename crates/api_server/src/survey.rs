@@ -196,40 +196,6 @@ pub async fn delete_survey(
     Ok(Json(()))
 }
 
-#[delete("/survey/<survey_id>/respond")]
-pub async fn clear_survey_responses(
-    db: Storage,
-    survey_id: i32,
-    claims: Claims,
-) -> Result<Json<()>, ApiErrorResponse<SurveyError>> {
-    let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
-        error!("{e:?}");
-        SurveyError::NotFound
-    })?;
-
-    if survey.owner_id != claims.user_id() {
-        return Err(SurveyError::NotOwner.into());
-    }
-
-    if !survey.published {
-        return Err(SurveyError::NotPublished.into());
-    }
-
-    db.run(move |conn| -> anyhow::Result<()> {
-        diesel::delete(crate::db::schema::responses::table)
-            .filter(crate::db::schema::responses::survey_id.eq(survey_id))
-            .execute(conn)?;
-        Ok(())
-    })
-    .await
-    .map_err(|e| {
-        error!("{e:?}");
-        SurveyError::Unknown
-    })?;
-
-    Ok(Json(()))
-}
-
 pub(crate) async fn get_survey_from_db(db: &Storage, survey_id: i32) -> anyhow::Result<Survey> {
     db.run(move |conn| {
         let survey = schema::surveys::dsl::surveys
@@ -474,21 +440,6 @@ mod tests {
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Forbidden);
-        });
-    }
-
-    #[test]
-    fn test_clear_survey_responses() {
-        run_test_with_db(|db_name| {
-            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
-
-            let token = create_test_user(&client);
-            let survey_id = make_survey(&client, &token);
-            publish_survey(&client, &token, survey_id);
-
-            let token = make_jwt(&client, 58008);
-
-            
         });
     }
 }

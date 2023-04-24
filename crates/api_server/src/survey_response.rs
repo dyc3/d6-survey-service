@@ -10,6 +10,7 @@ use crate::{
         models::{NewSurveyResponse, PatchSurveyResponse, Survey, SurveyResponse, SurveyResponses},
         Storage,
     },
+    jwt::Claims,
     validate::{Validate, ValidationError},
 };
 
@@ -165,4 +166,38 @@ pub async fn get_survey_response(
         })?;
 
     Ok(Json(survey_response))
+}
+
+#[delete("/survey/<survey_id>/respond")]
+pub async fn clear_survey_responses(
+    db: Storage,
+    survey_id: i32,
+    claims: Claims,
+) -> Result<Json<()>, ApiErrorResponse<SurveyResponseError>> {
+    let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
+        error!("{e:?}");
+        SurveyResponseError::SurveyNotFound
+    })?;
+
+    if survey.owner_id != claims.user_id() {
+        return Err(SurveyResponseError::Unknown.into());
+    }
+
+    if !survey.published {
+        return Err(SurveyResponseError::SurveyNotPublished.into());
+    }
+
+    db.run(move |conn| -> anyhow::Result<()> {
+        diesel::delete(crate::db::schema::responses::table)
+            .filter(crate::db::schema::responses::survey_id.eq(survey_id))
+            .execute(conn)?;
+        Ok(())
+    })
+    .await
+    .map_err(|e| {
+        error!("{e:?}");
+        SurveyResponseError::Unknown
+    })?;
+
+    Ok(Json(()))
 }
