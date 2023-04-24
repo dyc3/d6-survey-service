@@ -29,6 +29,8 @@ pub enum SurveyResponseError {
     SurveyNotPublished,
     #[error("Survey responder not found")]
     ResponderNotFound,
+    #[error("Not survey owner")]
+    NotSurveyOwner,
     #[error("Validation Error")]
     ValidationError(Vec<ValidationError>),
     #[error("Unknown error")]
@@ -41,6 +43,7 @@ impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
             SurveyResponseError::SurveyNotFound => Status::NotFound,
             SurveyResponseError::SurveyNotPublished => Status::Forbidden,
             SurveyResponseError::ResponderNotFound => Status::NotFound,
+            SurveyResponseError::NotSurveyOwner => Status::Forbidden,
             SurveyResponseError::ValidationError(_) => Status::UnprocessableEntity,
             SurveyResponseError::Unknown => Status::InternalServerError,
         };
@@ -180,7 +183,7 @@ pub async fn clear_survey_responses(
     })?;
 
     if survey.owner_id != claims.user_id() {
-        return Err(SurveyResponseError::Unknown.into());
+        return Err(SurveyResponseError::NotSurveyOwner.into());
     }
 
     if !survey.published {
