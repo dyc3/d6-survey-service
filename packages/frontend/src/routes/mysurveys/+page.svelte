@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
+
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import type { ListedSurvey } from '$lib/common';
@@ -45,8 +48,8 @@
 			<th class="actions">Actions</th>
 		</thead>
 		<tbody>
-			{#each surveys as survey}
-				<tr class="survey">
+			{#each surveys as survey (survey.id)}
+				<tr class="survey" transition:slide|local animate:flip>
 					<td class="name">{survey.title}</td>
 					<!-- TODO: replace with check box-->
 					<td class="published">{survey.published ? 'Yes' : 'No'}</td>
