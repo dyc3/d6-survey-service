@@ -3,6 +3,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { add_classes, toggle_class } from 'svelte/internal';
 	let hovering: number | boolean | null = null;
+	let hoveringChild = false;
 
 	//create event dispatcher
 	const dispatch = createEventDispatcher();
@@ -12,7 +13,7 @@
 		target: number
 	) => {
 		event.preventDefault();
-		console.log('brh');
+		console.log(event);
 		if (event.dataTransfer !== null) {
 			event.dataTransfer.dropEffect = 'move';
 			const oldIndex = parseInt(event.dataTransfer.getData('text/plain'));
@@ -21,6 +22,7 @@
 			dispatch('move', { oldIndex, newIndex });
 
 			hovering = false;
+			hoveringChild = false;
 		}
 	};
 
@@ -38,18 +40,25 @@
 </script>
 
 <div
-	class="draggable {hovering === index ? 'hovering' : ''}"
+	class="draggable {hovering || hoveringChild ? 'hovering' : ''}"
 	draggable={true}
 	on:dragstart={(event) => dragstart(event, index)}
 	on:drop={(event) => drop(event, index)}
-	on:dragover={() => false}
+	on:dragover={(event) => {
+		event.preventDefault();
+		hoveringChild = true;
+	}}
 	on:dragenter={() => {
 		hovering = index;
 	}}
 	on:dragleave={() => {
-		hovering = false;
+		hoveringChild = false;
+		if (!hoveringChild) {
+			hovering = false;
+		}
 	}}
 >
+	<span />
 	<slot />
 </div>
 
