@@ -37,6 +37,8 @@
 				window.removeEventListener('beforeunload', window.onbeforeunload);
 				goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
 			} else {
+				submitInProgress = false;
+
 				if (isValidationError(resp.error)) {
 					applyValidationErrors(resp.error.message.ValidationError);
 				} else {
@@ -46,7 +48,6 @@
 			}
 		} catch (e) {
 			console.error(e);
-		} finally {
 			submitInProgress = false;
 		}
 	}
@@ -75,12 +76,8 @@
 	/>
 {/each}
 
-{#if submitInProgress}
-	<div>Submmitting...</div>
-{/if}
-
 <div class="submit-button">
-	<Button --margin="5px" size="large" kind="primary" on:click={submitResponse}>Submit</Button>
+	<Button --margin="5px" size="large" kind="primary" on:click={submitResponse} loading={submitInProgress}>Submit</Button>
 </div>
 
 <style lang="scss">
