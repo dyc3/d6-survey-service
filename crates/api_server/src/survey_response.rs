@@ -238,3 +238,54 @@ pub async fn clear_survey_responses(
 
     Ok(Json(()))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::db::models::SurveyResponses;
+    use crate::questions::RText;
+    use crate::survey::*;
+    use crate::test_helpers::*;
+    use rocket::local::blocking::Client;
+    use std::collections::HashMap;
+
+    #[test]
+    fn test_clear_survey_responses() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let owner_token = create_test_user(&client);
+            let survey_id = make_survey(&client, &owner_token);
+            publish_survey(&client, &owner_token, survey_id);
+
+            let token = make_jwt(&client, 58008);
+
+            let response = client
+                .get(uri!("/api", get_survey(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", token))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let mut map: HashMap<Uuid, crate::questions::Response> = HashMap::new();
+
+            let response = client
+                .post(uri!("/api", create_survey_response(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .body(serde_json::to_vec(&SurveyResponses { 0: map }).unwrap())
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let response = client
+                .post(uri!("/api", clear_survey_responses(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", owner_token))
+                .dispatch();
+
+            println!("{:?}", response.body());
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+        });
+    }
+}
