@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { slide } from 'svelte/transition';
 	import type { Question, SurveyQuestions, ValidationError } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
@@ -84,19 +85,15 @@
 	}
 </script>
 
-{#each questions as q, index}
-	<div bind:this={indexQ}>
-		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-		<Button kind="default" size="small" on:click={() => move(index, index - 1)}>↑</Button>
-		<Button kind="default" size="small" on:click={() => move(index, index + 1)}>↓</Button>
-		<QContainer
-			bind:question={q.question}
-			bind:required={q.required}
-			editmode={true}
-			on:change
-			errors={errorsByUUID.get(q.uuid) ?? []}
-		/>
-	</div>
+{#each questions as q}
+	<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
+	<QContainer
+		bind:question={q.question}
+		bind:required={q.required}
+		editmode={true}
+		on:change
+		errors={errorsByUUID.get(q.uuid) ?? []}
+	/>
 {/each}
 
 <div class="panel">
