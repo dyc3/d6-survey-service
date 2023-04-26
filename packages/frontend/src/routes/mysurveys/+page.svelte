@@ -36,7 +36,9 @@
 
 <div class="toolbar">
 	<h1>My Surveys</h1>
-	<Button kind="primary" size="large" on:click={createNewSurvey} loading={loadingCreate}>Create Survey</Button>
+	<Button kind="primary" size="large" on:click={createNewSurvey} loading={loadingCreate}
+		>Create Survey</Button
+	>
 </div>
 <div class="main-container">
 	<table class="container">

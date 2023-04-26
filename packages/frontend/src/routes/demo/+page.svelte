@@ -66,7 +66,7 @@ Buttons
 <div>
 	<Button toggleable={true}>Toggle Button</Button>
 </div>
-<input type="checkbox" bind:checked={loading}>
+<input type="checkbox" bind:checked={loading} />
 <div>
 	<Button {loading}>Loading Default</Button>
 	<Button kind="primary" {loading}>Loading Primary</Button>

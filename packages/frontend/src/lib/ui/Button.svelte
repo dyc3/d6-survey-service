@@ -44,7 +44,7 @@
 				loadingWidth = button.clientWidth;
 				button.style.width = `${loadingWidth}px`;
 			} else {
-				button.style.width = "";
+				button.style.width = '';
 			}
 		}
 	}
@@ -62,11 +62,11 @@
 >
 	<div class="surface">
 		<span class="subsurface">
-				{#if loading}
-					<Spinner --color="white" />
-				{:else}
-					<slot />
-				{/if}
+			{#if loading}
+				<Spinner --color="white" />
+			{:else}
+				<slot />
+			{/if}
 		</span>
 	</div>
 </button>

@@ -77,7 +77,13 @@
 {/each}
 
 <div class="submit-button">
-	<Button --margin="5px" size="large" kind="primary" on:click={submitResponse} loading={submitInProgress}>Submit</Button>
+	<Button
+		--margin="5px"
+		size="large"
+		kind="primary"
+		on:click={submitResponse}
+		loading={submitInProgress}>Submit</Button
+	>
 </div>
 
 <style lang="scss">
