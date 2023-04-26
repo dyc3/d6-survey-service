@@ -54,6 +54,7 @@
 
 	export let errors: ValidationError[] = [];
 	$: validationErrors = buildErrorMapFromFields(errors);
+	$: console.log(errors);
 </script>
 
 <Container>
@@ -107,11 +108,12 @@
 					<Button kind="danger" size="small" on:click={() => removeChoice(i)}>x</Button>
 				</div>
 			{/each}
+			<div>
+				{#each validationErrors.get('text') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
 			<Button on:click={addChoice}>+</Button>
-			<!-- TODO: show errors under the choices that have them -->
-			{#each validationErrors.get('choices') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
 		{:else}
 			<ButtonGroup
 				orientation="vertical"
