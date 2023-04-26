@@ -29,6 +29,12 @@
 				if (resp.value !== null) {
 					responderUuid = resp.value.responder_uuid;
 				}
+				//override the event listener then properly remove it below.
+				window.onbeforeunload = function () {
+					return;
+				};
+
+				window.removeEventListener('beforeunload', window.onbeforeunload);
 				goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
 			} else {
 				if (isValidationError(resp.error)) {
@@ -51,7 +57,7 @@
 			return 'Are you sure you want to leave this page? Your response will not be saved.';
 		};
 	}
-	
+
 	function applyValidationErrors(errors: ValidationError[]) {
 		validationErrors = buildErrorMapFromUuids(errors);
 	}
@@ -73,18 +79,16 @@
 	<div>Submmitting...</div>
 {/if}
 
-<div class='submit-button'>
+<div class="submit-button">
 	<Button --margin="5px" size="large" kind="primary" on:click={submitResponse}>Submit</Button>
 </div>
 
-
 <style lang="scss">
 	@import '../../../../lib/ui/variables';
-	
-	.submit-button{
+
+	.submit-button {
 		display: flex;
 		justify-content: center;
-		margin-top: $large-padding
+		margin-top: $large-padding;
 	}
-
 </style>

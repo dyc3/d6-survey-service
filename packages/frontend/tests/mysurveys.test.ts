@@ -70,6 +70,8 @@ test('create a survey with a few questions', async ({ page }) => {
 	await page.getByRole('heading', { name: 'My Surveys' }).waitFor({ state: 'visible' });
 
 	await page.getByRole('button', { name: 'Create Survey' }).click();
+	await page.getByRole('heading', { name: 'Editing' }).waitFor({ state: 'visible' });
+
 	await page.getByPlaceholder('Survey Title').click();
 	await page.getByPlaceholder('Survey Title').fill('foo');
 
@@ -89,10 +91,10 @@ test('create a survey with a few questions', async ({ page }) => {
 
 	await page.getByRole('combobox').selectOption('Rating');
 	await page.getByRole('button', { name: '+ Add Question' }).click();
-	await page.getByPlaceholder('Enter prompt...').click();
-	await page.getByPlaceholder('Enter prompt...').fill('q2');
-	await page.getByPlaceholder('Insert prompt...').click();
-	await page.getByPlaceholder('Insert prompt...').fill('q3');
+	await page.getByPlaceholder('Enter prompt...').nth(0).click();
+	await page.getByPlaceholder('Enter prompt...').nth(0).fill('q2');
+	await page.getByPlaceholder('Enter prompt...').nth(1).click();
+	await page.getByPlaceholder('Enter prompt...').nth(1).fill('q3');
 
 	await page.getByText('Saving...').waitFor({ state: 'visible' });
 	await page.getByText('Changes saved').waitFor({ state: 'visible' });
