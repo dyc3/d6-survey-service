@@ -5,7 +5,9 @@
 <div class="spinner ld ld-ring ld-cycle" />
 
 <style lang="scss">
+	@import "./variables.scss";
+
 	.spinner {
-		color: white;
+		color: var(--color, $color-primary);
 	}
 </style>

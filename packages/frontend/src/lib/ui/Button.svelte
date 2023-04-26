@@ -63,7 +63,7 @@
 	<div class="surface">
 		<span class="subsurface">
 				{#if loading}
-					<Spinner />
+					<Spinner --color="white" />
 				{:else}
 					<slot />
 				{/if}
