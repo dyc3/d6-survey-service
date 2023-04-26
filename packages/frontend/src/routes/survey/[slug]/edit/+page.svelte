@@ -3,6 +3,7 @@
 	import type { SurveyPatch, SurveyQuestions, ValidationError } from '$lib/common';
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
+	import Spinner from '$lib/ui/Spinner.svelte';
 	import type { PageData } from './$types';
 
 	import _ from 'lodash';
@@ -57,7 +58,10 @@
 
 	let submitChangesDebounced = _.debounce(submitChanges, 2000);
 
+	let loadingPublish = false;
+
 	async function publishSurvey() {
+		loadingPublish = true;
 		// make sure we don't submit changes twice, or publish a survey with unsaved changes
 		submitChangesDebounced.cancel();
 		let resp = await editSurvey(data.surveyId, {
@@ -75,6 +79,7 @@
 			await goto(`/mysurveys`);
 		} else {
 			alert('Error publishing survey: ' + resp.error.message);
+			loadingPublish = false;
 		}
 	}
 
@@ -100,8 +105,12 @@
 		onChange('description');
 	}
 
+	let loadingExport = false;
+
 	async function downloadResults() {
+		loadingExport = true;
 		let resp = await exportResponses(data.surveyId);
+		loadingExport = false;
 		if (!resp.ok) {
 			alert('Error exporting results: ' + resp.error.message);
 			return;
@@ -130,7 +139,7 @@
 			class:fail={!isSaving && !wasSaveSuccessful}
 		>
 			{#if isSaving}
-				Saving...
+				<Spinner /> Saving...
 			{:else if wasSaveSuccessful}
 				Changes saved
 			{:else}
@@ -138,7 +147,7 @@
 			{/if}
 		</span>
 	</div>
-	<Button --margin="5px" on:click={downloadResults}>Export Results</Button>
+	<Button --margin="5px" on:click={downloadResults} loading={loadingExport}>Export Results</Button>
 </div>
 
 <div class="container">
@@ -164,7 +173,7 @@
 	/>
 
 	<div class="panel">
-		<Button --margin="5px" on:click={publishSurvey}>Publish Survey</Button>
+		<Button --margin="5px" on:click={publishSurvey} loading={loadingPublish}>Publish Survey</Button>
 	</div>
 </div>
 
