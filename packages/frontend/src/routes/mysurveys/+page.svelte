@@ -9,7 +9,9 @@
 	export let data: PageData;
 	let surveys: ListedSurvey[] = data.surveys;
 
+	let loadingCreate = false;
 	async function createNewSurvey() {
+		loadingCreate = true;
 		let surveyInfo = await createSurvey();
 		if (surveyInfo.ok) {
 			goto('/survey/' + surveyInfo.value.id + '/edit');
@@ -34,7 +36,7 @@
 
 <div class="toolbar">
 	<h1>My Surveys</h1>
-	<Button kind="primary" size="large" on:click={createNewSurvey}>Create Survey</Button>
+	<Button kind="primary" size="large" on:click={createNewSurvey} loading={loadingCreate}>Create Survey</Button>
 </div>
 <div class="main-container">
 	<table class="container">
