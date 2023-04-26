@@ -48,7 +48,7 @@
 				{/each}
 			</div>
 		{:else}
-			<span class='prompt-text'>{prompt}</span>
+			<span>{prompt}</span>
 		{/if}
 	</div>
 
@@ -64,7 +64,7 @@
 				<input type="checkbox" bind:checked={multiline} on:change /> Multiline?
 			</div>
 		{:else}
-			<span class='description-text'>{description}</span>
+			<span>{description}</span>
 		{/if}
 	</div>
 
@@ -76,15 +76,4 @@
 
 <style lang="scss">
 	@import '../ui/variables';
-
-	.prompt-text {
-		font-size: $bold-font-size;
-		font-weight: bold;
-		color: $color-blue;
-	}
-
-	.description-text {
-		font-size: $main-font-size;
-		color: $color-blue;
-	}
 </style>

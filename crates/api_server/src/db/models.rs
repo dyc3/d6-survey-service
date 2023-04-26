@@ -45,6 +45,16 @@ pub struct Survey {
     pub updated_at: chrono::NaiveDateTime,
 }
 
+/// Used to minimize the amount of data we query from the database
+/// when checking for mid-air collisions and other preconditions.
+#[derive(Queryable)]
+#[diesel(table_name=surveys)]
+pub struct SurveyUpdateCheck {
+    pub published: bool,
+    pub owner_id: i32,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
 /// Represents a partial update to a survey
 #[typeshare]
 #[derive(AsChangeset, Serialize, Deserialize, Default)]
@@ -80,10 +90,32 @@ pub struct ListedSurvey {
     pub owner_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, AsExpression, FromSqlRow, Default)]
 #[diesel(sql_type = Jsonb)]
 #[typeshare(serialized_as = "Vec<SurveyQuestion>")]
 pub struct SurveyQuestions(pub Vec<SurveyQuestion>);
+
+impl SurveyQuestions {
+    pub fn new() -> Self {
+        Self(Vec::new())
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &SurveyQuestion> {
+        self.0.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut SurveyQuestion> {
+        self.0.iter_mut()
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
 
 impl From<Vec<SurveyQuestion>> for SurveyQuestions {
     fn from(v: Vec<SurveyQuestion>) -> Self {
@@ -122,9 +154,17 @@ pub struct SurveyResponse {
     pub responder_uuid: Uuid,
     pub content: SurveyResponses,
     #[typeshare(serialized_as = "String")]
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     #[typeshare(serialized_as = "String")]
-    pub updated_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+/// Used to minimize the amount of data we query from the database
+/// when checking for mid-air collisions.
+#[derive(Queryable)]
+#[diesel(table_name=responses)]
+pub struct SurveyResponseUpdateCheck {
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Insertable)]

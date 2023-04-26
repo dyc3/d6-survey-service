@@ -67,6 +67,7 @@
 		border: none;
 		transition: all $transition-duration ease-in-out;
 		margin: var(--margin, 0);
+		height: 100%;
 
 		* {
 			transition: all $transition-duration ease-in-out;
@@ -166,7 +167,7 @@
 		}
 	}
 
-	button:disabled{
+	button:disabled {
 		opacity: 0.5;
 		pointer-events: none;
 	}

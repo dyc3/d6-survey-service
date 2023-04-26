@@ -6,6 +6,7 @@ extern crate typeshare;
 extern crate diesel;
 
 pub mod api;
+mod cache;
 mod cors;
 pub mod db;
 pub mod jwt;
@@ -35,6 +36,7 @@ pub fn rocket() -> _ {
                 survey::get_survey_auth,
                 survey::edit_survey,
                 survey::delete_survey,
+                survey::export_responses,
                 survey_response::create_survey_response,
                 survey_response::edit_survey_response,
                 survey_response::get_survey_response,

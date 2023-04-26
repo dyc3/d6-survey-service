@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { editSurvey, isValidationError } from '$lib/api';
+	import { editSurvey, exportResponses, isValidationError } from '$lib/api';
 	import type { SurveyPatch, SurveyQuestions, ValidationError } from '$lib/common';
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
@@ -10,6 +10,7 @@
 	import QuestionsEditor from '$lib/QuestionsEditor.svelte';
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
 	import { buildErrorMapFromFields } from '$lib/validation';
+	import { page } from '$app/stores';
 
 	let title = 'Untitled Survey';
 	let description = '';
@@ -80,11 +81,41 @@
 	function onChange(field: keyof SurveyPatch) {
 		isSaving = true;
 		dirtyFields.add(field);
+		validationErrors.delete(field);
+		validationErrors = validationErrors;
 		submitChangesDebounced();
 	}
 
 	function applyValidationErrors(errors: ValidationError[]) {
 		validationErrors = buildErrorMapFromFields(errors);
+	}
+
+	$: {
+		title = title;
+		onChange('title');
+	}
+
+	$: {
+		description = description;
+		onChange('description');
+	}
+
+	async function downloadResults() {
+		let resp = await exportResponses(data.surveyId);
+		if (!resp.ok) {
+			alert('Error exporting results: ' + resp.error.message);
+			return;
+		}
+		let obj = URL.createObjectURL(new Blob([resp.value.blob], { type: 'text/csv' }));
+
+		const a = document.createElement('a');
+		a.style.display = 'none';
+		a.href = obj;
+		a.download = resp.value.filename;
+		document.body.appendChild(a);
+		a.click();
+
+		URL.revokeObjectURL(obj);
 	}
 </script>
 
@@ -92,15 +123,22 @@
 	<div>
 		<h1>{title}</h1>
 		<h2>Editing</h2>
-		{#if isSaving}
-			<span>Saving...</span>
-		{:else if wasSaveSuccessful}
-			<span>Changes saved</span>
-		{:else}
-			<span>Changes not saved</span>
-		{/if}
+		<span
+			class="save-indicator"
+			class:saving={isSaving}
+			class:success={!isSaving && wasSaveSuccessful}
+			class:fail={!isSaving && !wasSaveSuccessful}
+		>
+			{#if isSaving}
+				Saving...
+			{:else if wasSaveSuccessful}
+				Changes saved
+			{:else}
+				Changes not saved
+			{/if}
+		</span>
 	</div>
-	<Button --margin='5px'>View Results</Button>
+	<Button --margin="5px" on:click={downloadResults}>Export Results</Button>
 </div>
 
 <div class="container">
@@ -150,5 +188,9 @@
 		align-items: center;
 		flex-direction: column;
 		margin: 40px;
+	}
+
+	.save-indicator.fail {
+		color: $color-danger;
 	}
 </style>

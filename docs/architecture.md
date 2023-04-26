@@ -409,6 +409,53 @@ graph TD
     qUpdated -->|No| success
 ```
 
+### Caching and ETags
+
+The server will support caching using ETags. The client will send an `If-None-Match` header with the ETag of the resource that it has cached. If the server has a resource with the same ETag, it will respond with a 304 Not Modified.
+
+`If-None-Match` and `If-Match` headers should not be required for any requests.
+
+```mermaid
+sequenceDiagram
+    Client->>+Server: GET /api/survey/{ID}
+    Server->>-Client: 200 OK, ETag: foobar
+    Client->>+Server: GET /api/survey/{ID}, If-None-Match: foobar
+    Server->>-Client: 304 Not Modified
+```
+
+Similarly, ETags should be used to prevent data loss when editing a survey, also called a "mid-air collision". The client should send an `If-Match` header with the ETag of the resource that it is editing. If the server has a resource with a different ETag, it will respond with a 409 Conflict.
+
+```mermaid
+sequenceDiagram
+    actor Alice
+    actor Bob
+    Alice->>+Server: GET /api/survey/{ID}
+    Server->>-Alice: 200 OK, ETag: foo
+    Alice->>+Server: PATCH /api/survey/{ID}, If-Match: foo
+    Server->>-Alice: 200 OK, ETag: bar
+    Bob->>+Server: PATCH /api/survey/{ID}, If-Match: foo
+    Server->>-Bob: 409 Conflict
+```
+
+This should also be used to make sure survey responders can't submit responses to outdated versions of the survey.
+
+```mermaid
+sequenceDiagram
+    actor Alice
+    actor Bob
+    Note over Server: Survey has Etag "foo"
+    Alice->>+Server: PATCH /api/survey/{ID}, If-Match: foo
+    Server->>-Alice: 200 OK, ETag: bar
+    Bob->>+Server: POST /api/survey/{ID}, If-Match: foo
+    Server->>-Bob: 409 Conflict
+```
+
+#### ETag Generation
+
+ETags should be generated from the JSON representation of the resource, excluding the previous ETag. The ETag should be a MD5 hash of the JSON string.
+
+The ETag should be stored in the database, and should be updated whenever the resource is modified.
+
 # Survey Questions
 
 These are the types of questions that we will support:
@@ -443,3 +490,16 @@ sequenceDiagram
 
 - Closing the broswer tab without submitting will prompt the user before exiting.
 - At the end of the survey, the user will be provided with a link that allows them to edit their responses.
+
+# Survey Results
+
+Users must be able to view the responses of the survey. We'll do this by providing the ability to export the responses as a CSV file.
+
+The CSV file will contain the following columns:
+
+- Responder ID
+- Tithe of each quesetion, one column per question
+
+The rows will contain the responses of each responder.
+
+
