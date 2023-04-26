@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { slide } from 'svelte/transition';
 	import type { Question, SurveyQuestions, ValidationError } from '$lib/common';
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
@@ -88,22 +89,21 @@
 	};
 </script>
 
-<div class="question-container">
-	{#each questions as q, index}
-		<div>
-			<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-			<Draggable {index} on:move={handleMove}>
-				<QContainer
-					bind:question={q.question}
-					bind:required={q.required}
-					editmode={true}
-					on:change
-					errors={errorsByUUID.get(q.uuid) ?? []}
-				/>
-			</Draggable>
-		</div>
-	{/each}
-</div>
+{#each questions as q, index (q.uuid)}
+	<div transition:slide|local={{ duration: 600 }}>
+		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
+		<Draggable {index} on:move={handleMove}>
+			<QContainer
+				bind:question={q.question}
+				bind:required={q.required}
+				editmode={true}
+				on:change
+				errors={errorsByUUID.get(q.uuid) ?? []}
+			/>
+		</Draggable>
+	</div>
+{/each}
+
 <div class="panel">
 	<select bind:value={questionToAdd}>
 		<option value="Text">Text</option>

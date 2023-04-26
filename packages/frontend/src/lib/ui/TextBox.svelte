@@ -6,6 +6,7 @@
 	export let placeholder = '';
 	export let value = '';
 	export let disabled = false;
+	export let password = false;
 
 	export let copyable = false;
 
@@ -31,6 +32,9 @@
 		bind:this={multilineElement}
 		on:change
 	/>
+{:else if password}
+	<!-- Frustratingly, `type` can't be dynamic if 2 way binding is used. -->
+	<input class="textbox" {name} type="password" {placeholder} {disabled} bind:value on:change />
 {:else}
 	<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
 {/if}
