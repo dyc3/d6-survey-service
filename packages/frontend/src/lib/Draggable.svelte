@@ -1,19 +1,17 @@
 <script lang="ts">
 	export let index: number;
 	import { createEventDispatcher } from 'svelte';
-	import { add_classes, toggle_class } from 'svelte/internal';
 	let hovering: number | boolean | null = null;
 	let hoveringChild = false;
 
 	//create event dispatcher
 	const dispatch = createEventDispatcher();
 
-	const drop = (
+	function drop(
 		event: DragEvent & { currentTarget: EventTarget & HTMLDivElement },
 		target: number
-	) => {
+	) {
 		event.preventDefault();
-		console.log(event);
 		if (event.dataTransfer !== null) {
 			event.dataTransfer.dropEffect = 'move';
 			const oldIndex = parseInt(event.dataTransfer.getData('text/plain'));
@@ -24,24 +22,27 @@
 			hovering = false;
 			hoveringChild = false;
 		}
-	};
+	}
 
-	const dragstart = (
+	function dragstart(
 		event: DragEvent & { currentTarget: EventTarget & HTMLDivElement },
 		i: number
-	) => {
-		if (event.dataTransfer !== null) {
-			event.dataTransfer.effectAllowed = 'move';
-			event.dataTransfer.dropEffect = 'move';
-			const start = i;
-			event.dataTransfer.setData('text/plain', start.toString());
+	) {
+		if (event.dataTransfer !== null && event.target !== null) {
+			// kind of cheap way to do it but basically if the dataTransfer to drag start has an item in the list
+			// then we know it comes from the draggable icon since anywhere else has an empty list.
+			if (event.dataTransfer.items.length > 0) {
+				event.dataTransfer.effectAllowed = 'move';
+				event.dataTransfer.dropEffect = 'move';
+				const start = i;
+				event.dataTransfer.setData('text/plain', start.toString());
+			}
 		}
-	};
+	}
 </script>
 
 <div
 	class="draggable {hovering || hoveringChild ? 'hovering' : ''}"
-	draggable={true}
 	on:dragstart={(event) => dragstart(event, index)}
 	on:drop={(event) => drop(event, index)}
 	on:dragover={(event) => {
@@ -58,11 +59,44 @@
 		}
 	}}
 >
-	<span />
+	<div
+		id="draggable-icon-container"
+		draggable={true}
+		on:dragstart={(event) => {
+			//fire the drag event but with the parent
+			const parent = event.currentTarget.parentElement;
+			if (parent !== null) {
+				let dataList = event.dataTransfer?.items;
+				if (dataList !== null) {
+					dataList?.add('draggable-icon', 'text/plain');
+				}
+				parent.dispatchEvent(
+					new DragEvent('dragstart', {
+						bubbles: true,
+						cancelable: true,
+						composed: true,
+						dataTransfer: event.dataTransfer
+					})
+				);
+			}
+		}}
+	>
+		<p class="draggable-icon" id="draggable-icon">=</p>
+	</div>
 	<slot />
 </div>
 
-<style>
+<style lang="scss">
+	@import './ui/variables';
+
+	.draggable-icon {
+		margin: 0;
+		padding: 0;
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: $color-blue;
+	}
+
 	.draggable {
 		display: flex;
 		height: fit-content;
