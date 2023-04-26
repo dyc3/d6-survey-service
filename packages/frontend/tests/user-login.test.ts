@@ -44,7 +44,7 @@ test('should not register user and should not log in', async ({ page }, testInfo
 	// await page.screenshot({ path: `screenshots/${testInfo.title}.png` });
 });
 
-/*test('should log out user', async ({ page }, testInfo) => {
+test('should log out user', async ({ page }, testInfo) => {
 	const username = `testuser-${crypto.randomUUID()}`;
 	const password = 'pass';
 
@@ -76,4 +76,3 @@ test('should not register user and should not log in', async ({ page }, testInfo
 	token = await page.evaluate(() => localStorage.getItem('token'));
 	expect(token).toBeFalsy();
 });
-*/
