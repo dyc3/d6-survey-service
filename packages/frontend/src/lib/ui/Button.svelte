@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import Spinner from './Spinner.svelte';
 
 	export let type: 'button' | 'submit' | 'reset' | undefined = undefined;
 	export let role: string | undefined = undefined;
@@ -16,6 +17,7 @@
 	export let kind: 'primary' | 'danger' | 'default' = 'default';
 	export let inButtonGroup = false;
 	export let disabled = false;
+	export let loading = false;
 
 	$: classes = `kind-${kind} sz-${size}`;
 
@@ -25,29 +27,46 @@
 		pressed = !pressed;
 	}
 
-	function disable() {
-		disabled = !disabled;
-	}
-
 	function handleClick(e: Event) {
 		if (toggleable && !inButtonGroup) {
 			toggle();
 		}
 		dispatch('click', e);
 	}
+
+	let button: HTMLButtonElement | undefined;
+	let loadingWidth = 0;
+
+	// Preserve width when changing loading
+	$: {
+		if (button) {
+			if (loading) {
+				loadingWidth = button.clientWidth;
+				button.style.width = `${loadingWidth}px`;
+			} else {
+				button.style.width = "";
+			}
+		}
+	}
 </script>
 
 <button
+	bind:this={button}
 	{type}
 	class={classes}
+	class:loading
 	on:click={handleClick}
 	aria-pressed={toggleable ? pressed : undefined}
 	{role}
-	{disabled}
+	disabled={disabled || loading}
 >
 	<div class="surface">
 		<span class="subsurface">
-			<slot />
+				{#if loading}
+					<Spinner />
+				{:else}
+					<slot />
+				{/if}
 		</span>
 	</div>
 </button>
@@ -84,7 +103,7 @@
 		background-clip: text;
 		-webkit-background-clip: text; /* stylelint-disable-line property-no-vendor-prefix */
 		clip-path: inset(2px);
-		padding: 2px;
+		padding: 3px;
 		width: auto;
 	}
 
@@ -156,7 +175,8 @@
 	}
 
 	button:active,
-	[aria-pressed='true'] {
+	[aria-pressed='true'],
+	.loading {
 		.surface {
 			background: transparent;
 			color: $color-surface;
@@ -170,5 +190,9 @@
 	button:disabled {
 		opacity: 0.5;
 		pointer-events: none;
+
+		&.loading {
+			opacity: 1;
+		}
 	}
 </style>
