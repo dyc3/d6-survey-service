@@ -54,7 +54,6 @@
 
 	export let errors: ValidationError[] = [];
 	$: validationErrors = buildErrorMapFromFields(errors);
-	$: console.log(errors);
 </script>
 
 <Container>
