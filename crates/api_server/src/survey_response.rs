@@ -268,13 +268,36 @@ mod tests {
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
 
+            // assert there is a response
+            let response = client
+                .get(uri!("/api", crate::survey::export::export_responses(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", owner_token.clone()))
+                .dispatch();
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let csv = response.into_string().unwrap();
+            assert_ne!(csv, "responder,created_at,updated_at\n");
+
+
             let response = client
                 .delete(uri!("/api", clear_survey_responses(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", owner_token))
+                .header(rocket::http::Header::new("Authorization", owner_token.clone()))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            // assert there are no responses
+            let response = client
+                .get(uri!("/api", crate::survey::export::export_responses(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", owner_token))
+                .dispatch();
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let csv = response.into_string().unwrap();
+            assert_eq!(csv, "responder,created_at,updated_at\n");
         });
     }
 }
