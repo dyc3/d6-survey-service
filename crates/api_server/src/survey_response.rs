@@ -258,33 +258,22 @@ mod tests {
             let survey_id = make_survey(&client, &owner_token);
             publish_survey(&client, &owner_token, survey_id);
 
-            let token = make_jwt(&client, 58008);
-
-            let response = client
-                .get(uri!("/api", get_survey(survey_id)).to_string())
-                .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", token))
-                .dispatch();
-
-            assert_eq!(response.status(), rocket::http::Status::Ok);
-
-            let mut map: HashMap<Uuid, crate::questions::Response> = HashMap::new();
+            let map: HashMap<Uuid, crate::questions::Response> = HashMap::new();
 
             let response = client
                 .post(uri!("/api", create_survey_response(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .body(serde_json::to_vec(&SurveyResponses { 0: map }).unwrap())
+                .body(serde_json::to_vec(&SurveyResponses(map)).unwrap())
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
 
             let response = client
-                .post(uri!("/api", clear_survey_responses(survey_id)).to_string())
+                .delete(uri!("/api", clear_survey_responses(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
                 .header(rocket::http::Header::new("Authorization", owner_token))
                 .dispatch();
 
-            println!("{:?}", response.body());
             assert_eq!(response.status(), rocket::http::Status::Ok);
         });
     }
