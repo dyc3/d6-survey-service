@@ -1,4 +1,4 @@
-export function arrayMove(array: any[], oldIndex: number, newIndex: number) {
+export function arrayMove<T>(array: T[], oldIndex: number, newIndex: number) {
 	if (oldIndex < newIndex) {
 		return [
 			...array.slice(0, oldIndex),
