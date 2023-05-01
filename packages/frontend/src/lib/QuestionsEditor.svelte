@@ -5,6 +5,8 @@
 	import QContainer from '$lib/QContainer.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { buildErrorMapFromUuids } from '$lib/validation';
+	import Draggable from './Draggable.svelte';
+	import { arrayMove } from './arrayutils';
 
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
@@ -76,20 +78,32 @@
 	$: {
 		errorsByUUID = buildErrorMapFromUuids(errors);
 	}
+
+	//listen for move event
+	function handleMove(e: CustomEvent) {
+		const { oldIndex, newIndex } = e.detail;
+		if (oldIndex === newIndex) return;
+		questions = arrayMove(questions, oldIndex, newIndex);
+		dispatch('change');
+	}
 </script>
 
-{#each questions as q (q.uuid)}
-	<div transition:slide|local={{ duration: 600 }}>
-		<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-		<QContainer
-			bind:question={q.question}
-			bind:required={q.required}
-			editmode={true}
-			on:change
-			errors={errorsByUUID.get(q.uuid) ?? []}
-		/>
-	</div>
-{/each}
+<div class="question-container">
+	{#each questions as q, index (q.uuid)}
+		<div transition:slide|local={{ duration: 600 }}>
+			<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
+			<Draggable {index} on:move={handleMove}>
+				<QContainer
+					bind:question={q.question}
+					bind:required={q.required}
+					editmode={true}
+					on:change
+					errors={errorsByUUID.get(q.uuid) ?? []}
+				/>
+			</Draggable>
+		</div>
+	{/each}
+</div>
 
 <div class="panel">
 	<select bind:value={questionToAdd}>
@@ -110,5 +124,11 @@
 		align-items: center;
 		flex-direction: column;
 		margin: 40px;
+	}
+
+	.question-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 </style>
