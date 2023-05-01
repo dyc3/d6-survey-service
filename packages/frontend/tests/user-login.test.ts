@@ -54,25 +54,14 @@ test('should log out user', async ({ page }, testInfo) => {
 	await page.fill('input[name="password"]', password);
 	await page.getByRole('button', { name: 'Submit' }).click();
 	await page.getByRole('heading', { name: 'My Surveys' }).waitFor({ state: 'visible' });
-	// await page.screenshot({ path: `screenshots/${testInfo.title}.png` });
 	let token = await page.evaluate(() => localStorage.getItem('token'));
 	expect(token).toBeTruthy();
+	await page.getByRole('button', { name: 'Log Out' }).waitFor({ state: 'visible' });
+	await page.reload();
+	await page.getByRole('button', { name: 'Log Out' }).waitFor({ state: 'visible' });
 	await page.getByRole('button', { name: 'Log Out' }).click();
 	token = await page.evaluate(() => localStorage.getItem('token'));
 	expect(token).toBeFalsy();
 
-	await page.evaluate(() => localStorage.clear());
-
-	await page.goto('/login');
-	await page.getByRole('tab', { name: 'Log In' }).click();
-	await page.fill('input[name="username"]', username);
-	await page.fill('input[name="password"]', password);
-	await page.getByRole('button', { name: 'Submit' }).click();
-	await page.getByRole('heading', { name: 'My Surveys' }).waitFor({ state: 'visible' });
-	token = await page.evaluate(() => localStorage.getItem('token'));
-	expect(token).toBeTruthy();
-
-	await page.getByRole('button', { name: 'Log Out' }).click();
-	token = await page.evaluate(() => localStorage.getItem('token'));
-	expect(token).toBeFalsy();
+	expect(page.url()).toContain('login');
 });
