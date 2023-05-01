@@ -27,90 +27,90 @@ describe('processing validation errors', () => {
 	});
 });
 
-describe("validation error aggregators", () => {
-	it("should collect errors by field name", () => {
+describe('validation error aggregators', () => {
+	it('should collect errors by field name', () => {
 		const errors: ValidationError[] = [
 			{
-				type: "BadValue",
+				type: 'BadValue',
 				data: {
-					field: "foo",
-					message: "invalid",
+					field: 'foo',
+					message: 'invalid'
 				}
 			},
 			{
-				type: "Required",
+				type: 'Required',
 				data: {
-					field: "bar",
+					field: 'bar'
 				}
-			},
+			}
 		];
 
 		const result = buildErrorMapFromFields(errors);
 
 		expect(result.size).toEqual(2);
-		expect(result.get("foo")).toEqual([errors[0]]);
-		expect(result.get("bar")).toEqual([errors[1]]);
+		expect(result.get('foo')).toEqual([errors[0]]);
+		expect(result.get('bar')).toEqual([errors[1]]);
 	});
 
-	it("should collect multiple errors by field name", () => {
+	it('should collect multiple errors by field name', () => {
 		const errors: ValidationError[] = [
 			{
-				type: "BadValue",
+				type: 'BadValue',
 				data: {
-					field: "foo",
-					message: "invalid",
+					field: 'foo',
+					message: 'invalid'
 				}
 			},
 			{
-				type: "Required",
+				type: 'Required',
 				data: {
-					field: "foo",
+					field: 'foo'
 				}
-			},
+			}
 		];
 
 		const result = buildErrorMapFromFields(errors);
 
 		expect(result.size).toEqual(1);
-		expect(result.get("foo")).toEqual(errors);
+		expect(result.get('foo')).toEqual(errors);
 	});
 
-	it("should collect errors by item UUID", () => {
+	it('should collect errors by item UUID', () => {
 		const errors: ValidationError[] = [
 			{
-				type: "Inner",
+				type: 'Inner',
 				data: {
-					field: "foo",
-					uuid: "123",
+					field: 'foo',
+					uuid: '123',
 					inner: {
-						type: "Required",
+						type: 'Required',
 						data: {
-							field: "bar",
+							field: 'bar'
 						}
 					}
 				}
 			},
 			{
-				type: "Inner",
+				type: 'Inner',
 				data: {
-					field: "foo",
-					uuid: "456",
+					field: 'foo',
+					uuid: '456',
 					inner: {
-						type: "Required",
+						type: 'Required',
 						data: {
-							field: "bar",
+							field: 'bar'
 						}
 					}
 				}
-			},
+			}
 		];
 
 		const result = buildErrorMapFromUuids(errors);
 
 		expect(result.size).toEqual(2);
 		// @ts-expect-error - we know inner exists, ignoring TS error for test brevity
-		expect(result.get("123")).toEqual([errors[0].data.inner]);
+		expect(result.get('123')).toEqual([errors[0].data.inner]);
 		// @ts-expect-error - we know inner exists, ignoring TS error for test brevity
-		expect(result.get("456")).toEqual([errors[1].data.inner]);
-	})
-})
+		expect(result.get('456')).toEqual([errors[1].data.inner]);
+	});
+});
