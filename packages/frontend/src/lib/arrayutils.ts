@@ -1,4 +1,4 @@
-export function arraySwap(oldIndex: number, newIndex: number, array: any[]) {
+export function arrayMove(array: any[], oldIndex: number, newIndex: number) {
 	if (oldIndex < newIndex) {
 		return [
 			...array.slice(0, oldIndex),

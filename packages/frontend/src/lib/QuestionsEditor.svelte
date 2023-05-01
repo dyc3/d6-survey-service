@@ -6,7 +6,7 @@
 	import Button from '$lib/ui/Button.svelte';
 	import { buildErrorMapFromUuids } from '$lib/validation';
 	import Draggable from './Draggable.svelte';
-	import { arraySwap } from './functions/arraySwap';
+	import { arrayMove } from './arrayutils';
 
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
@@ -83,7 +83,7 @@
 	function handleMove(e: CustomEvent) {
 		const { oldIndex, newIndex } = e.detail;
 		if (oldIndex === newIndex) return;
-		questions = arraySwap(oldIndex, newIndex, questions);
+		questions = arrayMove(questions, oldIndex, newIndex);
 		dispatch('change');
 	}
 </script>
