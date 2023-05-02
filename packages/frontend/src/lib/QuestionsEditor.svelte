@@ -104,7 +104,7 @@
 	function handleDragStart(e: CustomEvent) {
 		draggedIndex = e.detail.start;
 		showSidebar();
-	};
+	}
 
 	//handle move but using the new index from the drop container
 	function handleMoveDrop(e: DragEvent) {
@@ -116,14 +116,18 @@
 		hideSidebar();
 		dispatch('change');
 	}
-
 </script>
 
 {#each questions as q, index (q.uuid)}
 	<Panel border={true}>
 		<div transition:slide|local={{ duration: 600 }}>
 			<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-			<Draggable {index} on:move={handleMove} on:dragbegin={handleDragStart} on:dragStop={hideSidebar}>
+			<Draggable
+				{index}
+				on:move={handleMove}
+				on:dragbegin={handleDragStart}
+				on:dragStop={hideSidebar}
+			>
 				<QContainer
 					bind:question={q.question}
 					bind:required={q.required}
@@ -135,9 +139,10 @@
 		</div>
 	</Panel>
 
-	<div class='drop-container hidden' id='droppableContainer'>
+	<div class="drop-container hidden" id="droppableContainer">
 		{#each questions as q, index}
-			<div class='mini-drop-container' 
+			<div
+				class="mini-drop-container"
 				on:drop={handleMoveDrop}
 				on:dragover={(e) => e.preventDefault()}
 			>
@@ -177,15 +182,15 @@
 		transition: opacity 0.5s ease-in-out;
 	}
 
-	.drop-container.hidden{
+	.drop-container.hidden {
 		opacity: 0;
 	}
 
-	.drop-container.show{
+	.drop-container.show {
 		opacity: 1;
 	}
 
-	.mini-drop-container{
+	.mini-drop-container {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -195,8 +200,7 @@
 		height: 50px;
 	}
 
-	.mini-drop-container:last-of-type{
+	.mini-drop-container:last-of-type {
 		border-bottom: none;
 	}
-
 </style>

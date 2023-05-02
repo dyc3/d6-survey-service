@@ -36,7 +36,7 @@
 				event.dataTransfer.dropEffect = 'move';
 				const start = i;
 				event.dataTransfer.setData('text/plain', start.toString());
-				dispatch("dragbegin", {start});
+				dispatch('dragbegin', { start });
 			}
 		}
 	}
@@ -60,7 +60,7 @@
 		}
 	}}
 	on:dragend={() => {
-		dispatch("dragStop");
+		dispatch('dragStop');
 	}}
 >
 	<div
