@@ -57,6 +57,7 @@
 		font-family: inherit;
 		margin: var(--margin, 5px);
 		overflow-y: hidden;
+		resize: none;
 	}
 
 	.textbox:disabled {
