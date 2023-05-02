@@ -69,6 +69,7 @@
 		font-size: $main-font-size;
 		font-family: inherit;
 		overflow-y: hidden;
+		resize: none;
 	}
 
 	.textbox:disabled {
