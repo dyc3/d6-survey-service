@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
+
 	import type { Choice, Response, ValidationError } from '$lib/common';
 	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
-	import Container from '$lib/ui/Container.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import './questions.scss';
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
@@ -54,7 +55,7 @@
 	$: validationErrors = buildErrorMapFromFields(errors);
 </script>
 
-<Container>
+<div class="question">
 	{#if required}
 		<span class="required">*</span>
 	{/if}
@@ -99,8 +100,8 @@
 				<label for="multiple">Multiple</label>
 				<input type="checkbox" id="multiple" bind:checked={multiple} on:change />
 			</div>
-			{#each choices as choice, i}
-				<div class="editable-choice">
+			{#each choices as choice, i (choice.uuid)}
+				<div class="editable-choice" transition:slide|local={{ duration: 200 }}>
 					<TextBox bind:value={choice.text} placeholder="Enter text..." on:change />
 					<Button kind="danger" size="small" on:click={() => removeChoice(i)}>x</Button>
 				</div>
@@ -123,7 +124,7 @@
 			{/each}
 		{/if}
 	</div>
-</Container>
+</div>
 
 <style lang="scss">
 	@import '../ui/variables';
@@ -131,6 +132,7 @@
 	.choices {
 		display: flex;
 		flex-direction: column;
+		min-width: 300px;
 	}
 
 	.editable-choice {

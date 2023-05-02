@@ -7,6 +7,7 @@
 	import { browser } from '$app/environment';
 	import { createSurveyResponse, editSurveyResponse, isValidationError } from '$lib/api';
 	import { buildErrorMapFromUuids } from '$lib/validation';
+	import Panel from '$lib/ui/Panel.svelte';
 
 	export let data: PageData;
 
@@ -37,6 +38,8 @@
 				window.removeEventListener('beforeunload', window.onbeforeunload);
 				goto(`/survey/${survey.id}/submitted?responder=${responderUuid}`);
 			} else {
+				submitInProgress = false;
+
 				if (isValidationError(resp.error)) {
 					applyValidationErrors(resp.error.message.ValidationError);
 				} else {
@@ -46,7 +49,6 @@
 			}
 		} catch (e) {
 			console.error(e);
-		} finally {
 			submitInProgress = false;
 		}
 	}
@@ -67,21 +69,27 @@
 <p>{survey.description}</p>
 
 {#each survey.questions as surveyquestion}
-	<QContainer
-		question={surveyquestion.question}
-		bind:response={response[surveyquestion.uuid]}
-		required={surveyquestion.required}
-		errors={validationErrors.get(surveyquestion.uuid) ?? []}
-	/>
+	<Panel border>
+		<QContainer
+			question={surveyquestion.question}
+			bind:response={response[surveyquestion.uuid]}
+			required={surveyquestion.required}
+			errors={validationErrors.get(surveyquestion.uuid) ?? []}
+		/>
+	</Panel>
 {/each}
 
-{#if submitInProgress}
-	<div>Submmitting...</div>
-{/if}
-
-<div class="submit-button">
-	<Button --margin="5px" size="large" kind="primary" on:click={submitResponse}>Submit</Button>
-</div>
+<Panel>
+	<div class="submit-button">
+		<Button
+			--margin="5px"
+			size="large"
+			kind="primary"
+			on:click={submitResponse}
+			loading={submitInProgress}>Submit</Button
+		>
+	</div>
+</Panel>
 
 <style lang="scss">
 	@import '../../../../lib/ui/variables';
@@ -89,6 +97,5 @@
 	.submit-button {
 		display: flex;
 		justify-content: center;
-		margin-top: $large-padding;
 	}
 </style>

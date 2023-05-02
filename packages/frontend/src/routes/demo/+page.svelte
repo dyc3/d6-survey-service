@@ -42,6 +42,8 @@
 
 	let selected1: number[] = [];
 	let selected2: string[] = [];
+
+	let loading = true;
 </script>
 
 <h1>Component Demo</h1>
@@ -63,6 +65,12 @@ Buttons
 </div>
 <div>
 	<Button toggleable={true}>Toggle Button</Button>
+</div>
+<input type="checkbox" bind:checked={loading} />
+<div>
+	<Button {loading}>Loading Default</Button>
+	<Button kind="primary" {loading}>Loading Primary</Button>
+	<Button kind="danger" {loading}>Loading Danger</Button>
 </div>
 <div>
 	<h3>Single selection</h3>

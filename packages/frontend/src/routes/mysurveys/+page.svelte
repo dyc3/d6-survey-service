@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
+
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import type { ListedSurvey } from '$lib/common';
@@ -9,7 +12,9 @@
 	export let data: PageData;
 	let surveys: ListedSurvey[] = data.surveys;
 
+	let loadingCreate = false;
 	async function createNewSurvey() {
+		loadingCreate = true;
 		let surveyInfo = await createSurvey();
 		if (surveyInfo.ok) {
 			goto('/survey/' + surveyInfo.value.id + '/edit');
@@ -34,7 +39,9 @@
 
 <div class="toolbar">
 	<h1>My Surveys</h1>
-	<Button kind="primary" size="large" on:click={createNewSurvey}>Create Survey</Button>
+	<Button kind="primary" size="large" on:click={createNewSurvey} loading={loadingCreate}
+		>Create Survey</Button
+	>
 </div>
 <div class="main-container">
 	<table class="container">
@@ -45,8 +52,8 @@
 			<th class="actions">Actions</th>
 		</thead>
 		<tbody>
-			{#each surveys as survey}
-				<tr class="survey">
+			{#each surveys as survey (survey.id)}
+				<tr class="survey" transition:slide|local animate:flip>
 					<td class="name">{survey.title}</td>
 					<!-- TODO: replace with check box-->
 					<td class="published">{survey.published ? 'Yes' : 'No'}</td>
@@ -59,8 +66,15 @@
 						/>
 					</td>
 					<td class="actions">
-						<Button --margin="5px" on:click={() => goto(`/survey/${survey.id}/edit`)}>Edit</Button>
-						<Button --margin="5px" kind="danger" on:click={() => doDeleteSurvey(survey.id)}>
+						<Button --margin="5px" size="small" on:click={() => goto(`/survey/${survey.id}/edit`)}>
+							Edit
+						</Button>
+						<Button
+							--margin="5px"
+							size="small"
+							kind="danger"
+							on:click={() => doDeleteSurvey(survey.id)}
+						>
 							Delete
 						</Button>
 					</td>
@@ -74,7 +88,6 @@
 	@import '../../lib/ui/variables';
 
 	.main-container {
-		height: 70vh;
 		border: 2px solid $color-default;
 		min-width: fit-content;
 	}
@@ -93,8 +106,8 @@
 
 	.actions {
 		display: flex;
-		max-width: 250px;
-		justify-content: space-between;
+		flex-direction: row;
+		align-items: center;
 	}
 
 	.survey {
