@@ -33,7 +33,9 @@
 					content: {
 						prompt: '',
 						description: '',
-						max_rating: 5
+						max_rating: 5,
+						min_text: '',
+						max_text: ''
 					}
 				};
 				break;

@@ -401,6 +401,8 @@ mod tests {
                     prompt: "".to_owned(),
                     description: "".to_owned(),
                     max_rating: 5,
+                    min_text: "".to_owned(),
+                    max_text: "".to_owned(),
                 }
                 .into(),
                 QMultipleChoice {
@@ -441,6 +443,8 @@ mod tests {
                 prompt: "Prompt".to_owned(),
                 description: "".to_owned(),
                 max_rating: 1,
+                min_text: "".to_owned(),
+                max_text: "".to_owned(),
             };
             let errors = q.validate().unwrap_err();
             for (i, error) in errors.iter().enumerate() {
@@ -668,6 +672,8 @@ mod tests {
                 prompt: "Prompt".to_owned(),
                 description: "".to_owned(),
                 max_rating: 5,
+                min_text: "".to_owned(),
+                max_text: "".to_owned(),
             };
 
             let r1 = RRating { rating: 0 };

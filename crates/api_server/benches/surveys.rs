@@ -18,6 +18,8 @@ fn get_survey(c: &mut Criterion) {
             prompt: "Rate the foobar".to_string(),
             description: "1 is the worst, 5 is the best".to_string(),
             max_rating: 5,
+            min_text: "Worst".to_string(),
+            max_text: "Best".to_string(),
         }
         .into(),
         QMultipleChoice {
@@ -46,6 +48,8 @@ fn get_survey(c: &mut Criterion) {
             prompt: "Rate the foobar".to_string(),
             description: "1 is the worst, 5 is the best".to_string(),
             max_rating: 5,
+            min_text: "Worst".to_string(),
+            max_text: "Best".to_string(),
         }
         .into(),
     ]
@@ -121,6 +125,8 @@ fn patch_survey(c: &mut Criterion) {
             prompt: "Rate the foobar".to_string(),
             description: "1 is the worst, 5 is the best".to_string(),
             max_rating: 5,
+            min_text: "Worst".to_string(),
+            max_text: "Best".to_string(),
         }
         .into(),
         QMultipleChoice {
@@ -149,6 +155,8 @@ fn patch_survey(c: &mut Criterion) {
             prompt: "Rate the foobar".to_string(),
             description: "1 is the worst, 5 is the best".to_string(),
             max_rating: 5,
+            min_text: "Worst".to_string(),
+            max_text: "Best".to_string(),
         }
         .into(),
     ]

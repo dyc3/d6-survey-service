@@ -29,6 +29,8 @@
 			bind:prompt={question.content.prompt}
 			bind:description={question.content.description}
 			bind:max_rating={question.content.max_rating}
+			bind:min_text={question.content.min_text}
+			bind:max_text={question.content.max_text}
 			{editmode}
 			{required}
 			bind:response

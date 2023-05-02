@@ -13,8 +13,8 @@
 	export let max_rating = 10;
 	export let required = false;
 
-	export let minText = 'low';
-	export let maxText = 'high';
+	export let min_text = 'low';
+	export let max_text = 'high';
 
 	export let response: Response | undefined = undefined;
 	let selected: number[] = loadResponse(response);
@@ -51,8 +51,8 @@
 		{#if editmode}
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /></span>
 			<span>
-				where 1 is <input bind:value={minText} on:change /> and {max_rating} is
-				<input bind:value={maxText} on:change />
+				where 1 is <input bind:value={min_text} on:change /> and {max_rating} is
+				<input bind:value={max_text} on:change />
 			</span>
 			<div>
 				{#each validationErrors.get('max_rating') ?? [] as error}
@@ -105,8 +105,8 @@
 			bind:selected
 		/>
 		<div class="align-rating-text">
-			<span class="description-text">{minText}</span>
-			<span class="description-text">{maxText}</span>
+			<span class="description-text">{min_text}</span>
+			<span class="description-text">{max_text}</span>
 		</div>
 		{#each validationErrors.get('response') ?? [] as error}
 			<ValidationErrorRenderer {error} />

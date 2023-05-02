@@ -218,6 +218,8 @@ mod tests {
                                     prompt: "How much do you like this?".to_owned(),
                                     description: "".to_owned(),
                                     max_rating: 10,
+                                    min_text: "".to_owned(),
+                                    max_text: "".to_owned(),
                                 }),
                                 required: true,
                             },

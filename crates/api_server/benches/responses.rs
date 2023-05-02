@@ -101,6 +101,8 @@ fn survey_rating_questions(c: &mut Criterion) {
                 prompt: "Rate your food.".to_string(),
                 description: "please".to_string(),
                 max_rating: 5,
+                min_text: "Gross".to_string(),
+                max_text: "Tasty".to_string(),
             }
             .into(),
         },
@@ -111,6 +113,8 @@ fn survey_rating_questions(c: &mut Criterion) {
                 prompt: "Rate your fun.".to_string(),
                 description: "please".to_string(),
                 max_rating: 5,
+                min_text: "Boring".to_string(),
+                max_text: "Fun".to_string(),
             }
             .into(),
         },
@@ -183,6 +187,8 @@ fn survey_response_stress(c: &mut Criterion) {
                 prompt: "Rate your food.".to_string(),
                 description: "please".to_string(),
                 max_rating: 5,
+                min_text: "Gross".to_string(),
+                max_text: "Tasty".to_string(),
             }
             .into(),
         },
@@ -193,6 +199,8 @@ fn survey_response_stress(c: &mut Criterion) {
                 prompt: "Rate your fun.".to_string(),
                 description: "please".to_string(),
                 max_rating: 5,
+                min_text: "Boring".to_string(),
+                max_text: "Fun".to_string(),
             }
             .into(),
         },
