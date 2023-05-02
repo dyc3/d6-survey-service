@@ -152,7 +152,7 @@
 </div>
 
 <div class="container">
-	<Panel>
+	<Panel --spacing="0">
 		<TextBox
 			--margin="0"
 			placeholder="Survey Title"
@@ -191,10 +191,6 @@
 
 	.container {
 		align-items: center;
-
-		> * {
-			margin-bottom: 30px;
-		}
 	}
 
 	.toolbar {
