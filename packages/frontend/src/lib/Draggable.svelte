@@ -97,12 +97,6 @@
 		color: $color-blue;
 	}
 
-	.draggable {
-		display: flex;
-		height: fit-content;
-		width: fit-content;
-	}
-
 	.hovering {
 		background-color: #3273dc22;
 	}
