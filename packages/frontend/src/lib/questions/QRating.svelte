@@ -2,7 +2,6 @@
 	import type { Response, ValidationError } from '$lib/common';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
-	import Container from '$lib/ui/Container.svelte';
 	import './questions.scss';
 	import { buildErrorMapFromFields } from '$lib/validation';
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';

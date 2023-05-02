@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/ui/Container.svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
 	import { loginUser, registerUser } from '$lib/api';
@@ -36,7 +35,7 @@
 	$: tab = selected[0];
 </script>
 
-<Container>
+<div>
 	<ButtonGroup
 		orientation="horizontal"
 		buttons={['Log In', 'Register']}
@@ -59,7 +58,7 @@
 			<span>{response}</span>
 		</div>
 	{/if}
-</Container>
+</div>
 
 <style lang="scss">
 	@import '../../lib/ui/variables';

@@ -5,7 +5,6 @@
 	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
-	import Container from '$lib/ui/Container.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import './questions.scss';
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
