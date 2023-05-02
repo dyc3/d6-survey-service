@@ -107,6 +107,7 @@
 	.actions {
 		display: flex;
 		flex-direction: row;
+		align-items: center;
 	}
 
 	.survey {
