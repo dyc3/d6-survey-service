@@ -7,6 +7,7 @@
 	import { browser } from '$app/environment';
 	import { createSurveyResponse, editSurveyResponse, isValidationError } from '$lib/api';
 	import { buildErrorMapFromUuids } from '$lib/validation';
+	import Panel from '$lib/ui/Panel.svelte';
 
 	export let data: PageData;
 
@@ -68,23 +69,27 @@
 <p>{survey.description}</p>
 
 {#each survey.questions as surveyquestion}
-	<QContainer
-		question={surveyquestion.question}
-		bind:response={response[surveyquestion.uuid]}
-		required={surveyquestion.required}
-		errors={validationErrors.get(surveyquestion.uuid) ?? []}
-	/>
+	<Panel border>
+		<QContainer
+			question={surveyquestion.question}
+			bind:response={response[surveyquestion.uuid]}
+			required={surveyquestion.required}
+			errors={validationErrors.get(surveyquestion.uuid) ?? []}
+		/>
+	</Panel>
 {/each}
 
-<div class="submit-button">
-	<Button
-		--margin="5px"
-		size="large"
-		kind="primary"
-		on:click={submitResponse}
-		loading={submitInProgress}>Submit</Button
-	>
-</div>
+<Panel>
+	<div class="submit-button">
+		<Button
+			--margin="5px"
+			size="large"
+			kind="primary"
+			on:click={submitResponse}
+			loading={submitInProgress}>Submit</Button
+		>
+	</div>
+</Panel>
 
 <style lang="scss">
 	@import '../../../../lib/ui/variables';
