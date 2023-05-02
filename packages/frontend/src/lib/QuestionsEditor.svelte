@@ -118,15 +118,6 @@
 </Panel>
 
 <style lang="scss">
-	// TODO: deduplicate this class, copied from survey edit page
-	.panel {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-		margin: 40px;
-	}
-
 	.question-container {
 		display: flex;
 		flex-direction: column;
