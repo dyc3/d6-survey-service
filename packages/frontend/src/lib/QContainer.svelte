@@ -60,12 +60,12 @@
 <style lang="scss">
 	@import './ui/variables';
 
-	.question-container {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-		margin: auto;
-		padding-top: $large-padding;
-	}
+	// .question-container {
+	// 	display: flex;
+	// 	justify-content: center;
+	// 	align-items: center;
+	// 	flex-direction: column;
+	// 	margin: auto;
+	// 	padding-top: $large-padding;
+	// }
 </style>

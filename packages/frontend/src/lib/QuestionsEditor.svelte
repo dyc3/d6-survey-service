@@ -7,6 +7,7 @@
 	import { buildErrorMapFromUuids } from '$lib/validation';
 	import Draggable from './Draggable.svelte';
 	import { arrayMove } from './arrayutils';
+	import Panel from './ui/Panel.svelte';
 
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
@@ -88,8 +89,8 @@
 	}
 </script>
 
-<div class="question-container">
-	{#each questions as q, index (q.uuid)}
+{#each questions as q, index (q.uuid)}
+	<Panel border={true}>
 		<div transition:slide|local={{ duration: 600 }}>
 			<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
 			<Draggable {index} on:move={handleMove}>
@@ -102,10 +103,10 @@
 				/>
 			</Draggable>
 		</div>
-	{/each}
-</div>
+	</Panel>
+{/each}
 
-<div class="panel">
+<Panel>
 	<select bind:value={questionToAdd}>
 		<option value="Text">Text</option>
 		<option value="MultipleChoice">Multiple Choice</option>
@@ -114,7 +115,7 @@
 	<Button --margin="5px" size="small" on:click={() => addQuestion(questionToAdd)}>
 		+ Add Question
 	</Button>
-</div>
+</Panel>
 
 <style lang="scss">
 	// TODO: deduplicate this class, copied from survey edit page

@@ -8,13 +8,13 @@
 	.main-layout {
 		display: flex;
 		position: relative;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
+		// flex-direction: column;
+		// justify-content: center;
+		// align-items: center;
 		padding: 20px 30px;
 		margin: auto;
 		min-height: fit-content;
-		width: max-content;
+		width: 100%;
 		border: $color-blue 3px solid;
 		border-radius: 10px;
 		line-height: 2;

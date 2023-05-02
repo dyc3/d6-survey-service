@@ -34,7 +34,7 @@
 	$: validationErrors = buildErrorMapFromFields(errors);
 </script>
 
-<Container>
+<div>
 	{#if required}
 		<span class="required">*</span>
 	{/if}
@@ -72,7 +72,7 @@
 	{#each validationErrors.get('response') ?? [] as error}
 		<ValidationErrorRenderer {error} />
 	{/each}
-</Container>
+</div>
 
 <style lang="scss">
 	@import '../ui/variables';
