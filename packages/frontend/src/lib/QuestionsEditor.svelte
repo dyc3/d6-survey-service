@@ -12,6 +12,8 @@
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
 
+	let draggedIndex: number | null = null;
+
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 	const dispatch = createEventDispatcher();
 
@@ -80,20 +82,48 @@
 		errorsByUUID = buildErrorMapFromUuids(errors);
 	}
 
+	function showSidebar() {
+		document.getElementById('droppableContainer')?.classList.add('show');
+		document.getElementById('droppableContainer')?.classList.remove('hidden');
+	}
+
+	function hideSidebar() {
+		document.getElementById('droppableContainer')?.classList.remove('show');
+		document.getElementById('droppableContainer')?.classList.add('hidden');
+	}
+
 	//listen for move event
 	function handleMove(e: CustomEvent) {
 		const { oldIndex, newIndex } = e.detail;
 		if (oldIndex === newIndex) return;
 		questions = arrayMove(questions, oldIndex, newIndex);
+		hideSidebar();
 		dispatch('change');
 	}
+
+	function handleDragStart(e: CustomEvent) {
+		draggedIndex = e.detail.start;
+		showSidebar();
+	};
+
+	//handle move but using the new index from the drop container
+	function handleMoveDrop(e: DragEvent) {
+		if (draggedIndex === null) return;
+		const oldIndex = draggedIndex;
+		const newIndex = parseInt((e.target as HTMLElement).innerText);
+		questions = arrayMove(questions, oldIndex, newIndex);
+		draggedIndex = null;
+		hideSidebar();
+		dispatch('change');
+	}
+
 </script>
 
 {#each questions as q, index (q.uuid)}
 	<Panel border={true}>
 		<div transition:slide|local={{ duration: 600 }}>
 			<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-			<Draggable {index} on:move={handleMove}>
+			<Draggable {index} on:move={handleMove} on:dragbegin={handleDragStart} on:dragStop={hideSidebar}>
 				<QContainer
 					bind:question={q.question}
 					bind:required={q.required}
@@ -104,6 +134,17 @@
 			</Draggable>
 		</div>
 	</Panel>
+
+	<div class='drop-container hidden' id='droppableContainer'>
+		{#each questions as q, index}
+			<div class='mini-drop-container' 
+				on:drop={handleMoveDrop}
+				on:dragover={(e) => e.preventDefault()}
+			>
+				{index}
+			</div>
+		{/each}
+	</div>
 {/each}
 
 <Panel>
@@ -118,3 +159,44 @@
 		</Button>
 	</div>
 </Panel>
+
+<style lang="scss">
+	@import './ui/variables';
+
+	.drop-container {
+		display: flex;
+		position: fixed;
+		right: 0;
+		top: 50%;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid $color-blue;
+		border-top-left-radius: 8px;
+		border-bottom-left-radius: 8px;
+		transition: opacity 0.5s ease-in-out;
+	}
+
+	.drop-container.hidden{
+		opacity: 0;
+	}
+
+	.drop-container.show{
+		opacity: 1;
+	}
+
+	.mini-drop-container{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		border-bottom: 1px solid $color-blue;
+		width: 50px;
+		height: 50px;
+	}
+
+	.mini-drop-container:last-of-type{
+		border-bottom: none;
+	}
+
+</style>
