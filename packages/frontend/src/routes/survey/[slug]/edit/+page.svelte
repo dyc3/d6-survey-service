@@ -199,14 +199,6 @@
 		align-items: center;
 	}
 
-	.panel {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-		margin: 40px;
-	}
-
 	.save-indicator.fail {
 		color: $color-danger;
 	}
