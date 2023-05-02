@@ -192,7 +192,7 @@ export async function clearSurveyResponses(
 	survey_id: number,
 	opts?: ExtraOptions
 ): Promise<ApiResponse<null>> {
-	return apiReqAuth(`/api/survey/${survey_id}/respond`, { method: 'DELETE', ...opts })
+	return apiReqAuth(`/api/survey/${survey_id}/respond`, { method: 'DELETE', ...opts });
 }
 
 interface ExportResponse {
