@@ -61,6 +61,7 @@
 	.textbox {
 		border: 3px solid $color-default;
 		border-radius: 3px;
+		flex-grow: 1;
 		background-color: $color-bg;
 		box-sizing: border-box;
 		color: $color-default;
