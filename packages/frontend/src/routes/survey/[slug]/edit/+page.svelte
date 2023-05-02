@@ -182,7 +182,11 @@
 	/>
 
 	<Panel>
-		<Button --margin="5px" on:click={publishSurvey} loading={loadingPublish}>Publish Survey</Button>
+		<div class="flex-center">
+			<Button --margin="5px" on:click={publishSurvey} loading={loadingPublish}>
+				Publish Survey
+			</Button>
+		</div>
 	</Panel>
 </div>
 

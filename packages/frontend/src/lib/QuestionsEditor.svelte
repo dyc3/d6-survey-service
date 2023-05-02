@@ -107,14 +107,16 @@
 {/each}
 
 <Panel>
-	<select bind:value={questionToAdd}>
-		<option value="Text">Text</option>
-		<option value="MultipleChoice">Multiple Choice</option>
-		<option value="Rating">Rating</option>
-	</select>
-	<Button --margin="5px" size="small" on:click={() => addQuestion(questionToAdd)}>
-		+ Add Question
-	</Button>
+	<div class="flex-center" style="flex-direction: column">
+		<select bind:value={questionToAdd}>
+			<option value="Text">Text</option>
+			<option value="MultipleChoice">Multiple Choice</option>
+			<option value="Rating">Rating</option>
+		</select>
+		<Button --margin="5px" size="small" on:click={() => addQuestion(questionToAdd)}>
+			+ Add Question
+		</Button>
+	</div>
 </Panel>
 
 <style lang="scss">
