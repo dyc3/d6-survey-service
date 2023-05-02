@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Response, ValidationError } from '$lib/common';
 	import TextBox from '$lib/ui/TextBox.svelte';
-	import Container from '$lib/ui/Container.svelte';
 	import './questions.scss';
 	import { buildErrorMapFromFields } from '$lib/validation';
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
@@ -34,7 +33,7 @@
 	$: validationErrors = buildErrorMapFromFields(errors);
 </script>
 
-<Container>
+<div>
 	{#if required}
 		<span class="required">*</span>
 	{/if}
@@ -72,7 +71,7 @@
 	{#each validationErrors.get('response') ?? [] as error}
 		<ValidationErrorRenderer {error} />
 	{/each}
-</Container>
+</div>
 
 <style lang="scss">
 	@import '../ui/variables';

@@ -66,8 +66,15 @@
 						/>
 					</td>
 					<td class="actions">
-						<Button --margin="5px" on:click={() => goto(`/survey/${survey.id}/edit`)}>Edit</Button>
-						<Button --margin="5px" kind="danger" on:click={() => doDeleteSurvey(survey.id)}>
+						<Button --margin="5px" size="small" on:click={() => goto(`/survey/${survey.id}/edit`)}>
+							Edit
+						</Button>
+						<Button
+							--margin="5px"
+							size="small"
+							kind="danger"
+							on:click={() => doDeleteSurvey(survey.id)}
+						>
 							Delete
 						</Button>
 					</td>
@@ -81,7 +88,6 @@
 	@import '../../lib/ui/variables';
 
 	.main-container {
-		height: 70vh;
 		border: 2px solid $color-default;
 		min-width: fit-content;
 	}
@@ -100,8 +106,8 @@
 
 	.actions {
 		display: flex;
-		max-width: 250px;
-		justify-content: space-between;
+		flex-direction: row;
+		align-items: center;
 	}
 
 	.survey {
