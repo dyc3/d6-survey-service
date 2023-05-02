@@ -43,7 +43,7 @@ function createJWTStore() {
 		get,
 		login,
 		logout,
-		loggedIn,
+		loggedIn
 	};
 }
 
