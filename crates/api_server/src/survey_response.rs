@@ -243,8 +243,6 @@ pub async fn clear_survey_responses(
 mod tests {
     use super::*;
     use crate::db::models::SurveyResponses;
-    use crate::questions::RText;
-    use crate::survey::*;
     use crate::test_helpers::*;
     use rocket::local::blocking::Client;
     use std::collections::HashMap;
@@ -272,18 +270,23 @@ mod tests {
             let response = client
                 .get(uri!("/api", crate::survey::export::export_responses(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", owner_token.clone()))
+                .header(rocket::http::Header::new(
+                    "Authorization",
+                    owner_token.clone(),
+                ))
                 .dispatch();
             assert_eq!(response.status(), rocket::http::Status::Ok);
 
             let csv = response.into_string().unwrap();
             assert_ne!(csv, "responder,created_at,updated_at\n");
 
-
             let response = client
                 .delete(uri!("/api", clear_survey_responses(survey_id)).to_string())
                 .header(rocket::http::ContentType::JSON)
-                .header(rocket::http::Header::new("Authorization", owner_token.clone()))
+                .header(rocket::http::Header::new(
+                    "Authorization",
+                    owner_token.clone(),
+                ))
                 .dispatch();
 
             assert_eq!(response.status(), rocket::http::Status::Ok);
