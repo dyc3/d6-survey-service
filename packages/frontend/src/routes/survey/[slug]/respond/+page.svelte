@@ -97,6 +97,5 @@
 	.submit-button {
 		display: flex;
 		justify-content: center;
-		margin-top: $large-padding;
 	}
 </style>
