@@ -15,6 +15,8 @@ paths:
                 type: string
   /api/user/register:
     summary: Register a new user
+    tags:
+      - user
     post:
       requestBody:
         content:
@@ -35,6 +37,8 @@ paths:
                   - token
   /api/user/login:
     summary: Log in an existing user
+    tags:
+      - user
     post:
       requestBody:
         content:
@@ -56,6 +60,8 @@ paths:
   "/api/survey/create":
     post:
       summary: Create a new survey
+      tags:
+      - survey
       security:
         - JWT: []
       responses:
@@ -92,6 +98,8 @@ paths:
       - $ref: "#/components/parameters/survey"
     get:
       summary: Get a survey.
+      tags:
+      - survey
       description: >
         Get a survey. If the survey is not published, only the owner can
         get it. If the survey is published, anyone can get it.
@@ -136,6 +144,8 @@ paths:
           description: Survey not found
     patch:
       summary: Update a survey
+      tags:
+      - survey
       description: >
         Update a survey. Only the owner of the survey can update it. If the
         survey is published, it cannot be updated unless it is unpublished
@@ -180,6 +190,8 @@ paths:
                     $ref: "#/components/schemas/SurveyQuestion"
   /api/user/surveys:
     summary: Get all surveys owned by the user
+    tags:
+      - survey
     get:
       security:
         - JWT: []
@@ -204,6 +216,8 @@ paths:
           format: uuid
     post:
       summary: Submit a survey response
+      tags:
+      - survey response
       description: >
         Submit a survey response. The request body is a JSON object with
         the question IDs as keys and the response as the value.
@@ -224,6 +238,8 @@ paths:
         $ref: "#/components/requestBodies/SurveyResponse"
     patch:
       summary: Update a survey response
+      tags:
+      - survey response
       description: >
         Update a survey response. The request body is a JSON object with
         the question IDs as keys and the response as the value.
