@@ -15,9 +15,9 @@ paths:
                 type: string
   /api/user/register:
     summary: Register a new user
-    tags:
-      - user
     post:
+      tags:
+        - user
       requestBody:
         content:
           application/json:
@@ -37,9 +37,9 @@ paths:
                   - token
   /api/user/login:
     summary: Log in an existing user
-    tags:
-      - user
     post:
+      tags:
+        - user
       requestBody:
         content:
           application/json:
@@ -99,7 +99,7 @@ paths:
     get:
       summary: Get a survey.
       tags:
-      - survey
+        - survey
       description: >
         Get a survey. If the survey is not published, only the owner can
         get it. If the survey is published, anyone can get it.
@@ -190,9 +190,10 @@ paths:
                     $ref: "#/components/schemas/SurveyQuestion"
   /api/user/surveys:
     summary: Get all surveys owned by the user
-    tags:
-      - survey
     get:
+      tags:
+        - survey
+        - user
       security:
         - JWT: []
       responses:
@@ -217,7 +218,7 @@ paths:
     post:
       summary: Submit a survey response
       tags:
-      - survey response
+        - survey response
       description: >
         Submit a survey response. The request body is a JSON object with
         the question IDs as keys and the response as the value.
@@ -239,7 +240,7 @@ paths:
     patch:
       summary: Update a survey response
       tags:
-      - survey response
+        - survey response
       description: >
         Update a survey response. The request body is a JSON object with
         the question IDs as keys and the response as the value.
@@ -255,6 +256,8 @@ paths:
         $ref: "#/components/requestBodies/SurveyResponse"
     get:
       summary: Get a survey response
+      tags:
+        - survey reponse
       parameters:
         - $ref: "#/components/parameters/ifmodifiedsince"
         - $ref: "#/components/parameters/ifnonematch"
