@@ -14,7 +14,6 @@
 		padding: 20px 30px;
 		height: max-content;
 		box-sizing: border-box;
-
 		margin-bottom: var(--spacing, $panel-spacing);
 	}
 

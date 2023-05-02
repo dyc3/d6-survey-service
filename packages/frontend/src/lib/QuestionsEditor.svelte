@@ -118,6 +118,3 @@
 		</Button>
 	</div>
 </Panel>
-
-<style lang="scss">
-</style>
