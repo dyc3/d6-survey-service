@@ -50,7 +50,8 @@
 		border: 3px solid $color-default;
 		border-radius: 3px;
 		background-color: $color-bg;
-		min-width: 70%;
+		width: 100%;
+		box-sizing: border-box;
 		color: $color-default;
 		padding: 0.5em;
 		font-size: $main-font-size;
