@@ -13,6 +13,7 @@
 	export let errors: ValidationError[] = [];
 
 	let draggedIndex: number | null = null;
+	let sidebarVisible = false;
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 	const dispatch = createEventDispatcher();
@@ -82,28 +83,18 @@
 		errorsByUUID = buildErrorMapFromUuids(errors);
 	}
 
-	function showSidebar() {
-		document.getElementById('droppableContainer')?.classList.add('show');
-		document.getElementById('droppableContainer')?.classList.remove('hidden');
-	}
-
-	function hideSidebar() {
-		document.getElementById('droppableContainer')?.classList.remove('show');
-		document.getElementById('droppableContainer')?.classList.add('hidden');
-	}
-
 	//listen for move event
 	function handleMove(e: CustomEvent) {
 		const { oldIndex, newIndex } = e.detail;
 		if (oldIndex === newIndex) return;
 		questions = arrayMove(questions, oldIndex, newIndex);
-		hideSidebar();
+		sidebarVisible = false;
 		dispatch('change');
 	}
 
 	function handleDragStart(e: CustomEvent) {
 		draggedIndex = e.detail.start;
-		showSidebar();
+		sidebarVisible = true;
 	}
 
 	//handle move but using the new index from the drop container
@@ -113,7 +104,7 @@
 		const newIndex = parseInt((e.target as HTMLElement).innerText);
 		questions = arrayMove(questions, oldIndex, newIndex);
 		draggedIndex = null;
-		hideSidebar();
+		sidebarVisible = false;
 		dispatch('change');
 	}
 </script>
@@ -126,7 +117,7 @@
 				{index}
 				on:move={handleMove}
 				on:dragbegin={handleDragStart}
-				on:dragStop={hideSidebar}
+				on:dragStop={() => (sidebarVisible = false)}
 			>
 				<QContainer
 					bind:question={q.question}
@@ -139,7 +130,7 @@
 		</div>
 	</Panel>
 
-	<div class="drop-container hidden" id="droppableContainer">
+	<div class="drop-container {sidebarVisible ? 'show' : ''}" id="droppableContainer">
 		{#each questions as q, index}
 			<div
 				class="mini-drop-container"
@@ -172,6 +163,7 @@
 		display: flex;
 		position: fixed;
 		right: 0;
+		opacity: 0;
 		top: 50%;
 		flex-direction: column;
 		align-items: center;
@@ -180,10 +172,6 @@
 		border-top-left-radius: 8px;
 		border-bottom-left-radius: 8px;
 		transition: opacity 0.5s ease-in-out;
-	}
-
-	.drop-container.hidden {
-		opacity: 0;
 	}
 
 	.drop-container.show {
