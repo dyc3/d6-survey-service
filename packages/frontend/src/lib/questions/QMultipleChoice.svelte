@@ -57,10 +57,6 @@
 </script>
 
 <div class="question">
-	{#if required}
-		<span class="required">*</span>
-	{/if}
-
 	<div class="prompt-text">
 		{#if editmode}
 			<TextBox placeholder="Enter prompt..." bind:value={prompt} on:change />
@@ -71,6 +67,9 @@
 			</div>
 		{:else}
 			<span>{prompt}</span>
+			{#if required}
+				<span class="required">*</span>
+			{/if}
 		{/if}
 	</div>
 
