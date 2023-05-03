@@ -14,6 +14,7 @@ use crate::{
         },
         Storage,
     },
+    jwt::Claims,
     validate::{Validate, ValidationError},
 };
 
@@ -34,6 +35,8 @@ pub enum SurveyResponseError {
     SurveyNotPublished,
     #[error("Survey responder not found")]
     ResponderNotFound,
+    #[error("Not survey owner")]
+    NotSurveyOwner,
     #[error("Validation Error")]
     ValidationError(Vec<ValidationError>),
     #[error("Unknown error")]
@@ -47,6 +50,7 @@ impl From<SurveyResponseError> for ApiErrorResponse<SurveyResponseError> {
             SurveyResponseError::SurveyNotFound => Status::NotFound,
             SurveyResponseError::SurveyNotPublished => Status::Forbidden,
             SurveyResponseError::ResponderNotFound => Status::NotFound,
+            SurveyResponseError::NotSurveyOwner => Status::Forbidden,
             SurveyResponseError::ValidationError(_) => Status::UnprocessableEntity,
             SurveyResponseError::Unknown => Status::InternalServerError,
         };
@@ -199,4 +203,104 @@ pub async fn get_survey_response(
     }
 
     Ok(ApiOkCacheableResource::Ok(survey_response))
+}
+
+#[delete("/survey/<survey_id>/respond")]
+pub async fn clear_survey_responses(
+    db: Storage,
+    survey_id: i32,
+    claims: Claims,
+) -> Result<Json<()>, ApiErrorResponse<SurveyResponseError>> {
+    let survey = get_survey_from_db(&db, survey_id).await.map_err(|e| {
+        error!("{e:?}");
+        SurveyResponseError::SurveyNotFound
+    })?;
+
+    if survey.owner_id != claims.user_id() {
+        return Err(SurveyResponseError::NotSurveyOwner.into());
+    }
+
+    if !survey.published {
+        return Err(SurveyResponseError::SurveyNotPublished.into());
+    }
+
+    db.run(move |conn| -> anyhow::Result<()> {
+        diesel::delete(crate::db::schema::responses::table)
+            .filter(crate::db::schema::responses::survey_id.eq(survey_id))
+            .execute(conn)?;
+        Ok(())
+    })
+    .await
+    .map_err(|e| {
+        error!("{e:?}");
+        SurveyResponseError::Unknown
+    })?;
+
+    Ok(Json(()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::db::models::SurveyResponses;
+    use crate::test_helpers::*;
+    use rocket::local::blocking::Client;
+    use std::collections::HashMap;
+
+    #[test]
+    fn test_clear_survey_responses() {
+        run_test_with_db(|db_name| {
+            let client = Client::tracked(test_rocket(db_name)).expect("valid rocket instance");
+
+            let owner_token = create_test_user(&client);
+            let survey_id = make_survey(&client, &owner_token);
+            publish_survey(&client, &owner_token, survey_id);
+
+            let map: HashMap<Uuid, crate::questions::Response> = HashMap::new();
+
+            let response = client
+                .post(uri!("/api", create_survey_response(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .body(serde_json::to_vec(&SurveyResponses(map)).unwrap())
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            // assert there is a response
+            let response = client
+                .get(uri!("/api", crate::survey::export::export_responses(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new(
+                    "Authorization",
+                    owner_token.clone(),
+                ))
+                .dispatch();
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let csv = response.into_string().unwrap();
+            assert_ne!(csv, "responder,created_at,updated_at\n");
+
+            let response = client
+                .delete(uri!("/api", clear_survey_responses(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new(
+                    "Authorization",
+                    owner_token.clone(),
+                ))
+                .dispatch();
+
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            // assert there are no responses
+            let response = client
+                .get(uri!("/api", crate::survey::export::export_responses(survey_id)).to_string())
+                .header(rocket::http::ContentType::JSON)
+                .header(rocket::http::Header::new("Authorization", owner_token))
+                .dispatch();
+            assert_eq!(response.status(), rocket::http::Status::Ok);
+
+            let csv = response.into_string().unwrap();
+            assert_eq!(csv, "responder,created_at,updated_at\n");
+        });
+    }
 }
