@@ -12,6 +12,7 @@
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
 	import { buildErrorMapFromFields } from '$lib/validation';
 	import { page } from '$app/stores';
+	import Panel from '$lib/ui/Panel.svelte';
 
 	let title = 'Untitled Survey';
 	let description = '';
@@ -151,12 +152,20 @@
 </div>
 
 <div class="container">
-	<div class="panel">
-		<TextBox placeholder="Survey Title" bind:value={title} on:change={() => onChange('title')} />
+	<Panel --spacing="0">
+		<TextBox
+			--margin="0"
+			placeholder="Survey Title"
+			bind:value={title}
+			on:change={() => onChange('title')}
+		/>
 		{#each validationErrors.get('title') ?? [] as err}
 			<ValidationErrorRenderer error={err} />
 		{/each}
+	</Panel>
+	<Panel>
 		<TextBox
+			--margin="0"
 			placeholder="Survey Description"
 			bind:value={description}
 			on:change={() => onChange('description')}
@@ -164,7 +173,7 @@
 		{#each validationErrors.get('description') ?? [] as err}
 			<ValidationErrorRenderer error={err} />
 		{/each}
-	</div>
+	</Panel>
 
 	<QuestionsEditor
 		bind:questions
@@ -172,16 +181,19 @@
 		errors={validationErrors.get('questions') ?? []}
 	/>
 
-	<div class="panel">
-		<Button --margin="5px" on:click={publishSurvey} loading={loadingPublish}>Publish Survey</Button>
-	</div>
+	<Panel>
+		<div class="flex-center">
+			<Button --margin="5px" on:click={publishSurvey} loading={loadingPublish}>
+				Publish Survey
+			</Button>
+		</div>
+	</Panel>
 </div>
 
 <style lang="scss">
 	@import '../../../../lib/ui/variables';
 
 	.container {
-		border: 2px solid $color-default;
 		align-items: center;
 	}
 
@@ -189,14 +201,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-	}
-
-	.panel {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-		margin: 40px;
 	}
 
 	.save-indicator.fail {

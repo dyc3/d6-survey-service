@@ -21,45 +21,62 @@
 	}
 </script>
 
-{#if multiline}
-	<textarea
-		class="textbox"
-		{name}
-		{placeholder}
-		{disabled}
-		bind:value
-		on:keydown={handleKeydown}
-		bind:this={multilineElement}
-		on:change
-	/>
-{:else if password}
-	<!-- Frustratingly, `type` can't be dynamic if 2 way binding is used. -->
-	<input class="textbox" {name} type="password" {placeholder} {disabled} bind:value on:change />
-{:else}
-	<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
-{/if}
+<span class="textbox-outer">
+	{#if multiline}
+		<textarea
+			class="textbox"
+			{name}
+			{placeholder}
+			{disabled}
+			bind:value
+			on:keydown={handleKeydown}
+			bind:this={multilineElement}
+			on:change
+		/>
+	{:else if password}
+		<!-- Frustratingly, `type` can't be dynamic if 2 way binding is used. -->
+		<input class="textbox" {name} type="password" {placeholder} {disabled} bind:value on:change />
+	{:else}
+		<input class="textbox" {name} type="text" {placeholder} {disabled} bind:value on:change />
+	{/if}
 
-{#if copyable}
-	<Button size="small" on:click={copyToClipboard}>Copy</Button>
-{/if}
+	{#if copyable}
+		<div class="copy">
+			<Button size="small" on:click={copyToClipboard}>Copy</Button>
+		</div>
+	{/if}
+</span>
 
 <style lang="scss">
 	@import 'variables';
 
+	.textbox-outer {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		align-items: center;
+		margin: var(--margin, 5px);
+	}
+
 	.textbox {
 		border: 3px solid $color-default;
 		border-radius: 3px;
+		flex-grow: 1;
 		background-color: $color-bg;
-		min-width: 70%;
+		box-sizing: border-box;
 		color: $color-default;
 		padding: 0.5em;
 		font-size: $main-font-size;
 		font-family: inherit;
-		margin: var(--margin, 5px);
 		overflow-y: hidden;
+		resize: none;
 	}
 
 	.textbox:disabled {
 		opacity: 0.5;
+	}
+
+	.copy {
+		margin-left: 5px;
 	}
 </style>

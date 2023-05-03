@@ -5,11 +5,10 @@
 	import Button from '$lib/ui/Button.svelte';
 	import ButtonGroup from '$lib/ui/ButtonGroup.svelte';
 	import TextBox from '$lib/ui/TextBox.svelte';
-	import Container from '$lib/ui/Container.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import './questions.scss';
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
-	import { buildErrorMapFromFields } from '$lib/validation';
+	import { buildErrorMapFromFields, buildErrorMapFromUuids } from '$lib/validation';
 
 	export let editmode = false;
 	export let prompt: string;
@@ -54,9 +53,10 @@
 
 	export let errors: ValidationError[] = [];
 	$: validationErrors = buildErrorMapFromFields(errors);
+	$: choiceErrors = buildErrorMapFromUuids(validationErrors.get('choices') ?? []);
 </script>
 
-<Container>
+<div class="question">
 	{#if required}
 		<span class="required">*</span>
 	{/if}
@@ -106,12 +106,18 @@
 					<TextBox bind:value={choice.text} placeholder="Enter text..." on:change />
 					<Button kind="danger" size="small" on:click={() => removeChoice(i)}>x</Button>
 				</div>
+				{#each choiceErrors.get(choice.uuid) ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
 			{/each}
+			<div>
+				{#each validationErrors.get('choices') ?? [] as error}
+					{#if error.type !== 'Inner'}
+						<ValidationErrorRenderer {error} />
+					{/if}
+				{/each}
+			</div>
 			<Button on:click={addChoice}>+</Button>
-			<!-- TODO: show errors under the choices that have them -->
-			{#each validationErrors.get('choices') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
 		{:else}
 			<ButtonGroup
 				orientation="vertical"
@@ -125,7 +131,7 @@
 			{/each}
 		{/if}
 	</div>
-</Container>
+</div>
 
 <style lang="scss">
 	@import '../ui/variables';

@@ -47,7 +47,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(errors)}
+			{errors}
 		/>
 	{/if}
 
@@ -64,10 +64,7 @@
 
 	.question-container {
 		display: flex;
-		justify-content: center;
-		align-items: center;
 		flex-direction: column;
-		margin: auto;
-		padding-top: $large-padding;
+		width: 100%;
 	}
 </style>

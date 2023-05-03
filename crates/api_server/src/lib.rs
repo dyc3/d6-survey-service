@@ -40,6 +40,7 @@ pub fn rocket() -> _ {
                 survey_response::create_survey_response,
                 survey_response::edit_survey_response,
                 survey_response::get_survey_response,
+                survey_response::clear_survey_responses,
             ],
         )
         .register("/", catchers![api::default_catcher])
