@@ -45,7 +45,7 @@
 			{required}
 			bind:response
 			on:change
-			errors={unwrapInnerErrors(errors)}
+			{errors}
 		/>
 	{/if}
 
