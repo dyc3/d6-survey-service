@@ -107,6 +107,7 @@
 		);
 		questions = arrayMove(questions, oldIndex, newIndex);
 		draggedIndex = null;
+		hoveringIndex = null;
 		sidebarVisible = false;
 		dispatch('change');
 	}
