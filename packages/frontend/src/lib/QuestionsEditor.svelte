@@ -141,21 +141,13 @@
 			on:drop={handleMoveDrop}
 			on:dragover={(e) => e.preventDefault()}
 			on:dragenter={() => {
-				//this is in an anonymous function because a separate function
-				//was throwing very weird errors.
-
-				//this is to ENSURE that the leaving event does not fire AFTER
-				//the entering event when swapping between two eligible divs.
-				if (hoveringIndex != null) {
-					setTimeout(() => {
-						hoveringIndex = index;
-					}, 10);
-				} else {
-					hoveringIndex = index;
-				}
+				hoveringIndex = index;
 			}}
 			on:dragleave={() => {
-				hoveringIndex = null;
+				//make sure leaving does not fire after entering
+				if (hoveringIndex === index) {
+					hoveringIndex = null;
+				}
 			}}
 		>
 			{q.question.content.prompt}
