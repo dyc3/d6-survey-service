@@ -12,6 +12,10 @@
 	export let questions: SurveyQuestions = [];
 	export let errors: ValidationError[] = [];
 
+	let draggedIndex: number | null = null;
+	let hoveringIndex: number | null = null;
+	let sidebarVisible = false;
+
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
 	const dispatch = createEventDispatcher();
 
@@ -85,6 +89,26 @@
 		const { oldIndex, newIndex } = e.detail;
 		if (oldIndex === newIndex) return;
 		questions = arrayMove(questions, oldIndex, newIndex);
+		sidebarVisible = false;
+		dispatch('change');
+	}
+
+	function handleDragStart(e: CustomEvent) {
+		draggedIndex = e.detail.start;
+		sidebarVisible = true;
+	}
+
+	//handle move but using the new index from the drop container
+	function handleMoveDrop(e: DragEvent) {
+		if (draggedIndex === null) return;
+		const oldIndex = draggedIndex;
+		const newIndex = Array.from(document.querySelectorAll('.mini-drop-container')).indexOf(
+			e.target as HTMLElement
+		);
+		questions = arrayMove(questions, oldIndex, newIndex);
+		draggedIndex = null;
+		hoveringIndex = null;
+		sidebarVisible = false;
 		dispatch('change');
 	}
 </script>
@@ -93,7 +117,12 @@
 	<Panel border={true}>
 		<div transition:slide|local={{ duration: 600 }}>
 			<Button kind="danger" size="small" on:click={() => removeQuestion(q.uuid)}>X</Button>
-			<Draggable {index} on:move={handleMove}>
+			<Draggable
+				{index}
+				on:move={handleMove}
+				on:dragbegin={handleDragStart}
+				on:dragStop={() => (sidebarVisible = false)}
+			>
 				<QContainer
 					bind:question={q.question}
 					bind:required={q.required}
@@ -105,6 +134,27 @@
 		</div>
 	</Panel>
 {/each}
+
+<div class="drop-container {sidebarVisible ? 'show' : ''}" id="droppableContainer">
+	{#each questions as q, index (q.question.content.prompt)}
+		<div
+			class="mini-drop-container {hoveringIndex === index ? 'hover' : ''}"
+			on:drop={handleMoveDrop}
+			on:dragover={(e) => e.preventDefault()}
+			on:dragenter={() => {
+				hoveringIndex = index;
+			}}
+			on:dragleave={() => {
+				//make sure leaving does not fire after entering
+				if (hoveringIndex === index) {
+					hoveringIndex = null;
+				}
+			}}
+		>
+			{q.question.content.prompt}
+		</div>
+	{/each}
+</div>
 
 <Panel>
 	<div class="flex-center" style="flex-direction: column">
@@ -118,3 +168,47 @@
 		</Button>
 	</div>
 </Panel>
+
+<style lang="scss">
+	@import './ui/variables';
+
+	.drop-container {
+		display: flex;
+		position: fixed;
+		right: 0;
+		opacity: 0;
+		top: 50%;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background-color: white;
+		border: 1px solid $color-blue;
+		border-top-left-radius: 8px;
+		border-bottom-left-radius: 8px;
+		transition: opacity 0.5s ease-in-out;
+		pointer-events: none;
+	}
+
+	.drop-container.show {
+		opacity: 1;
+	}
+
+	.mini-drop-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		border-bottom: 1px solid $color-blue;
+		width: 100%;
+		height: 50px;
+		pointer-events: all;
+	}
+
+	.mini-drop-container.hover {
+		background-color: #3273dc22;
+	}
+
+	.mini-drop-container:last-of-type {
+		border-bottom: none;
+	}
+</style>
