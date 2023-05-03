@@ -9,7 +9,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import './questions.scss';
 	import ValidationErrorRenderer from '$lib/ValidationErrorRenderer.svelte';
-	import { buildErrorMapFromFields } from '$lib/validation';
+	import { buildErrorMapFromFields, buildErrorMapFromUuids } from '$lib/validation';
 
 	export let editmode = false;
 	export let prompt: string;
@@ -54,6 +54,7 @@
 
 	export let errors: ValidationError[] = [];
 	$: validationErrors = buildErrorMapFromFields(errors);
+	$: choiceErrors = buildErrorMapFromUuids(validationErrors.get('choices') ?? []);
 </script>
 
 <Container>
@@ -106,10 +107,15 @@
 					<TextBox bind:value={choice.text} placeholder="Enter text..." on:change />
 					<Button kind="danger" size="small" on:click={() => removeChoice(i)}>x</Button>
 				</div>
+				{#each choiceErrors.get(choice.uuid) ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
 			{/each}
 			<div>
-				{#each validationErrors.get('text') ?? [] as error}
-					<ValidationErrorRenderer {error} />
+				{#each validationErrors.get('choices') ?? [] as error}
+					{#if error.type !== 'Inner'}
+						<ValidationErrorRenderer {error} />
+					{/if}
 				{/each}
 			</div>
 			<Button on:click={addChoice}>+</Button>
