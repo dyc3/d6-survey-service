@@ -105,7 +105,9 @@
 	}
 
 	.actions {
-		padding-left: 1rem;
+		display: flex;
+ 		flex-direction: row;
+ 		align-items: center;
 	}
 
 	.survey {

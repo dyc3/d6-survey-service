@@ -13,6 +13,7 @@
 	export let errors: ValidationError[] = [];
 
 	let draggedIndex: number | null = null;
+	let hoveringIndex: number | null = null;
 	let sidebarVisible = false;
 
 	let questionToAdd: 'Text' | 'Rating' | 'MultipleChoice' = 'Text';
@@ -101,7 +102,9 @@
 	function handleMoveDrop(e: DragEvent) {
 		if (draggedIndex === null) return;
 		const oldIndex = draggedIndex;
-		const newIndex = parseInt((e.target as HTMLElement).innerText);
+		const newIndex = Array.from(document.querySelectorAll('.mini-drop-container')).indexOf(
+			e.target as HTMLElement
+		);
 		questions = arrayMove(questions, oldIndex, newIndex);
 		draggedIndex = null;
 		sidebarVisible = false;
@@ -129,19 +132,36 @@
 			</Draggable>
 		</div>
 	</Panel>
-
-	<div class="drop-container {sidebarVisible ? 'show' : ''}" id="droppableContainer">
-		{#each questions as q, index}
-			<div
-				class="mini-drop-container"
-				on:drop={handleMoveDrop}
-				on:dragover={(e) => e.preventDefault()}
-			>
-				{index}
-			</div>
-		{/each}
-	</div>
 {/each}
+
+<div class="drop-container {sidebarVisible ? 'show' : ''}" id="droppableContainer">
+	{#each questions as q, index (q.question.content.prompt)}
+		<div
+			class="mini-drop-container {hoveringIndex === index ? 'hover' : ''}"
+			on:drop={handleMoveDrop}
+			on:dragover={(e) => e.preventDefault()}
+			on:dragenter={() => {
+				//this is in an anonymous function because a separate function
+				//was throwing very weird errors.
+
+				//this is to ENSURE that the leaving event does not fire AFTER
+				//the entering event when swapping between two eligible divs.
+				if (hoveringIndex != null) {
+					setTimeout(() => {
+						hoveringIndex = index;
+					}, 10);
+				} else {
+					hoveringIndex = index;
+				}
+			}}
+			on:dragleave={() => {
+				hoveringIndex = null;
+			}}
+		>
+			{q.question.content.prompt}
+		</div>
+	{/each}
+</div>
 
 <Panel>
 	<div class="flex-center" style="flex-direction: column">
@@ -168,10 +188,12 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		background-color: white;
 		border: 1px solid $color-blue;
 		border-top-left-radius: 8px;
 		border-bottom-left-radius: 8px;
 		transition: opacity 0.5s ease-in-out;
+		pointer-events: none;
 	}
 
 	.drop-container.show {
@@ -184,8 +206,13 @@
 		align-items: center;
 		justify-content: center;
 		border-bottom: 1px solid $color-blue;
-		width: 50px;
+		width: 100%;
 		height: 50px;
+		pointer-events: all;
+	}
+
+	.mini-drop-container.hover {
+		background-color: #3273dc22;
 	}
 
 	.mini-drop-container:last-of-type {
