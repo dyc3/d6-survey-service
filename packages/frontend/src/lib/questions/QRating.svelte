@@ -42,10 +42,6 @@
 </script>
 
 <div>
-	{#if required}
-		<span class="required">*</span>
-	{/if}
-
 	<div class="prompt-text">
 		{#if editmode}
 			<span>On a scale of 1- <input bind:value={max_rating} type="number" on:change /></span>
@@ -63,20 +59,23 @@
 		{/if}
 	</div>
 
-	{#if editmode}
-		<div class="text-box-container prompt-text">
-			<TextBox placeholder="Enter prompt..." bind:value={prompt} />
-		</div>
-		<div>
-			{#each validationErrors.get('prompt') ?? [] as error}
-				<ValidationErrorRenderer {error} />
-			{/each}
-		</div>
-	{:else}
-		<div>
+	<div class="prompt-text">
+		{#if editmode}
+			<div class="text-box-container">
+				<TextBox placeholder="Enter prompt..." bind:value={prompt} />
+			</div>
+			<div>
+				{#each validationErrors.get('prompt') ?? [] as error}
+					<ValidationErrorRenderer {error} />
+				{/each}
+			</div>
+		{:else}
 			<span>{prompt}</span>
-		</div>
-	{/if}
+			{#if required}
+				<span class="required">*</span>
+			{/if}
+		{/if}
+	</div>
 
 	{#if editmode}
 		<div class="text-box-container description-text">
