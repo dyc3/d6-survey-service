@@ -34,6 +34,8 @@ pub struct QRating {
     pub prompt: String,
     pub description: String,
     pub max_rating: u8,
+    pub min_text: String,
+    pub max_text: String,
 }
 
 #[typeshare]

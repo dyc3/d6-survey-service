@@ -73,6 +73,8 @@ export interface QRating {
 	prompt: string;
 	description: string;
 	max_rating: number;
+	min_text: string;
+	max_text: string;
 }
 
 export interface Choice {

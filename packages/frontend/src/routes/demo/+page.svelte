@@ -17,7 +17,13 @@
 		},
 		{
 			type: 'Rating',
-			content: { prompt: 'Rate your experience', description: '', max_rating: 10 }
+			content: {
+				prompt: 'Rate your experience',
+				description: '',
+				max_rating: 10,
+				min_text: 'Worst',
+				max_text: 'Best'
+			}
 		},
 		{
 			type: 'MultipleChoice',
